@@ -12,24 +12,23 @@
 
 ## 项目功能
 
-- 商品列表展示
-- 商品搜索
-- 商品详情页
-- 后台新增周边页面
-- 图片放在 public/goods/ 目录下
+- 谷子图鉴（公共区）：所有用户公开商品，显示上传者和时间
+- 痛柜（私人收藏）：用户个人收藏，可设为公开分享
+- 商品列表展示 + 搜索 + 详情页
+- 公开投稿 + 管理员审核流程
+- 删除申请 + 管理员审核流程
+- 用户注册/登录（Supabase Auth）
+- 个人中心：投稿管理、痛柜管理、通知中心
+- 手机拍照上传（Supabase Storage）
 
 ## 商品数据结构
 
 商品包含：
 
-- id
-- title
-- work
-- character
-- category
-- price
-- description
-- image
+- id, title, work, character, category, price, description, image
+- submitter_id（上传者 UUID）
+- visibility（'public' | 'private'，公开/私密）
+- created_at（发布时间）
 
 ## 图片规则
 
@@ -68,10 +67,12 @@ public/goods/
 - 2026-05-16: 添加公开投稿功能 — /submit 投稿页 + /admin/items/review 审核页（用 [待审核] 描述标记实现，无需数据库迁移）
 - 2026-05-16: 添加删除申请审核功能 — 详情页"申请删除此条目"按钮，管理员审核页支持"确认删除"/"恢复"（用 [申请删除] 标记，无需数据库迁移）
 - 2026-05-16: 添加用户账号系统 — Supabase Auth 邮箱注册/登录，个人中心 (/mypage) 查看投稿和通知，审核结果自动通知用户，导航栏感知登录状态
+- 2026-05-16: 分拆谷子图鉴（公共区）与痛柜（私人收藏）— 公共区显示上传者+时间，痛柜支持手动上传/收藏引用/公开开关，商品卡片新增加入痛柜按钮
 - 已配置 git SOCKS5 代理 (127.0.0.1:10808) 用于 GitHub 推送
 
 ## 数据库迁移（需在 Supabase SQL Editor 执行）
 
+### 第一次迁移（已执行）
 ```sql
 ALTER TABLE items ADD COLUMN submitter_id UUID REFERENCES auth.users(id) ON DELETE SET NULL;
 CREATE INDEX idx_items_submitter_id ON items(submitter_id);
@@ -91,6 +92,34 @@ CREATE INDEX idx_notifications_unread ON notifications(user_id) WHERE is_read = 
 
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can read own notifications" ON notifications FOR SELECT USING (auth.uid() = user_id);
+```
+
+### 第二次迁移（痛柜功能需要，未执行）
+```sql
+ALTER TABLE items ADD COLUMN visibility TEXT NOT NULL DEFAULT 'public' CHECK (visibility IN ('public', 'private'));
+
+CREATE TABLE user_collections (
+  id BIGSERIAL PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  item_id INTEGER NOT NULL REFERENCES items(id) ON DELETE CASCADE,
+  added_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE(user_id, item_id)
+);
+CREATE INDEX idx_collections_user ON user_collections(user_id);
+
+CREATE TABLE profiles (
+  user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  display_name TEXT,
+  cabinet_public BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE user_collections ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users manage own collections" ON user_collections FOR ALL USING (auth.uid() = user_id);
+
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users manage own profile" ON profiles FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Anyone can read public profiles" ON profiles FOR SELECT USING (cabinet_public = true);
 ```
 
 ## Supabase Dashboard 配置
