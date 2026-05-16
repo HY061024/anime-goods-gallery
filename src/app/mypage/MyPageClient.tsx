@@ -18,12 +18,14 @@ export default function MyPageClient({
   collection,
   profile,
   userId,
+  categories = [],
 }: {
   items: ItemWithDisplay[];
   notifications: Notification[];
   collection: Item[];
   profile: Profile;
   userId: string;
+  categories?: string[];
 }) {
   const [tab, setTab] = useState<"items" | "notifications" | "cabinet">("items");
   const [notifications, setNotifications] = useState(initialNotifications);
@@ -115,7 +117,7 @@ export default function MyPageClient({
 
       {/* 痛柜 Tab */}
       {tab === "cabinet" && (
-        <CabinetTab items={collection} profile={profile} userId={userId} />
+        <CabinetTab items={collection} profile={profile} userId={userId} categories={categories} />
       )}
 
       {/* 通知列表 */}

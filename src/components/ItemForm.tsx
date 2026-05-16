@@ -3,16 +3,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const categories = ["手办", "吧唧", "亚克力", "色纸", "挂件"];
-
 type ItemFormProps = {
   action: (formData: FormData) => Promise<{ error?: string }>;
   title: string;
   description: string;
   submitLabel: string;
+  categories?: string[];
 };
 
-export default function ItemForm({ action, title, description, submitLabel }: ItemFormProps) {
+export default function ItemForm({ action, title, description, submitLabel, categories = [] }: ItemFormProps) {
   const [error, setError] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
   const router = useRouter();
@@ -53,16 +52,19 @@ export default function ItemForm({ action, title, description, submitLabel }: It
         </Field>
 
         <Field label="分类" required>
-          <select
+          <input
             name="category"
-            defaultValue=""
-            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
-          >
-            <option value="" disabled>请选择分类</option>
-            {categories.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
+            list="category-list"
+            placeholder="例如：手办、吧唧、亚克力、色纸…也可自由输入"
+            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
+          />
+          {categories.length > 0 && (
+            <datalist id="category-list">
+              {categories.map((c) => (
+                <option key={c} value={c} />
+              ))}
+            </datalist>
+          )}
         </Field>
 
         <Field label="价格（元）" required>

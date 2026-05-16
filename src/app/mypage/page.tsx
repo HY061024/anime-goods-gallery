@@ -3,6 +3,7 @@ import { getItemsByUserId } from "@/lib/items";
 import { getNotificationsByUserId, getUnreadNotificationCount } from "@/lib/notifications";
 import { getUserCollection } from "@/lib/collections";
 import { getProfile } from "@/lib/profiles";
+import { getAllCategories } from "@/lib/categories";
 import MyPageClient from "./MyPageClient";
 
 export const dynamic = "force-dynamic";
@@ -24,12 +25,13 @@ export default async function MyPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const [items, notifications, unreadCount, collection, profile] = await Promise.all([
+  const [items, notifications, unreadCount, collection, profile, categories] = await Promise.all([
     getItemsByUserId(user.id),
     getNotificationsByUserId(user.id),
     getUnreadNotificationCount(user.id),
     getUserCollection(user.id),
     getProfile(user.id),
+    getAllCategories(),
   ]);
 
   const approvedCount = items.filter(
@@ -63,6 +65,7 @@ export default async function MyPage() {
         collection={collection}
         profile={profile}
         userId={user.id}
+        categories={categories}
       />
     </div>
   );

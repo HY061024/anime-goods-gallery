@@ -1,14 +1,20 @@
 import Link from "next/link";
-import { searchItems } from "@/lib/items";
+import { searchItems, getPopularWorks, getPopularCharacters } from "@/lib/items";
 import { createClient } from "@/lib/supabaseServer";
 import { getSubmitterNames } from "@/lib/profiles";
 import { getCollectedItemIds } from "@/lib/collections";
+import { getAllCategories } from "@/lib/categories";
 import { collectItem } from "@/app/actions";
 import ItemCard from "@/components/ItemCard";
 
 export default async function HomePage() {
-  const items = await searchItems();
-  const supabase = await createClient();
+  const [items, categories, popularWorks, popularCharacters, supabase] = await Promise.all([
+    searchItems(),
+    getAllCategories(),
+    getPopularWorks(8),
+    getPopularCharacters(12),
+    createClient(),
+  ]);
   const { data: { user } } = await supabase.auth.getUser();
 
   const submitterIds = items.map((i) => i.submitter_id).filter(Boolean) as string[];
@@ -16,6 +22,8 @@ export default async function HomePage() {
     getSubmitterNames(submitterIds),
     user ? getCollectedItemIds(user.id) : Promise.resolve(new Set<number>()),
   ]);
+
+  const hotCategories = categories.slice(0, 8);
 
   return (
     <>
@@ -36,7 +44,7 @@ export default async function HomePage() {
               二次元周边图鉴
             </h1>
             <p className="mx-auto mb-10 max-w-xl text-lg text-pink-100">
-              收录手办、吧唧、亚克力、色纸、挂件等二次元周边，支持按角色、作品、分类搜索
+              按 IP（作品）、角色自由浏览，支持关键字搜索，找到你喜欢的周边
             </p>
 
             {/* 搜索框 */}
@@ -51,18 +59,22 @@ export default async function HomePage() {
               </button>
             </form>
 
-            {/* 快捷分类 */}
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-              <span className="text-sm text-pink-200">热门分类：</span>
-              {["手办", "吧唧", "亚克力", "色纸", "挂件"].map((cat) => (
-                <Link
-                  key={cat}
-                  href={`/items?category=${cat}`}
-                  className="rounded-full bg-white/20 px-3 py-1 text-sm text-white transition hover:bg-white/30"
-                >
-                  {cat}
-                </Link>
-              ))}
+            {/* 快捷入口：分类 + 投稿 */}
+            <div className="mt-6 space-y-3">
+              {hotCategories.length > 0 && (
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  <span className="text-sm text-pink-200">热门分类：</span>
+                  {hotCategories.map((cat) => (
+                    <Link
+                      key={cat}
+                      href={`/items?category=${encodeURIComponent(cat)}`}
+                      className="rounded-full bg-white/20 px-3 py-1 text-sm text-white transition hover:bg-white/30"
+                    >
+                      {cat}
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* 投稿 CTA */}
@@ -85,8 +97,79 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* 按 IP 浏览 */}
+      {popularWorks.length > 0 && (
+        <section className="mx-auto max-w-6xl px-4 py-12">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">按 IP 浏览</h2>
+              <p className="mt-1 text-sm text-gray-500">按作品系列查找周边</p>
+            </div>
+            <Link
+              href="/items"
+              className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-pink-500 shadow-sm transition hover:bg-pink-50"
+            >
+              全部作品 →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {popularWorks.map((w) => (
+              <Link
+                key={w.name}
+                href={`/items?work=${encodeURIComponent(w.name)}`}
+                className="group rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-pink-200"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-pink-400 to-purple-500 text-sm font-bold text-white">
+                    {w.name.charAt(0)}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-gray-900 group-hover:text-pink-500">
+                      {w.name}
+                    </p>
+                    <p className="text-xs text-gray-400">{w.count} 件周边</p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 按角色浏览 */}
+      {popularCharacters.length > 0 && (
+        <section className="mx-auto max-w-6xl px-4 pb-12">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">按角色浏览</h2>
+              <p className="mt-1 text-sm text-gray-500">按角色查找周边</p>
+            </div>
+            <Link
+              href="/items"
+              className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-pink-500 shadow-sm transition hover:bg-pink-50"
+            >
+              全部角色 →
+            </Link>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {popularCharacters.map((c) => (
+              <Link
+                key={c.name}
+                href={`/items?character=${encodeURIComponent(c.name)}`}
+                className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-gray-600 shadow-sm transition hover:border-pink-300 hover:bg-pink-50 hover:text-pink-500"
+              >
+                {c.name}
+                <span className="ml-1.5 text-xs text-gray-300">{c.count}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* 最新收录 */}
-      <section className="mx-auto max-w-6xl px-4 py-12">
+      <section className="mx-auto max-w-6xl px-4 pb-12">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">最新收录</h2>

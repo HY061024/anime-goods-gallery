@@ -12,10 +12,12 @@ export default function CabinetTab({
   items,
   profile,
   userId,
+  categories = [],
 }: {
   items: Item[];
   profile: Profile;
   userId: string;
+  categories?: string[];
 }) {
   const [showUpload, setShowUpload] = useState(false);
   const [cabinetPublic, setCabinetPublic] = useState(profile.cabinet_public);
@@ -92,6 +94,7 @@ export default function CabinetTab({
             title="上传到痛柜"
             description="私密上传，无需审核，仅自己可见（除非开启公开痛柜）"
             submitLabel="添加到痛柜"
+            categories={categories}
           />
         </div>
       )}

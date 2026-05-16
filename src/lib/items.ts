@@ -5,11 +5,15 @@ import type { Item } from "@/data/items";
 type SearchItemsParams = {
   q?: string;
   category?: string;
+  work?: string;
+  character?: string;
 };
 
 export async function searchItems({
   q = "",
   category = "",
+  work = "",
+  character = "",
 }: SearchItemsParams = {}) {
   let query = supabase
     .from("items")
@@ -36,6 +40,14 @@ export async function searchItems({
     query = query.eq("category", category);
   }
 
+  if (work) {
+    query = query.eq("work", work);
+  }
+
+  if (character) {
+    query = query.eq("character", character);
+  }
+
   const { data, error } = await query;
 
   if (error) {
@@ -60,6 +72,42 @@ export async function getItemById(id: string) {
   }
 
   return data as Item;
+}
+
+export async function getPopularWorks(limit = 8) {
+  const { data } = await supabase
+    .from("items")
+    .select("work")
+    .not("description", "ilike", "[待审核]%")
+    .not("description", "ilike", "[申请删除]%")
+    .eq("visibility", "public");
+
+  const counts = new Map<string, number>();
+  for (const row of data ?? []) {
+    if (row.work) counts.set(row.work, (counts.get(row.work) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([name, count]) => ({ name, count }));
+}
+
+export async function getPopularCharacters(limit = 12) {
+  const { data } = await supabase
+    .from("items")
+    .select("character")
+    .not("description", "ilike", "[待审核]%")
+    .not("description", "ilike", "[申请删除]%")
+    .eq("visibility", "public");
+
+  const counts = new Map<string, number>();
+  for (const row of data ?? []) {
+    if (row.character) counts.set(row.character, (counts.get(row.character) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([name, count]) => ({ name, count }));
 }
 
 export async function getItemsByUserId(userId: string) {
