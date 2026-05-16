@@ -69,6 +69,7 @@ public/goods/
 - 2026-05-16: 添加用户账号系统 — Supabase Auth 邮箱注册/登录，个人中心 (/mypage) 查看投稿和通知，审核结果自动通知用户，导航栏感知登录状态
 - 2026-05-16: 分拆谷子图鉴（公共区）与痛柜（私人收藏）— 公共区显示上传者+时间，痛柜支持手动上传/收藏引用/公开开关，商品卡片新增加入痛柜按钮
 - 2026-05-16: 分类改为用户自由输入 + 按IP/角色浏览 — 分类从固定下拉改为输入框+已有分类自动补全，首页新增热门IP/角色浏览区域，搜索页支持按IP/角色筛选
+- 2026-05-16: 添加痛柜公开页(/users/[userId])+ 浏览量计数 — profiles 新增 cabinet_views 字段，访客浏览自动 +1，痛柜工具栏显示浏览统计
 - 已配置 git SOCKS5 代理 (127.0.0.1:10808) 用于 GitHub 推送
 
 ## 数据库迁移（需在 Supabase SQL Editor 执行）
@@ -121,6 +122,18 @@ CREATE POLICY "Users manage own collections" ON user_collections FOR ALL USING (
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users manage own profile" ON profiles FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Anyone can read public profiles" ON profiles FOR SELECT USING (cabinet_public = true);
+```
+
+### 第三次迁移（浏量计数需要，未执行）
+```sql
+ALTER TABLE profiles ADD COLUMN cabinet_views INTEGER NOT NULL DEFAULT 0;
+
+CREATE OR REPLACE FUNCTION increment_cabinet_views(target_user_id UUID)
+RETURNS void AS $$
+BEGIN
+  UPDATE profiles SET cabinet_views = cabinet_views + 1 WHERE user_id = target_user_id;
+END;
+$$ LANGUAGE plpgsql;
 ```
 
 ## Supabase Dashboard 配置
