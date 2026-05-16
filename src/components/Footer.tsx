@@ -21,6 +21,9 @@ export default function Footer() {
             <Link href="/items" className="text-gray-500 transition hover:text-pink-500">
               商品搜索
             </Link>
+            <Link href="/submit" className="text-gray-500 transition hover:text-pink-500">
+              投稿
+            </Link>
             <Link href="/admin" className="text-gray-500 transition hover:text-pink-500">
               后台管理
             </Link>

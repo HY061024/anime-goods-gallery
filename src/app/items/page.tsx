@@ -8,6 +8,7 @@ type ItemsPageProps = {
   searchParams: Promise<{
     q?: string;
     category?: string;
+    submitted?: string;
   }>;
 };
 
@@ -15,6 +16,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const params = await searchParams;
   const q = params.q ?? "";
   const category = params.category ?? "";
+  const submitted = params.submitted === "1";
 
   const filteredItems = await searchItems({ q, category });
 
@@ -28,6 +30,13 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
         <h1 className="mt-3 text-3xl font-bold text-gray-900">周边图鉴搜索</h1>
         <p className="mt-2 text-gray-500">根据角色、作品、分类或周边名称查找记录</p>
       </div>
+
+      {/* 投稿成功提示 */}
+      {submitted && (
+        <div className="mb-6 rounded-2xl bg-green-50 px-5 py-4 text-sm text-green-700 ring-1 ring-green-200">
+          投稿已提交，审核通过后会在图鉴中展示。感谢你的贡献！
+        </div>
+      )}
 
       {/* 搜索和筛选表单 */}
       <form className="mb-8 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">

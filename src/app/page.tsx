@@ -52,6 +52,16 @@ export default async function HomePage() {
                 </Link>
               ))}
             </div>
+
+            {/* 投稿 CTA */}
+            <div className="mt-8">
+              <Link
+                href="/submit"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-pink-500 shadow-lg transition hover:bg-pink-50 hover:scale-105"
+              >
+                投稿你喜欢的周边 →
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -87,8 +97,8 @@ export default async function HomePage() {
         ) : (
           <div className="rounded-3xl bg-white p-12 text-center shadow-sm">
             <p className="text-gray-500">还没有收录任何周边</p>
-            <Link href="/admin" className="mt-3 inline-block text-sm font-medium text-pink-500">
-              去后台添加 →
+            <Link href="/submit" className="mt-3 inline-block text-sm font-medium text-pink-500">
+              去投稿 →
             </Link>
           </div>
         )}

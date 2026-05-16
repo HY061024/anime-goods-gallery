@@ -1,12 +1,9 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { requireAdmin } from "./auth";
 import { saveItem } from "@/lib/itemActions";
 
-export async function createItem(formData: FormData) {
-  await requireAdmin();
-
+export async function submitItem(formData: FormData) {
   const imageFile = formData.get("imageFile") as File | null;
 
   const result = await saveItem(
@@ -19,9 +16,10 @@ export async function createItem(formData: FormData) {
       description: (formData.get("description") as string)?.trim() ?? "",
       imageName: (formData.get("image") as string)?.trim() ?? "",
       imageFile: imageFile && imageFile.size > 0 ? imageFile : null,
-    }
+    },
+    true
   );
 
   if ("error" in result) return { error: result.error };
-  redirect(`/items/${result.success}`);
+  redirect("/items?submitted=1");
 }

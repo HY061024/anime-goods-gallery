@@ -6,6 +6,7 @@ import Link from "next/link";
 const links = [
   { href: "/", label: "首页" },
   { href: "/items", label: "商品搜索" },
+  { href: "/submit", label: "投稿" },
   { href: "/admin", label: "后台管理" },
 ];
 

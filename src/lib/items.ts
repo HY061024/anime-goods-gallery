@@ -13,6 +13,7 @@ export async function searchItems({
   let query = supabase
     .from("items")
     .select("*")
+    .not("description", "ilike", "[待审核]%")
     .order("created_at", { ascending: false });
 
   const keyword = q.trim();
@@ -46,6 +47,7 @@ export async function getItemById(id: string) {
     .from("items")
     .select("*")
     .eq("id", Number(id))
+    .not("description", "ilike", "[待审核]%")
     .single();
 
   if (error) {
