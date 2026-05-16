@@ -5,6 +5,7 @@ import { getSubmitterNames } from "@/lib/profiles";
 import { getCollectedItemIds } from "@/lib/collections";
 import { getAllCategories } from "@/lib/categories";
 import { collectItem } from "@/app/actions";
+import ips from "@/data/ips";
 import ItemCard from "@/components/ItemCard";
 
 type ItemsPageProps = {
@@ -101,8 +102,8 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
             className="rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
           />
           <datalist id="work-list">
-            {popularWorks.map((w) => (
-              <option key={w.name} value={w.name} />
+            {ips.map((ip) => (
+              <option key={ip} value={ip} />
             ))}
           </datalist>
 

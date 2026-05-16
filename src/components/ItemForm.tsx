@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import ips from "@/data/ips";
 
 type ItemFormProps = {
   action: (formData: FormData) => Promise<{ error?: string }>;
@@ -44,7 +45,17 @@ export default function ItemForm({ action, title, description, submitLabel, cate
         </Field>
 
         <Field label="作品名称" required>
-          <Input name="work" placeholder="例如：初音未来、鸣潮、刀剑神域" />
+          <input
+            name="work"
+            list="work-list"
+            placeholder="例如：初音未来、鸣潮、刀剑神域…也可自由输入"
+            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
+          />
+          <datalist id="work-list">
+            {ips.map((ip) => (
+              <option key={ip} value={ip} />
+            ))}
+          </datalist>
         </Field>
 
         <Field label="角色名称" required>

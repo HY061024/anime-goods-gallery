@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import ips from "@/data/ips";
 
 type ItemRow = {
   id: number;
@@ -176,6 +177,7 @@ export default function BatchItemForm({
             <input
               value={sharedWork}
               onChange={(e) => setSharedWork(e.target.value)}
+              list="batch-work-list"
               placeholder="作品名称（如：初音未来）"
               className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400"
             />
@@ -258,6 +260,7 @@ export default function BatchItemForm({
                 <input
                   value={row.work}
                   onChange={(e) => updateRow(row.id, "work", e.target.value)}
+                  list="batch-work-list"
                   placeholder={`作品${sharedWork ? `（共用: ${sharedWork}）` : ""}`}
                   className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400"
                 />
@@ -301,6 +304,12 @@ export default function BatchItemForm({
             </div>
           </div>
         ))}
+
+        <datalist id="batch-work-list">
+          {ips.map((ip) => (
+            <option key={ip} value={ip} />
+          ))}
+        </datalist>
 
         <datalist id="batch-category-list">
           {categories.map((c) => (
