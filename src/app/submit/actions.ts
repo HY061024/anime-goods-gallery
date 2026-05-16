@@ -2,9 +2,13 @@
 
 import { redirect } from "next/navigation";
 import { saveItem } from "@/lib/itemActions";
+import { createClient } from "@/lib/supabaseServer";
 
 export async function submitItem(formData: FormData) {
   const imageFile = formData.get("imageFile") as File | null;
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
   const result = await saveItem(
     {
@@ -16,6 +20,7 @@ export async function submitItem(formData: FormData) {
       description: (formData.get("description") as string)?.trim() ?? "",
       imageName: (formData.get("image") as string)?.trim() ?? "",
       imageFile: imageFile && imageFile.size > 0 ? imageFile : null,
+      userId: user?.id,
     },
     true
   );

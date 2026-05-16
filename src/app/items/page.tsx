@@ -9,6 +9,7 @@ type ItemsPageProps = {
     q?: string;
     category?: string;
     submitted?: string;
+    deleteRequested?: string;
   }>;
 };
 
@@ -17,6 +18,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const q = params.q ?? "";
   const category = params.category ?? "";
   const submitted = params.submitted === "1";
+  const deleteRequested = params.deleteRequested === "1";
 
   const filteredItems = await searchItems({ q, category });
 
@@ -35,6 +37,13 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
       {submitted && (
         <div className="mb-6 rounded-2xl bg-green-50 px-5 py-4 text-sm text-green-700 ring-1 ring-green-200">
           投稿已提交，审核通过后会在图鉴中展示。感谢你的贡献！
+        </div>
+      )}
+
+      {/* 删除申请成功提示 */}
+      {deleteRequested && (
+        <div className="mb-6 rounded-2xl bg-blue-50 px-5 py-4 text-sm text-blue-700 ring-1 ring-blue-200">
+          删除申请已提交，管理员审核通过后该周边将被移除。
         </div>
       )}
 

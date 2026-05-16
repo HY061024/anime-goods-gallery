@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import type { Item } from "@/data/items";
 
 type SearchItemsParams = {
@@ -14,6 +15,7 @@ export async function searchItems({
     .from("items")
     .select("*")
     .not("description", "ilike", "[待审核]%")
+    .not("description", "ilike", "[申请删除]%")
     .order("created_at", { ascending: false });
 
   const keyword = q.trim();
@@ -48,6 +50,7 @@ export async function getItemById(id: string) {
     .select("*")
     .eq("id", Number(id))
     .not("description", "ilike", "[待审核]%")
+    .not("description", "ilike", "[申请删除]%")
     .single();
 
   if (error) {
@@ -55,4 +58,15 @@ export async function getItemById(id: string) {
   }
 
   return data as Item;
+}
+
+export async function getItemsByUserId(userId: string) {
+  const { data, error } = await supabaseAdmin
+    .from("items")
+    .select("*")
+    .eq("submitter_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(error.message);
+  return (data ?? []) as Item[];
 }

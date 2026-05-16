@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getItemById } from "@/lib/items";
+import DeleteRequestButton from "./DeleteRequestButton";
 
 type ItemDetailPageProps = {
   params: Promise<{ id: string }>;
@@ -67,6 +68,11 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
               <p className="leading-7 text-gray-600">{item.description}</p>
             </div>
           )}
+
+          {/* 删除申请 */}
+          <div className="mt-8 border-t border-gray-100 pt-6">
+            <DeleteRequestButton itemId={item.id} />
+          </div>
         </div>
       </div>
     </div>

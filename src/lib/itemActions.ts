@@ -11,6 +11,7 @@ export type SaveItemInput = {
   description: string;
   imageName: string;
   imageFile: File | null;
+  userId?: string;
 };
 
 export type SaveItemResult = { success: number } | { error: string };
@@ -62,17 +63,22 @@ export async function saveItem(
 
   const finalDescription = pending ? `${PENDING_MARKER}${description}` : description;
 
+  const insertData: Record<string, unknown> = {
+    title,
+    work,
+    character,
+    category,
+    price,
+    description: finalDescription,
+    image: imagePath,
+  };
+  if (input.userId) {
+    insertData.submitter_id = input.userId;
+  }
+
   const { data, error } = await supabaseAdmin
     .from("items")
-    .insert({
-      title,
-      work,
-      character,
-      category,
-      price,
-      description: finalDescription,
-      image: imagePath,
-    })
+    .insert(insertData)
     .select("id")
     .single();
 

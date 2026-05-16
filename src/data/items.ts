@@ -8,4 +8,5 @@ export type Item = {
   description: string;
   image: string;
   created_at?: string;
+  submitter_id?: string | null;
 };
