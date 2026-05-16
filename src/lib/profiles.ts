@@ -4,6 +4,7 @@ export type Profile = {
   user_id: string;
   display_name: string | null;
   cabinet_public: boolean;
+  cabinet_views: number;
   created_at: string;
 };
 
@@ -26,6 +27,14 @@ export async function getProfile(userId: string): Promise<Profile> {
 
   if (error) throw new Error(error.message);
   return created as Profile;
+}
+
+export async function incrementCabinetViews(userId: string) {
+  const { error } = await supabaseAdmin.rpc("increment_cabinet_views", {
+    target_user_id: userId,
+  });
+
+  if (error) throw new Error(error.message);
 }
 
 export async function updateProfile(

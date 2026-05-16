@@ -84,6 +84,12 @@ export default function CabinetTab({
             复制分享链接
           </button>
         )}
+
+        {cabinetPublic && (
+          <span className="text-xs text-gray-400">
+            {profile.cabinet_views} 次浏览
+          </span>
+        )}
       </div>
 
       {/* 上传表单 */}
