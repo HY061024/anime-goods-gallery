@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { adminLogin } from "./actions";
 
+export const dynamic = "force-dynamic";
+
 export default function AdminLoginPage() {
   const [error, setError] = useState("");
   const router = useRouter();
