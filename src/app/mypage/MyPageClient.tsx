@@ -3,7 +3,9 @@
 import { useState } from "react";
 import type { Item } from "@/data/items";
 import type { Notification } from "@/lib/notifications";
+import type { Profile } from "@/lib/profiles";
 import { markRead, markAllRead } from "./actions";
+import CabinetTab from "./CabinetTab";
 
 type ItemWithDisplay = Item & {
   displayDescription: string;
@@ -13,11 +15,17 @@ type ItemWithDisplay = Item & {
 export default function MyPageClient({
   items,
   notifications: initialNotifications,
+  collection,
+  profile,
+  userId,
 }: {
   items: ItemWithDisplay[];
   notifications: Notification[];
+  collection: Item[];
+  profile: Profile;
+  userId: string;
 }) {
-  const [tab, setTab] = useState<"items" | "notifications">("items");
+  const [tab, setTab] = useState<"items" | "notifications" | "cabinet">("items");
   const [notifications, setNotifications] = useState(initialNotifications);
 
   async function handleMarkRead(id: number) {
@@ -32,30 +40,31 @@ export default function MyPageClient({
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
   }
 
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
+
   return (
     <div>
       {/* Tab 切换 */}
       <div className="mb-4 flex gap-1 rounded-2xl bg-white p-1.5 shadow-sm ring-1 ring-gray-100">
-        <button
-          onClick={() => setTab("items")}
-          className={`flex-1 rounded-xl px-4 py-2 text-sm font-medium transition ${
-            tab === "items"
-              ? "bg-pink-500 text-white"
-              : "text-gray-600 hover:bg-gray-100"
-          }`}
-        >
-          我的投稿 ({items.length})
-        </button>
-        <button
-          onClick={() => setTab("notifications")}
-          className={`flex-1 rounded-xl px-4 py-2 text-sm font-medium transition ${
-            tab === "notifications"
-              ? "bg-pink-500 text-white"
-              : "text-gray-600 hover:bg-gray-100"
-          }`}
-        >
-          通知 ({notifications.filter((n) => !n.is_read).length})
-        </button>
+        {(
+          [
+            ["items", `我的投稿 (${items.length})`],
+            ["cabinet", `我的痛柜 (${collection.length})`],
+            ["notifications", `通知${unreadCount > 0 ? ` (${unreadCount})` : ""}`],
+          ] as const
+        ).map(([key, label]) => (
+          <button
+            key={key}
+            onClick={() => setTab(key)}
+            className={`flex-1 rounded-xl px-3 py-2 text-sm font-medium transition ${
+              tab === key
+                ? "bg-pink-500 text-white"
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
       </div>
 
       {/* 投稿列表 */}
@@ -102,6 +111,11 @@ export default function MyPageClient({
             ))
           )}
         </div>
+      )}
+
+      {/* 痛柜 Tab */}
+      {tab === "cabinet" && (
+        <CabinetTab items={collection} profile={profile} userId={userId} />
       )}
 
       {/* 通知列表 */}

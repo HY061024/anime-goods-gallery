@@ -16,6 +16,7 @@ export async function searchItems({
     .select("*")
     .not("description", "ilike", "[待审核]%")
     .not("description", "ilike", "[申请删除]%")
+    .eq("visibility", "public")
     .order("created_at", { ascending: false });
 
   const keyword = q.trim();
@@ -51,6 +52,7 @@ export async function getItemById(id: string) {
     .eq("id", Number(id))
     .not("description", "ilike", "[待审核]%")
     .not("description", "ilike", "[申请删除]%")
+    .eq("visibility", "public")
     .single();
 
   if (error) {

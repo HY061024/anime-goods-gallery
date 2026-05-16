@@ -12,6 +12,7 @@ export type SaveItemInput = {
   imageName: string;
   imageFile: File | null;
   userId?: string;
+  visibility?: 'public' | 'private';
 };
 
 export type SaveItemResult = { success: number } | { error: string };
@@ -75,6 +76,7 @@ export async function saveItem(
   if (input.userId) {
     insertData.submitter_id = input.userId;
   }
+  insertData.visibility = input.visibility ?? "public";
 
   const { data, error } = await supabaseAdmin
     .from("items")

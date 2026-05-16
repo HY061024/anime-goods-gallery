@@ -9,4 +9,5 @@ export type Item = {
   image: string;
   created_at?: string;
   submitter_id?: string | null;
+  visibility?: 'public' | 'private';
 };

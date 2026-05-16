@@ -21,6 +21,7 @@ export async function submitItem(formData: FormData) {
       imageName: (formData.get("image") as string)?.trim() ?? "",
       imageFile: imageFile && imageFile.size > 0 ? imageFile : null,
       userId: user?.id,
+      visibility: "public",
     },
     true
   );

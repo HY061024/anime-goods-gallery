@@ -1,9 +1,21 @@
 import Link from "next/link";
 import { searchItems } from "@/lib/items";
+import { createClient } from "@/lib/supabaseServer";
+import { getSubmitterNames } from "@/lib/profiles";
+import { getCollectedItemIds } from "@/lib/collections";
+import { collectItem } from "@/app/actions";
 import ItemCard from "@/components/ItemCard";
 
 export default async function HomePage() {
   const items = await searchItems();
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const submitterIds = items.map((i) => i.submitter_id).filter(Boolean) as string[];
+  const [submitterNames, collectedIds] = await Promise.all([
+    getSubmitterNames(submitterIds),
+    user ? getCollectedItemIds(user.id) : Promise.resolve(new Set<number>()),
+  ]);
 
   return (
     <>
@@ -91,7 +103,14 @@ export default async function HomePage() {
         {items.length > 0 ? (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {items.slice(0, 8).map((item) => (
-              <ItemCard key={item.id} item={item} />
+              <ItemCard
+                key={item.id}
+                item={item}
+                submitterName={submitterNames.get(item.submitter_id ?? "")}
+                showCollectButton={!!user}
+                collected={collectedIds.has(item.id)}
+                onCollect={collectItem}
+              />
             ))}
           </div>
         ) : (

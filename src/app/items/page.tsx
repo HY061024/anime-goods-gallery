@@ -1,5 +1,9 @@
 import Link from "next/link";
 import { searchItems } from "@/lib/items";
+import { createClient } from "@/lib/supabaseServer";
+import { getSubmitterNames } from "@/lib/profiles";
+import { getCollectedItemIds } from "@/lib/collections";
+import { collectItem } from "@/app/actions";
 import ItemCard from "@/components/ItemCard";
 
 const categories = ["手办", "吧唧", "亚克力", "色纸", "挂件"];
@@ -21,6 +25,15 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const deleteRequested = params.deleteRequested === "1";
 
   const filteredItems = await searchItems({ q, category });
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const submitterIds = filteredItems.map((i) => i.submitter_id).filter(Boolean) as string[];
+  const [submitterNames, collectedIds] = await Promise.all([
+    getSubmitterNames(submitterIds),
+    user ? getCollectedItemIds(user.id) : Promise.resolve(new Set<number>()),
+  ]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
@@ -90,7 +103,14 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
       {filteredItems.length > 0 ? (
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {filteredItems.map((item) => (
-            <ItemCard key={item.id} item={item} />
+            <ItemCard
+              key={item.id}
+              item={item}
+              submitterName={submitterNames.get(item.submitter_id ?? "")}
+              showCollectButton={!!user}
+              collected={collectedIds.has(item.id)}
+              onCollect={collectItem}
+            />
           ))}
         </div>
       ) : (
