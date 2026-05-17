@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { logout } from "@/lib/authActions";
+import { logout, switchAccount } from "@/lib/authActions";
 
 export default function Navbar({ userEmail }: { userEmail?: string | null }) {
   const [open, setOpen] = useState(false);
@@ -61,6 +61,11 @@ export default function Navbar({ userEmail }: { userEmail?: string | null }) {
                     <form action={logout}>
                       <button className="w-full rounded-lg px-3 py-2 text-left text-sm text-gray-600 transition hover:bg-red-50 hover:text-red-500">
                         退出登录
+                      </button>
+                    </form>
+                    <form action={switchAccount}>
+                      <button className="w-full rounded-lg px-3 py-2 text-left text-sm text-gray-400 transition hover:bg-gray-50 hover:text-gray-500">
+                        切换账号
                       </button>
                     </form>
                   </div>
@@ -137,7 +142,15 @@ export default function Navbar({ userEmail }: { userEmail?: string | null }) {
                   onClick={() => setOpen(false)}
                   className="block w-full rounded-lg px-4 py-3 text-left text-sm font-medium text-red-500 transition hover:bg-red-50"
                 >
-                  退出登录（{userEmail}）
+                  退出登录
+                </button>
+              </form>
+              <form action={switchAccount}>
+                <button
+                  onClick={() => setOpen(false)}
+                  className="block w-full rounded-lg px-4 py-3 text-left text-sm text-gray-400 transition hover:bg-gray-50"
+                >
+                  切换账号
                 </button>
               </form>
             </>

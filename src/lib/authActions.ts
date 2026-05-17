@@ -52,6 +52,26 @@ export async function signup(formData: FormData) {
 export async function logout() {
   const supabase = await createClient();
   await supabase.auth.signOut();
+
+  // 同时清除管理员 Cookie，确保完全退出
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  cookieStore.delete("admin_id");
+  cookieStore.delete("admin_role");
+
   revalidatePath("/", "layout");
   redirect("/");
+}
+
+export async function switchAccount() {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  cookieStore.delete("admin_id");
+  cookieStore.delete("admin_role");
+
+  revalidatePath("/", "layout");
+  redirect("/auth/login");
 }
