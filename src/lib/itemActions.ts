@@ -1,5 +1,3 @@
-"use server";
-
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 export type SaveItemInput = {
