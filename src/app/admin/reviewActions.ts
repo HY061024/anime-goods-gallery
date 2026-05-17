@@ -93,6 +93,8 @@ export async function approveDeleteRequest(formData: FormData) {
   }
 
   revalidatePath("/admin/items/review");
+  revalidatePath("/");
+  revalidatePath("/items");
 }
 
 export async function rejectDeleteRequest(formData: FormData) {

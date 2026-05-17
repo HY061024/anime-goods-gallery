@@ -5,7 +5,6 @@ export async function getAllCategories(): Promise<string[]> {
     .from("items")
     .select("category")
     .not("description", "ilike", "[待审核]%")
-    .not("description", "ilike", "[申请删除]%")
     .eq("visibility", "public")
     .order("category");
 

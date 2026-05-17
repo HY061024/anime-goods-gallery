@@ -19,7 +19,6 @@ export async function searchItems({
     .from("items")
     .select("*")
     .not("description", "ilike", "[待审核]%")
-    .not("description", "ilike", "[申请删除]%")
     .eq("visibility", "public")
     .order("created_at", { ascending: false });
 
@@ -63,7 +62,6 @@ export async function getItemById(id: string) {
     .select("*")
     .eq("id", Number(id))
     .not("description", "ilike", "[待审核]%")
-    .not("description", "ilike", "[申请删除]%")
     .eq("visibility", "public")
     .single();
 
@@ -79,7 +77,6 @@ export async function getPopularWorks(limit = 8) {
     .from("items")
     .select("work")
     .not("description", "ilike", "[待审核]%")
-    .not("description", "ilike", "[申请删除]%")
     .eq("visibility", "public");
 
   const counts = new Map<string, number>();
@@ -97,7 +94,6 @@ export async function getPopularCharacters(limit = 12) {
     .from("items")
     .select("character")
     .not("description", "ilike", "[待审核]%")
-    .not("description", "ilike", "[申请删除]%")
     .eq("visibility", "public");
 
   const counts = new Map<string, number>();
