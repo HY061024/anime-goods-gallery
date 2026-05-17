@@ -8,7 +8,7 @@ import {
   rejectItem,
   approveDeleteRequest,
   rejectDeleteRequest,
-} from "../../reviewActions";
+} from "../../../reviewActions";
 
 const PENDING_MARKER = "[待审核]";
 const DELETE_MARKER = "[申请删除]";

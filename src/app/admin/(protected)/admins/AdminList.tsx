@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { createAdmin, removeAdmin } from "../actions";
+import { createAdmin, removeAdmin } from "../../actions";
 
 export default function AdminList({
   admins: initialAdmins,

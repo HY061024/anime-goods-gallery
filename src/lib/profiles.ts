@@ -3,9 +3,20 @@ import { supabaseAdmin } from "@/lib/supabaseAdmin";
 export type Profile = {
   user_id: string;
   display_name: string | null;
+  avatar_url: string | null;
+  banner_url: string | null;
+  bio: string | null;
   cabinet_public: boolean;
   cabinet_views: number;
   created_at: string;
+};
+
+export type ProfileUpdates = {
+  display_name?: string;
+  avatar_url?: string;
+  banner_url?: string;
+  bio?: string;
+  cabinet_public?: boolean;
 };
 
 export async function getProfile(userId: string): Promise<Profile> {
@@ -39,7 +50,7 @@ export async function incrementCabinetViews(userId: string) {
 
 export async function updateProfile(
   userId: string,
-  updates: { display_name?: string; cabinet_public?: boolean }
+  updates: ProfileUpdates
 ) {
   const { error } = await supabaseAdmin
     .from("profiles")

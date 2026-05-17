@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { createClient } from "@/lib/supabaseServer";
+import { getTotalUnreadCount } from "@/lib/messages";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,6 +28,14 @@ export default async function RootLayout({
 }>) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  let unreadMessages = 0;
+  if (user) {
+    try {
+      unreadMessages = await getTotalUnreadCount(user.id);
+    } catch {
+      // messages 表可能尚未创建
+    }
+  }
 
   return (
     <html
@@ -34,7 +43,7 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-pink-50 font-sans">
-        <Navbar userEmail={user?.email ?? null} />
+        <Navbar userEmail={user?.email ?? null} unreadMessages={unreadMessages} />
         <main className="flex-1">{children}</main>
         <Footer />
       </body>

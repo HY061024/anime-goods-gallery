@@ -35,6 +35,12 @@ export default function AdminNav({
           </span>
         )}
       </NavLink>
+      <NavLink
+        href="/admin/feedback"
+        active={pathname.startsWith("/admin/feedback")}
+      >
+        反馈
+      </NavLink>
       {role === "super_admin" && (
         <NavLink
           href="/admin/admins"

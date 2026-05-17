@@ -4,6 +4,8 @@ import { getNotificationsByUserId, getUnreadNotificationCount } from "@/lib/noti
 import { getUserCollection } from "@/lib/collections";
 import { getProfile } from "@/lib/profiles";
 import { getAllCategories } from "@/lib/categories";
+import { getTotalUnreadCount } from "@/lib/messages";
+import ProfileCard from "./ProfileCard";
 import MyPageClient from "./MyPageClient";
 
 export const dynamic = "force-dynamic";
@@ -25,14 +27,16 @@ export default async function MyPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const [items, notifications, unreadCount, collection, profile, categories] = await Promise.all([
-    getItemsByUserId(user.id),
-    getNotificationsByUserId(user.id),
-    getUnreadNotificationCount(user.id),
-    getUserCollection(user.id),
-    getProfile(user.id),
-    getAllCategories(),
-  ]);
+  const [items, notifications, unreadCount, collection, profile, categories, unreadMessages] =
+    await Promise.all([
+      getItemsByUserId(user.id),
+      getNotificationsByUserId(user.id),
+      getUnreadNotificationCount(user.id),
+      getUserCollection(user.id),
+      getProfile(user.id),
+      getAllCategories(),
+      getTotalUnreadCount(user.id),
+    ]);
 
   const approvedCount = items.filter(
     (i) => !i.description.startsWith("[待审核]") && !i.description.startsWith("[申请删除]")
@@ -47,10 +51,7 @@ export default async function MyPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">个人中心</h1>
-        <p className="mt-2 text-gray-500">{user.email}</p>
-      </div>
+      <ProfileCard profile={profile} userId={user.id} />
 
       <div className="mb-8 grid grid-cols-2 gap-3 md:grid-cols-4">
         <StatCard label="总投稿" value={items.length} />

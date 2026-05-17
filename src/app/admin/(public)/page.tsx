@@ -1,6 +1,6 @@
 import { getAdminCount } from "@/lib/adminAuth";
-import LoginForm from "./LoginForm";
-import SetupForm from "./SetupForm";
+import LoginForm from "../LoginForm";
+import SetupForm from "../SetupForm";
 
 export const dynamic = "force-dynamic";
 

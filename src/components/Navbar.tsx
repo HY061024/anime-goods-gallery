@@ -4,7 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { logout, switchAccount } from "@/lib/authActions";
 
-export default function Navbar({ userEmail }: { userEmail?: string | null }) {
+export default function Navbar({
+  userEmail,
+  unreadMessages = 0,
+}: {
+  userEmail?: string | null;
+  unreadMessages?: number;
+}) {
   const [open, setOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
@@ -44,6 +50,23 @@ export default function Navbar({ userEmail }: { userEmail?: string | null }) {
                 className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition hover:bg-pink-50 hover:text-pink-600"
               >
                 个人中心
+              </Link>
+              <Link
+                href="/mypage/friends"
+                className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition hover:bg-pink-50 hover:text-pink-600"
+              >
+                好友
+              </Link>
+              <Link
+                href="/mypage/messages"
+                className="relative rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition hover:bg-pink-50 hover:text-pink-600"
+              >
+                消息
+                {unreadMessages > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] text-white">
+                    {unreadMessages > 99 ? "99+" : unreadMessages}
+                  </span>
+                )}
               </Link>
               {/* 用户菜单 */}
               <div className="relative">
@@ -90,6 +113,13 @@ export default function Navbar({ userEmail }: { userEmail?: string | null }) {
               </Link>
             </>
           )}
+
+          <Link
+            href="/feedback"
+            className="rounded-lg px-4 py-2 text-sm font-medium text-gray-400 transition hover:bg-pink-50 hover:text-pink-500"
+          >
+            意见反馈
+          </Link>
 
           <Link
             href="/admin"
@@ -139,6 +169,25 @@ export default function Navbar({ userEmail }: { userEmail?: string | null }) {
               >
                 个人中心
               </Link>
+              <Link
+                href="/mypage/friends"
+                onClick={() => setOpen(false)}
+                className="block rounded-lg px-4 py-3 text-sm font-medium text-gray-600 transition hover:bg-pink-50 hover:text-pink-600"
+              >
+                好友
+              </Link>
+              <Link
+                href="/mypage/messages"
+                onClick={() => setOpen(false)}
+                className="block rounded-lg px-4 py-3 text-sm font-medium text-gray-600 transition hover:bg-pink-50 hover:text-pink-600"
+              >
+                消息
+                {unreadMessages > 0 && (
+                  <span className="ml-2 rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] text-white">
+                    {unreadMessages > 99 ? "99+" : unreadMessages}
+                  </span>
+                )}
+              </Link>
               <button
                 onClick={() => { setOpen(false); logout(); }}
                 className="block w-full rounded-lg px-4 py-3 text-left text-sm font-medium text-red-500 transition hover:bg-red-50"
@@ -170,6 +219,13 @@ export default function Navbar({ userEmail }: { userEmail?: string | null }) {
               </Link>
             </>
           )}
+          <Link
+            href="/feedback"
+            onClick={() => setOpen(false)}
+            className="block rounded-lg px-4 py-3 text-sm font-medium text-gray-400 transition hover:bg-pink-50 hover:text-pink-500"
+          >
+            意见反馈
+          </Link>
           <Link
             href="/admin"
             onClick={() => setOpen(false)}

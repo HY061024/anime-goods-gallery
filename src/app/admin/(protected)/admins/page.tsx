@@ -1,4 +1,4 @@
-import { requireSuperAdmin } from "../auth";
+import { requireSuperAdmin } from "../../auth";
 import { getAllAdmins } from "@/lib/adminAuth";
 import AdminList from "./AdminList";
 

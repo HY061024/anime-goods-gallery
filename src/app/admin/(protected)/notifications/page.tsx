@@ -1,4 +1,4 @@
-import { requireAdmin } from "../auth";
+import { requireAdmin } from "../../auth";
 import { getAdminNotifications, getUnreadAdminCount } from "@/lib/adminNotifications";
 import NotificationList from "./NotificationList";
 

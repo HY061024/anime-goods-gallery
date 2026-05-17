@@ -1,6 +1,6 @@
 import ItemForm from "@/components/ItemForm";
 import { getAllCategories } from "@/lib/categories";
-import { createItem } from "../../createItem";
+import { createItem } from "../../../createItem";
 
 export default async function NewItemPage() {
   const categories = await getAllCategories();
