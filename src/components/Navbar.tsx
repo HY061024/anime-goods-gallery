@@ -58,16 +58,18 @@ export default function Navbar({ userEmail }: { userEmail?: string | null }) {
                 </button>
                 {userMenuOpen && (
                   <div className="absolute right-0 top-full mt-1 w-48 rounded-xl bg-white p-1.5 shadow-lg ring-1 ring-gray-200">
-                    <form action={logout}>
-                      <button className="w-full rounded-lg px-3 py-2 text-left text-sm text-gray-600 transition hover:bg-red-50 hover:text-red-500">
-                        退出登录
-                      </button>
-                    </form>
-                    <form action={switchAccount}>
-                      <button className="w-full rounded-lg px-3 py-2 text-left text-sm text-gray-400 transition hover:bg-gray-50 hover:text-gray-500">
-                        切换账号
-                      </button>
-                    </form>
+                    <button
+                      onClick={() => { setUserMenuOpen(false); logout(); }}
+                      className="w-full rounded-lg px-3 py-2 text-left text-sm text-gray-600 transition hover:bg-red-50 hover:text-red-500"
+                    >
+                      退出登录
+                    </button>
+                    <button
+                      onClick={() => { setUserMenuOpen(false); switchAccount(); }}
+                      className="w-full rounded-lg px-3 py-2 text-left text-sm text-gray-400 transition hover:bg-gray-50 hover:text-gray-500"
+                    >
+                      切换账号
+                    </button>
                   </div>
                 )}
               </div>
@@ -137,22 +139,18 @@ export default function Navbar({ userEmail }: { userEmail?: string | null }) {
               >
                 个人中心
               </Link>
-              <form action={logout}>
-                <button
-                  onClick={() => setOpen(false)}
-                  className="block w-full rounded-lg px-4 py-3 text-left text-sm font-medium text-red-500 transition hover:bg-red-50"
-                >
-                  退出登录
-                </button>
-              </form>
-              <form action={switchAccount}>
-                <button
-                  onClick={() => setOpen(false)}
-                  className="block w-full rounded-lg px-4 py-3 text-left text-sm text-gray-400 transition hover:bg-gray-50"
-                >
-                  切换账号
-                </button>
-              </form>
+              <button
+                onClick={() => { setOpen(false); logout(); }}
+                className="block w-full rounded-lg px-4 py-3 text-left text-sm font-medium text-red-500 transition hover:bg-red-50"
+              >
+                退出登录
+              </button>
+              <button
+                onClick={() => { setOpen(false); switchAccount(); }}
+                className="block w-full rounded-lg px-4 py-3 text-left text-sm text-gray-400 transition hover:bg-gray-50"
+              >
+                切换账号
+              </button>
             </>
           ) : (
             <>
