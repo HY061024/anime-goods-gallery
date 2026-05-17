@@ -2,13 +2,28 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { getAdminById } from "@/lib/adminAuth";
+import type { AdminRole } from "@/lib/adminAuth";
 
-// 验证管理员是否已登录（供 Server Action 和新页面调用）
-export async function requireAdmin() {
+export async function requireAdmin(): Promise<{
+  id: string;
+  email: string;
+  role: AdminRole;
+}> {
   const cookieStore = await cookies();
-  const token = cookieStore.get("admin_token");
+  const idCookie = cookieStore.get("admin_id");
+  if (!idCookie?.value) redirect("/admin");
 
-  if (!token || token.value !== "true") {
-    redirect("/admin");
+  const admin = await getAdminById(idCookie.value);
+  if (!admin) redirect("/admin");
+
+  return admin;
+}
+
+export async function requireSuperAdmin() {
+  const admin = await requireAdmin();
+  if (admin.role !== "super_admin") {
+    redirect("/admin/items/new");
   }
+  return admin;
 }

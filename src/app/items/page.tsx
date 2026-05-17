@@ -14,6 +14,8 @@ type ItemsPageProps = {
     category?: string;
     work?: string;
     character?: string;
+    minPrice?: string;
+    maxPrice?: string;
     submitted?: string;
     deleteRequested?: string;
   }>;
@@ -25,11 +27,13 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const category = params.category ?? "";
   const work = params.work ?? "";
   const character = params.character ?? "";
+  const minPrice = params.minPrice ? Number(params.minPrice) : undefined;
+  const maxPrice = params.maxPrice ? Number(params.maxPrice) : undefined;
   const submitted = params.submitted === "1";
   const deleteRequested = params.deleteRequested === "1";
 
   const [filteredItems, categories, popularWorks, popularCharacters, supabaseResult] = await Promise.all([
-    searchItems({ q, category, work, character }),
+    searchItems({ q, category, work, character, minPrice, maxPrice }),
     getAllCategories(),
     getPopularWorks(8),
     getPopularCharacters(12),
@@ -44,7 +48,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
     user ? getCollectedItemIds(user.id) : Promise.resolve(new Set<number>()),
   ]);
 
-  const activeFilterCount = [q, category, work, character].filter(Boolean).length;
+  const activeFilterCount = [q, category, work, character, params.minPrice, params.maxPrice].filter(Boolean).length;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
@@ -110,6 +114,29 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
           <button className="rounded-xl bg-pink-500 px-5 py-3 font-medium text-white transition hover:bg-pink-600 active:bg-pink-700">
             搜索
           </button>
+        </div>
+
+        <div className="flex items-center gap-3 border-t border-gray-50 px-5 pb-5">
+          <span className="text-xs text-gray-400 shrink-0">价格区间</span>
+          <input
+            name="minPrice"
+            type="number"
+            min="0"
+            step="0.01"
+            defaultValue={params.minPrice ?? ""}
+            placeholder="最低价"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400"
+          />
+          <span className="text-xs text-gray-300">—</span>
+          <input
+            name="maxPrice"
+            type="number"
+            min="0"
+            step="0.01"
+            defaultValue={params.maxPrice ?? ""}
+            placeholder="最高价"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400"
+          />
         </div>
 
         {/* 结果统计 */}

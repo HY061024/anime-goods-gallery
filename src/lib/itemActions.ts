@@ -1,4 +1,5 @@
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { createAdminNotification } from "@/lib/adminNotifications";
 
 export type SaveItemInput = {
   title: string;
@@ -84,6 +85,11 @@ export async function saveItem(
 
   if (error) {
     return { error: `写入失败：${error.message}` };
+  }
+
+  // 投稿时通知管理员
+  if (pending) {
+    createAdminNotification(data.id, title);
   }
 
   return { success: data.id };

@@ -7,6 +7,8 @@ type SearchItemsParams = {
   category?: string;
   work?: string;
   character?: string;
+  minPrice?: number;
+  maxPrice?: number;
 };
 
 export async function searchItems({
@@ -14,6 +16,8 @@ export async function searchItems({
   category = "",
   work = "",
   character = "",
+  minPrice,
+  maxPrice,
 }: SearchItemsParams = {}) {
   let query = supabase
     .from("items")
@@ -45,6 +49,13 @@ export async function searchItems({
 
   if (character) {
     query = query.eq("character", character);
+  }
+
+  if (minPrice != null) {
+    query = query.gte("price", minPrice);
+  }
+  if (maxPrice != null) {
+    query = query.lte("price", maxPrice);
   }
 
   const { data, error } = await query;
