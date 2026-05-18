@@ -25,7 +25,8 @@ export async function createItem(formData: FormData) {
     revalidatePath("/items");
     return { redirectUrl: `/items/${result.success}` };
   } catch (e) {
-    console.error("createItem 出错:", e);
-    return { error: "提交失败，请稍后再试" };
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("createItem 出错:", msg);
+    return { error: `[createItem] ${msg}` };
   }
 }

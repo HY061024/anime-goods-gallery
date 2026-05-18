@@ -33,7 +33,8 @@ export async function submitItem(formData: FormData) {
     revalidatePath("/items");
     return { success: true };
   } catch (e) {
-    console.error("submitItem 出错:", e);
-    return { error: "提交失败，请稍后再试" };
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("submitItem 出错:", msg);
+    return { error: `[submitItem] ${msg}` };
   }
 }

@@ -46,7 +46,8 @@ export default function ItemForm({ action, title, description, submitLabel, cate
       ) {
         throw e;
       }
-      setError("提交失败，请稍后再试");
+      const msg = e instanceof Error ? e.message : String(e);
+      setError(`[ItemForm] ${msg}`);
       console.error(e);
     } finally {
       setSubmitting(false);

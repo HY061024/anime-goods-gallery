@@ -25,8 +25,9 @@ export async function saveItem(
   try {
     return await doSaveItem(input, pending);
   } catch (e) {
-    console.error("saveItem 出错:", e);
-    return { error: "提交失败，请稍后再试" };
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("saveItem 出错:", msg);
+    return { error: `[saveItem] ${msg}` };
   }
 }
 
@@ -36,11 +37,11 @@ async function doSaveItem(
 ): Promise<SaveItemResult> {
   const { title, work, character, category, price, description, imageName, imageFile } = input;
 
-  if (!title) return { error: "请填写商品标题" };
-  if (!work) return { error: "请填写作品名称" };
-  if (!character) return { error: "请填写角色名称" };
-  if (!category) return { error: "请选择分类" };
-  if (!price || price <= 0) return { error: "请填写有效价格" };
+  if (!title) return { error: "[验证] 请填写商品标题" };
+  if (!work) return { error: "[验证] 请填写作品名称" };
+  if (!character) return { error: "[验证] 请填写角色名称" };
+  if (!category) return { error: "[验证] 请选择分类" };
+  if (!price || price <= 0) return { error: "[验证] 请填写有效价格" };
 
   let imagePath = "";
 
@@ -59,7 +60,7 @@ async function doSaveItem(
       });
 
     if (uploadError) {
-      return { error: `图片上传失败：${uploadError.message}` };
+      return { error: `[Storage上传] ${uploadError.message}` };
     }
 
     const { data: urlData } = supabaseAdmin.storage
@@ -70,7 +71,7 @@ async function doSaveItem(
   } else if (imageName) {
     imagePath = `/goods/${imageName}`;
   } else {
-    return { error: "请上传图片或填写图片文件名" };
+    return { error: "[验证] 请上传图片或填写图片文件名" };
   }
 
   const finalDescription = pending ? `${PENDING_MARKER}${description}` : description;
@@ -96,7 +97,7 @@ async function doSaveItem(
     .single();
 
   if (error) {
-    return { error: `写入失败：${error.message}` };
+    return { error: `[DB写入] code=${error.code} msg=${error.message} details=${error.details}` };
   }
 
   // 投稿时通知管理员
