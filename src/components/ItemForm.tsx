@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabaseBrowser } from "@/lib/supabaseBrowser";
+import { createBrowserSupabase } from "@/lib/supabaseBrowser";
 import ips from "@/data/ips";
 
 type ItemFormProps = {
@@ -36,7 +36,8 @@ export default function ItemForm({ action, title, description, submitLabel, cate
         const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
         const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
-        const { error: uploadError } = await supabaseBrowser.storage
+        const supabase = createBrowserSupabase();
+        const { error: uploadError } = await supabase.storage
           .from("goods")
           .upload(fileName, file, {
             contentType: file.type || "image/jpeg",
@@ -49,7 +50,7 @@ export default function ItemForm({ action, title, description, submitLabel, cate
           return;
         }
 
-        const { data: urlData } = supabaseBrowser.storage
+        const { data: urlData } = supabase.storage
           .from("goods")
           .getPublicUrl(fileName);
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabaseBrowser } from "@/lib/supabaseBrowser";
+import { createBrowserSupabase } from "@/lib/supabaseBrowser";
 import ips from "@/data/ips";
 
 type ItemRow = {
@@ -115,7 +115,8 @@ export default function BatchItemForm({
         const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
         const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${i}.${ext}`;
 
-        const { error: uploadError } = await supabaseBrowser.storage
+        const supabase = createBrowserSupabase();
+        const { error: uploadError } = await supabase.storage
           .from("goods")
           .upload(fileName, file, {
             contentType: file.type || "image/jpeg",
@@ -128,7 +129,7 @@ export default function BatchItemForm({
           return;
         }
 
-        const { data: urlData } = supabaseBrowser.storage
+        const { data: urlData } = supabase.storage
           .from("goods")
           .getPublicUrl(fileName);
 
