@@ -72,7 +72,29 @@ public/goods/
 - 2026-05-16: 添加痛柜公开页(/users/[userId])+ 浏览量计数 — profiles 新增 cabinet_views 字段，访客浏览自动 +1，痛柜工具栏显示浏览统计
 - 2026-05-16: 添加批量上传功能 — BatchItemForm 组件，支持共用作品/角色+多行独立填写图片标题价格，/submit/batch 和痛柜均有入口
 - 2026-05-16: 添加动漫+游戏IP参考列表 — src/data/ips.ts 收录200+ IP，投稿和搜索页作品输入框自动补全
+- 2026-05-17/18: 添加好友系统 — friendships 表 + 好友请求/接受/拒绝 + 好友列表页 (/mypage/friends) + FriendButton 组件
+- 2026-05-17/18: 添加站内消息 — messages 表 + 对话列表 + 聊天界面 (ChatView) + 未读消息红点 + 导航栏通知数
+- 2026-05-17/18: 添加意见反馈 — feedback 表 + 反馈表单页 (/feedback) + 管理员查看反馈 (/admin/feedback)
+- 2026-05-17/18: 优化个人主页 — profiles 表扩展 avatar_url/bio/banner_url + ProfileEditor 编辑组件 + 公开用户页展示完整资料
+- 2026-05-17/18: 管理员后台重构 — admin 路由分组 (public)/(protected)，统一 auth 层，新增反馈管理入口
+- 2026-05-17/18: 修复 friends.ts、messages.ts、adminNotifications.ts 缺少 "use server" 导致的页面报错
+- 2026-05-17/18: 添加 /health 数据库健康检查页（检查所有表和字段完整性）
+- 2026-05-18: 修复登录和个人中心 "This page couldn't load" — 根因 middleware.ts setAll 每次创建新 NextResponse 导致 cookies 丢失 + Server Action 中 cookie 写入被 try/catch 静默吞掉。拆分 supabaseServer.ts（Server Components 用）和 supabaseAction.ts（Server Actions 用），新增 /mypage error.tsx 错误边界
+- 2026-05-18: 修复 "supabaseKey is required" — 根因 profiles.ts 和 notifications.ts 没有 "use server" 指令但导入了 supabaseAdmin。ProfileCard/ViewTracker（"use client"）直接导入这些文件的函数，导致整个 supabaseAdmin → supabase-js 链被打包进浏览器。修复：profiles.ts、notifications.ts 加上 "use server"，supabase.ts、supabaseAdmin.ts 加上 import "server-only" + 运行时环境变量检查
+- 2026-05-18: 添加底部导航栏 — BottomNav 组件，手机端底部固定三 Tab（首页/痛柜/我的），PC 端左侧固定侧边栏，Navbar 精简为仅 Logo+用户下拉，新建 /profile 个人中心页
+- 2026-05-18: 图片上传改为浏览器直传 Supabase Storage — 绕过 Vercel Hobby 计划 4.5MB 请求体限制。supabaseBrowser.ts 使用 @supabase/ssr createBrowserClient 携带用户登录会话通过 Storage RLS
+- 2026-05-18: 添加图片压缩 — compressImage.ts，上传前在浏览器端将图片最长边缩至 1920px、转 JPEG 质量 0.8，手机照片从 10MB 降到 ~300KB，解决慢和 "Failed to fetch" 问题
 - 已配置 git SOCKS5 代理 (127.0.0.1:10808) 用于 GitHub 推送
+
+## 管理员路由结构
+
+- `src/app/admin/(public)/page.tsx` — 登录页
+- `src/app/admin/(protected)/layout.tsx` — 需登录的 layout（统一 requireAdmin）
+- `src/app/admin/(protected)/items/new/` — 新增周边
+- `src/app/admin/(protected)/items/review/` — 审核管理
+- `src/app/admin/(protected)/notifications/` — 管理员通知
+- `src/app/admin/(protected)/feedback/` — 反馈管理
+- `src/app/admin/(protected)/admins/` — 管理员管理（仅 super_admin）
 
 ## 数据库迁移（需在 Supabase SQL Editor 执行）
 
@@ -136,6 +158,75 @@ BEGIN
   UPDATE profiles SET cabinet_views = cabinet_views + 1 WHERE user_id = target_user_id;
 END;
 $$ LANGUAGE plpgsql;
+```
+
+### 第四次迁移（好友+消息+反馈+个人资料扩展，已执行）
+```sql
+-- profiles 扩展
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS avatar_url TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS bio TEXT DEFAULT '';
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS banner_url TEXT;
+
+-- 好友系统
+CREATE TABLE IF NOT EXISTS friendships (
+  id BIGSERIAL PRIMARY KEY,
+  sender_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  receiver_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE(sender_id, receiver_id)
+);
+CREATE INDEX IF NOT EXISTS idx_friendships_receiver ON friendships(receiver_id, status);
+CREATE INDEX IF NOT EXISTS idx_friendships_sender ON friendships(sender_id, status);
+
+DROP POLICY IF EXISTS "Users can read own friendships" ON friendships;
+DROP POLICY IF EXISTS "Users can create friendships" ON friendships;
+ALTER TABLE friendships ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can read own friendships" ON friendships FOR SELECT USING (auth.uid() = sender_id OR auth.uid() = receiver_id);
+CREATE POLICY "Users can create friendships" ON friendships FOR INSERT WITH CHECK (auth.uid() = sender_id);
+
+-- 站内消息
+CREATE TABLE IF NOT EXISTS messages (
+  id BIGSERIAL PRIMARY KEY,
+  sender_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  receiver_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  content TEXT NOT NULL DEFAULT '',
+  is_read BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_messages_thread ON messages(LEAST(sender_id, receiver_id), GREATEST(sender_id, receiver_id), created_at DESC);
+
+DROP POLICY IF EXISTS "Users can read own messages" ON messages;
+DROP POLICY IF EXISTS "Users can send messages" ON messages;
+ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can read own messages" ON messages FOR SELECT USING (auth.uid() = sender_id OR auth.uid() = receiver_id);
+CREATE POLICY "Users can send messages" ON messages FOR INSERT WITH CHECK (auth.uid() = sender_id);
+
+-- 意见反馈
+CREATE TABLE IF NOT EXISTS feedback (
+  id BIGSERIAL PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  email TEXT DEFAULT '',
+  content TEXT NOT NULL DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- 管理员通知
+CREATE TABLE IF NOT EXISTS admin_notifications (
+  id BIGSERIAL PRIMARY KEY,
+  item_id INTEGER REFERENCES items(id) ON DELETE SET NULL,
+  item_title TEXT NOT NULL DEFAULT '',
+  is_read BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- 管理员表
+CREATE TABLE IF NOT EXISTS admins (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT UNIQUE NOT NULL,
+  role TEXT NOT NULL DEFAULT 'admin' CHECK (role IN ('admin', 'super_admin')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
 ```
 
 ## Supabase Dashboard 配置
