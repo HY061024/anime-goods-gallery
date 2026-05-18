@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { saveItem } from "@/lib/itemActions";
-import { createClient } from "@/lib/supabaseServer";
+import { createClient } from "@/lib/supabaseAction";
 
 export async function submitItem(formData: FormData) {
   const imageFile = formData.get("imageFile") as File | null;

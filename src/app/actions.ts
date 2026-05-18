@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabaseServer";
+import { createClient } from "@/lib/supabaseAction";
 import { addToCollection } from "@/lib/collections";
 
 export async function collectItem(itemId: number) {

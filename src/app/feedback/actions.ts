@@ -1,7 +1,7 @@
 "use server";
 
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
-import { createClient } from "@/lib/supabaseServer";
+import { createClient } from "@/lib/supabaseAction";
 
 export async function submitFeedback(formData: FormData) {
   const content = formData.get("content") as string;

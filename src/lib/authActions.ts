@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabaseServer";
+import { createClient } from "@/lib/supabaseAction";
 
 export async function login(formData: FormData) {
   const email = formData.get("email") as string;

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { markNotificationRead, markAllNotificationsRead } from "@/lib/notifications";
-import { createClient } from "@/lib/supabaseServer";
+import { createClient } from "@/lib/supabaseAction";
 
 export async function markRead(notificationId: number) {
   await markNotificationRead(notificationId);

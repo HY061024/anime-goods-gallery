@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabaseServer";
+import { createClient } from "@/lib/supabaseAction";
 import { saveItem } from "@/lib/itemActions";
 
 export async function batchSubmitPublic(formData: FormData) {

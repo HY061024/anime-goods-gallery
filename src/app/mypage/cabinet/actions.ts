@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabaseServer";
+import { createClient } from "@/lib/supabaseAction";
 import { addToCollection, removeFromCollection } from "@/lib/collections";
 import { getProfile, updateProfile } from "@/lib/profiles";
 import { saveItem } from "@/lib/itemActions";
