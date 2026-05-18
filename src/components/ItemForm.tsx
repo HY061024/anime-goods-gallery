@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabaseBrowser";
+import { compressImage } from "@/lib/compressImage";
 import ips from "@/data/ips";
 
 type ItemFormProps = {
@@ -17,6 +18,7 @@ type ItemFormProps = {
 export default function ItemForm({ action, title, description, submitLabel, categories = [], successPath }: ItemFormProps) {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [statusText, setStatusText] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
   const router = useRouter();
 
@@ -29,18 +31,21 @@ export default function ItemForm({ action, title, description, submitLabel, cate
 
   async function handleSubmit(formData: FormData) {
     setError("");
+    setStatusText("");
     setSubmitting(true);
     try {
       const file = formData.get("imageFile") as File | null;
       if (file && file.size > 0) {
-        const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        setStatusText("压缩图片中…");
+        const compressed = await compressImage(file);
+        setStatusText("上传图片中…");
+        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
 
         const supabase = createBrowserSupabase();
         const { error: uploadError } = await supabase.storage
           .from("goods")
-          .upload(fileName, file, {
-            contentType: file.type || "image/jpeg",
+          .upload(fileName, compressed, {
+            contentType: "image/jpeg",
             upsert: false,
           });
 
@@ -58,6 +63,7 @@ export default function ItemForm({ action, title, description, submitLabel, cate
         formData.delete("imageFile");
       }
 
+      setStatusText("保存中…");
       const result = await action(formData);
       if (result?.error) {
         setError(result.error);
@@ -79,6 +85,7 @@ export default function ItemForm({ action, title, description, submitLabel, cate
       console.error(e);
     } finally {
       setSubmitting(false);
+      setStatusText("");
     }
   }
 
@@ -187,7 +194,7 @@ export default function ItemForm({ action, title, description, submitLabel, cate
           disabled={submitting}
           className="w-full rounded-xl bg-pink-500 py-3 font-medium text-white transition hover:bg-pink-600 active:bg-pink-700 disabled:opacity-50"
         >
-          {submitting ? "提交中…" : submitLabel}
+          {submitting ? (statusText || "提交中…") : submitLabel}
         </button>
       </form>
     </div>

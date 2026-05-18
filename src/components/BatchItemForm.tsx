@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabaseBrowser";
+import { compressImage } from "@/lib/compressImage";
 import ips from "@/data/ips";
 
 type ItemRow = {
@@ -111,15 +112,15 @@ export default function BatchItemForm({
       fd.set(`price_${i}`, r.price);
       if (r.description) fd.set(`description_${i}`, r.description);
       if (r.imageFile && r.imageFile.size > 0) {
-        const file = r.imageFile;
-        const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${i}.${ext}`;
+        setError(`正在处理第 ${i + 1} 件图片…`);
+        const compressed = await compressImage(r.imageFile);
+        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${i}.jpg`;
 
         const supabase = createBrowserSupabase();
         const { error: uploadError } = await supabase.storage
           .from("goods")
-          .upload(fileName, file, {
-            contentType: file.type || "image/jpeg",
+          .upload(fileName, compressed, {
+            contentType: "image/jpeg",
             upsert: false,
           });
 
@@ -144,6 +145,7 @@ export default function BatchItemForm({
       return;
     }
 
+    setError("");
     const res = await action(fd);
     if (res?.error) {
       setError(res.error);
