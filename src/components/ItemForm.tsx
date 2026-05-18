@@ -5,15 +5,17 @@ import { useRouter } from "next/navigation";
 import ips from "@/data/ips";
 
 type ItemFormProps = {
-  action: (formData: FormData) => Promise<{ error?: string }>;
+  action: (formData: FormData) => Promise<{ error?: string; success?: boolean; redirectUrl?: string }>;
   title: string;
   description: string;
   submitLabel: string;
   categories?: string[];
+  successPath?: string;
 };
 
-export default function ItemForm({ action, title, description, submitLabel, categories = [] }: ItemFormProps) {
+export default function ItemForm({ action, title, description, submitLabel, categories = [], successPath }: ItemFormProps) {
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const router = useRouter();
 
@@ -26,8 +28,29 @@ export default function ItemForm({ action, title, description, submitLabel, cate
 
   async function handleSubmit(formData: FormData) {
     setError("");
-    const result = await action(formData);
-    if (result?.error) setError(result.error);
+    setSubmitting(true);
+    try {
+      const result = await action(formData);
+      if (result?.error) {
+        setError(result.error);
+      } else if (result?.redirectUrl) {
+        router.push(result.redirectUrl);
+      } else if (result?.success && successPath) {
+        router.push(successPath);
+      }
+    } catch (e) {
+      if (
+        e instanceof Error &&
+        "digest" in e &&
+        (e as Error & { digest: string }).digest === "NEXT_REDIRECT"
+      ) {
+        throw e;
+      }
+      setError("提交失败，请稍后再试");
+      console.error(e);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -130,8 +153,12 @@ export default function ItemForm({ action, title, description, submitLabel, cate
           </p>
         )}
 
-        <button className="w-full rounded-xl bg-pink-500 py-3 font-medium text-white transition hover:bg-pink-600 active:bg-pink-700">
-          {submitLabel}
+        <button
+          type="submit"
+          disabled={submitting}
+          className="w-full rounded-xl bg-pink-500 py-3 font-medium text-white transition hover:bg-pink-600 active:bg-pink-700 disabled:opacity-50"
+        >
+          {submitting ? "提交中…" : submitLabel}
         </button>
       </form>
     </div>

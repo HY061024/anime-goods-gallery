@@ -14,6 +14,7 @@ export default async function SubmitPage() {
         description="提交你想收录的二次元周边信息，审核通过后会出现在图鉴中"
         submitLabel="提交投稿"
         categories={categories}
+        successPath="/items?submitted=1"
       />
       <div className="mx-auto max-w-2xl px-4 pb-8 text-center">
         <Link
