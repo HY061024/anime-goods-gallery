@@ -22,6 +22,18 @@ export async function saveItem(
   input: SaveItemInput,
   pending = false
 ): Promise<SaveItemResult> {
+  try {
+    return await doSaveItem(input, pending);
+  } catch (e) {
+    console.error("saveItem 出错:", e);
+    return { error: "提交失败，请稍后再试" };
+  }
+}
+
+async function doSaveItem(
+  input: SaveItemInput,
+  pending = false
+): Promise<SaveItemResult> {
   const { title, work, character, category, price, description, imageName, imageFile } = input;
 
   if (!title) return { error: "请填写商品标题" };

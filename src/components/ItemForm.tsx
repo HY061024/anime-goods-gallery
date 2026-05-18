@@ -26,15 +26,8 @@ export default function ItemForm({ action, title, description, submitLabel, cate
 
   async function handleSubmit(formData: FormData) {
     setError("");
-    try {
-      const result = await action(formData);
-      if (result?.error) {
-        setError(result.error);
-      }
-    } catch (e) {
-      setError("提交失败，请稍后再试");
-      console.error(e);
-    }
+    const result = await action(formData);
+    if (result?.error) setError(result.error);
   }
 
   return (
