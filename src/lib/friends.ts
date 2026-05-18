@@ -17,6 +17,14 @@ export type FriendInfo = {
   email?: string;
   display_name: string | null;
   avatar_url: string | null;
+  bio: string | null;
+};
+
+export type PendingRequest = Friendship & {
+  sender_display_name: string;
+  sender_avatar_url: string | null;
+  receiver_display_name: string;
+  receiver_avatar_url: string | null;
 };
 
 export async function sendFriendRequest(
@@ -99,7 +107,7 @@ export async function getFriends(userId: string): Promise<FriendInfo[]> {
 
   const { data: profiles } = await supabaseAdmin
     .from("profiles")
-    .select("user_id, display_name, avatar_url")
+    .select("user_id, display_name, avatar_url, bio")
     .in("user_id", friendIds);
 
   const profileMap = new Map(
@@ -110,12 +118,13 @@ export async function getFriends(userId: string): Promise<FriendInfo[]> {
     user_id: id,
     display_name: profileMap.get(id)?.display_name ?? null,
     avatar_url: profileMap.get(id)?.avatar_url ?? null,
+    bio: profileMap.get(id)?.bio ?? null,
   }));
 }
 
 export async function getPendingRequests(
   userId: string
-): Promise<{ incoming: Friendship[]; outgoing: Friendship[] }> {
+): Promise<{ incoming: PendingRequest[]; outgoing: PendingRequest[] }> {
   const { data: incoming } = await supabaseAdmin
     .from("friendships")
     .select("*")
@@ -130,9 +139,42 @@ export async function getPendingRequests(
     .eq("status", "pending")
     .order("created_at", { ascending: false });
 
+  const rawIncoming = (incoming ?? []) as Friendship[];
+  const rawOutgoing = (outgoing ?? []) as Friendship[];
+
+  // 收集所有需要查 profiles 的 user ID
+  const allUserIds = new Set<string>();
+  for (const r of rawIncoming) allUserIds.add(r.sender_id);
+  for (const r of rawOutgoing) allUserIds.add(r.receiver_id);
+
+  const { data: profiles } = await supabaseAdmin
+    .from("profiles")
+    .select("user_id, display_name, avatar_url")
+    .in("user_id", [...allUserIds]);
+
+  const profileMap = new Map(
+    (profiles ?? []).map((p) => [p.user_id, p])
+  );
+
+  function fallback(id: string) {
+    return profileMap.get(id)?.display_name ?? `用户${id.slice(0, 6)}`;
+  }
+
   return {
-    incoming: (incoming ?? []) as Friendship[],
-    outgoing: (outgoing ?? []) as Friendship[],
+    incoming: rawIncoming.map((r) => ({
+      ...r,
+      sender_display_name: fallback(r.sender_id),
+      sender_avatar_url: profileMap.get(r.sender_id)?.avatar_url ?? null,
+      receiver_display_name: fallback(userId),
+      receiver_avatar_url: null,
+    })),
+    outgoing: rawOutgoing.map((r) => ({
+      ...r,
+      sender_display_name: fallback(userId),
+      sender_avatar_url: null,
+      receiver_display_name: fallback(r.receiver_id),
+      receiver_avatar_url: profileMap.get(r.receiver_id)?.avatar_url ?? null,
+    })),
   };
 }
 

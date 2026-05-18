@@ -4,6 +4,7 @@ import { getPublicCabinet, getProfile } from "@/lib/profiles";
 import { createClient } from "@/lib/supabaseServer";
 import ItemCard from "@/components/ItemCard";
 import FriendButton from "@/components/FriendButton";
+import { getFriendshipStatus } from "@/lib/friends";
 import ViewTracker from "./ViewTracker";
 
 type Props = {
@@ -16,6 +17,14 @@ export default async function PublicCabinetPage({ params }: Props) {
 
   if (!cabinet) {
     const profile = await getProfile(userId).catch(() => null);
+    const supabaseForNotPublic = await createClient();
+    const { data: { user: visitor } } = await supabaseForNotPublic.auth.getUser();
+    const isOwnerNotPublic = visitor?.id === userId;
+    let fsNotPublic: string | null = null;
+    if (visitor && !isOwnerNotPublic) {
+      fsNotPublic = await getFriendshipStatus(visitor.id, userId);
+    }
+
     return (
       <div className="mx-auto max-w-4xl px-4 py-8">
         {/* Banner */}
@@ -43,6 +52,11 @@ export default async function PublicCabinetPage({ params }: Props) {
             </h1>
             <p className="text-sm text-gray-400">{profile?.bio || "该用户未公开痛柜"}</p>
           </div>
+          {!isOwnerNotPublic && visitor && (
+            <div className="pt-2 shrink-0">
+              <FriendButton userId={visitor.id} targetId={userId} initialStatus={fsNotPublic} />
+            </div>
+          )}
         </div>
 
         <div className="rounded-3xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-100">
@@ -62,6 +76,11 @@ export default async function PublicCabinetPage({ params }: Props) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const isOwner = user?.id === userId;
+
+  let friendshipStatus: string | null = null;
+  if (user && !isOwner) {
+    friendshipStatus = await getFriendshipStatus(user.id, userId);
+  }
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
@@ -103,7 +122,13 @@ export default async function PublicCabinetPage({ params }: Props) {
         </div>
 
         <div className="pt-10 shrink-0">
-          {!isOwner && user && <FriendButton userId={user.id} targetId={userId} />}
+          {!isOwner && user && (
+            <FriendButton
+              userId={user.id}
+              targetId={userId}
+              initialStatus={friendshipStatus}
+            />
+          )}
         </div>
       </div>
 

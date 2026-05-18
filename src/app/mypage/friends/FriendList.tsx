@@ -8,7 +8,7 @@ import {
   rejectFriendRequest,
   removeFriend,
 } from "@/lib/friends";
-import type { Friendship } from "@/lib/friends";
+import type { PendingRequest, FriendInfo } from "@/lib/friends";
 
 export default function FriendList({
   friends,
@@ -17,13 +17,9 @@ export default function FriendList({
   currentUserId,
   currentUserName,
 }: {
-  friends: {
-    user_id: string;
-    display_name: string | null;
-    avatar_url: string | null;
-  }[];
-  incoming: Friendship[];
-  outgoing: Friendship[];
+  friends: FriendInfo[];
+  incoming: PendingRequest[];
+  outgoing: PendingRequest[];
   currentUserId: string;
   currentUserName: string;
 }) {
@@ -69,12 +65,18 @@ export default function FriendList({
                 key={req.id}
                 className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-sm ring-1 ring-gray-100"
               >
-                <div className="h-10 w-10 rounded-full bg-pink-100 flex items-center justify-center text-sm text-pink-400 shrink-0">
-                  用户
+                <div className="h-10 w-10 rounded-full bg-pink-100 flex items-center justify-center shrink-0 overflow-hidden">
+                  {req.sender_avatar_url ? (
+                    <img src={req.sender_avatar_url} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="text-sm text-pink-400">
+                      {req.sender_display_name[0]}
+                    </span>
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900">
-                    用户{req.sender_id.slice(0, 8)}…
+                    {req.sender_display_name}
                   </p>
                   <p className="text-xs text-gray-400">想加你为好友</p>
                 </div>
@@ -112,11 +114,17 @@ export default function FriendList({
                 key={req.id}
                 className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-sm ring-1 ring-gray-100"
               >
-                <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center text-sm text-gray-400 shrink-0">
-                  用户
+                <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
+                  {req.receiver_avatar_url ? (
+                    <img src={req.receiver_avatar_url} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="text-sm text-gray-400">
+                      {req.receiver_display_name[0]}
+                    </span>
+                  )}
                 </div>
                 <p className="flex-1 text-sm text-gray-500">
-                  用户{req.receiver_id.slice(0, 8)}…
+                  {req.receiver_display_name}
                 </p>
                 <span className="text-xs text-amber-500">等待回复</span>
               </div>
@@ -143,12 +151,12 @@ export default function FriendList({
               >
                 <Link
                   href={`/users/${f.user_id}`}
-                  className="h-10 w-10 rounded-full bg-pink-100 flex items-center justify-center shrink-0 overflow-hidden"
+                  className="h-12 w-12 rounded-full bg-pink-100 flex items-center justify-center shrink-0 overflow-hidden"
                 >
                   {f.avatar_url ? (
                     <img src={f.avatar_url} alt="" className="h-full w-full object-cover" />
                   ) : (
-                    <span className="text-sm text-pink-400">
+                    <span className="text-base text-pink-400">
                       {(f.display_name ?? "?")[0]}
                     </span>
                   )}
@@ -160,12 +168,15 @@ export default function FriendList({
                   <p className="text-sm font-medium text-gray-900 hover:text-pink-500">
                     {f.display_name || `用户${f.user_id.slice(0, 6)}`}
                   </p>
+                  {f.bio && (
+                    <p className="text-xs text-gray-400 truncate">{f.bio}</p>
+                  )}
                 </Link>
                 <Link
                   href={`/mypage/messages/${f.user_id}`}
-                  className="rounded-lg bg-pink-50 px-2 py-1 text-xs text-pink-500 hover:bg-pink-100"
+                  className="rounded-lg bg-pink-500 px-3 py-1 text-xs font-medium text-white hover:bg-pink-600 transition"
                 >
-                  发消息
+                  发私信
                 </Link>
                 <button
                   onClick={() => handleRemove(f.user_id)}
