@@ -50,6 +50,7 @@ async function batchSave(
     const description = (formData.get(`description_${i}`) as string)?.trim() ?? "";
     const imageName = (formData.get(`image_${i}`) as string)?.trim() ?? "";
     const imageFile = formData.get(`imageFile_${i}`) as File | null;
+    const imageUrl = (formData.get(`imageUrl_${i}`) as string)?.trim() || undefined;
 
     if (!title) {
       errors.push(`第 ${i + 1} 个商品缺少标题`);
@@ -66,6 +67,7 @@ async function batchSave(
         description,
         imageName,
         imageFile: imageFile && imageFile.size > 0 ? imageFile : null,
+        imageUrl,
         userId,
         visibility,
       },

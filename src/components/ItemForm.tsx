@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { supabaseBrowser } from "@/lib/supabaseBrowser";
 import ips from "@/data/ips";
 
 type ItemFormProps = {
@@ -30,6 +31,32 @@ export default function ItemForm({ action, title, description, submitLabel, cate
     setError("");
     setSubmitting(true);
     try {
+      const file = formData.get("imageFile") as File | null;
+      if (file && file.size > 0) {
+        const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+        const { error: uploadError } = await supabaseBrowser.storage
+          .from("goods")
+          .upload(fileName, file, {
+            contentType: file.type || "image/jpeg",
+            upsert: false,
+          });
+
+        if (uploadError) {
+          setError(`[Storage上传] ${uploadError.message}`);
+          setSubmitting(false);
+          return;
+        }
+
+        const { data: urlData } = supabaseBrowser.storage
+          .from("goods")
+          .getPublicUrl(fileName);
+
+        formData.set("imageUrl", urlData.publicUrl);
+        formData.delete("imageFile");
+      }
+
       const result = await action(formData);
       if (result?.error) {
         setError(result.error);

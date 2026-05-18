@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabaseAction";
 export async function submitItem(formData: FormData) {
   try {
     const imageFile = formData.get("imageFile") as File | null;
+    const imageUrl = (formData.get("imageUrl") as string)?.trim() || undefined;
 
     const supabase = await createClient();
     const {
@@ -23,6 +24,7 @@ export async function submitItem(formData: FormData) {
         description: (formData.get("description") as string)?.trim() ?? "",
         imageName: (formData.get("image") as string)?.trim() ?? "",
         imageFile: imageFile && imageFile.size > 0 ? imageFile : null,
+        imageUrl,
         userId: user?.id,
         visibility: "public",
       },

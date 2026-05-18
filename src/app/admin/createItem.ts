@@ -9,6 +9,7 @@ export async function createItem(formData: FormData) {
     await requireAdmin();
 
     const imageFile = formData.get("imageFile") as File | null;
+    const imageUrl = (formData.get("imageUrl") as string)?.trim() || undefined;
 
     const result = await saveItem({
       title: (formData.get("title") as string)?.trim() ?? "",
@@ -19,6 +20,7 @@ export async function createItem(formData: FormData) {
       description: (formData.get("description") as string)?.trim() ?? "",
       imageName: (formData.get("image") as string)?.trim() ?? "",
       imageFile: imageFile && imageFile.size > 0 ? imageFile : null,
+      imageUrl,
     });
 
     if ("error" in result) return { error: result.error };

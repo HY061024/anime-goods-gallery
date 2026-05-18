@@ -10,6 +10,7 @@ export type SaveItemInput = {
   description: string;
   imageName: string;
   imageFile: File | null;
+  imageUrl?: string;
   userId?: string;
   visibility?: 'public' | 'private';
 };
@@ -68,6 +69,8 @@ async function doSaveItem(
       .getPublicUrl(fileName);
 
     imagePath = urlData.publicUrl;
+  } else if (input.imageUrl) {
+    imagePath = input.imageUrl;
   } else if (imageName) {
     imagePath = `/goods/${imageName}`;
   } else {

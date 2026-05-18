@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { supabaseBrowser } from "@/lib/supabaseBrowser";
 import ips from "@/data/ips";
 
 type ItemRow = {
@@ -109,8 +110,29 @@ export default function BatchItemForm({
       fd.set(`category_${i}`, r.category);
       fd.set(`price_${i}`, r.price);
       if (r.description) fd.set(`description_${i}`, r.description);
-      if (r.imageFile) {
-        fd.set(`imageFile_${i}`, r.imageFile);
+      if (r.imageFile && r.imageFile.size > 0) {
+        const file = r.imageFile;
+        const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${i}.${ext}`;
+
+        const { error: uploadError } = await supabaseBrowser.storage
+          .from("goods")
+          .upload(fileName, file, {
+            contentType: file.type || "image/jpeg",
+            upsert: false,
+          });
+
+        if (uploadError) {
+          setError(`第 ${i + 1} 件图片上传失败: ${uploadError.message}`);
+          setSubmitting(false);
+          return;
+        }
+
+        const { data: urlData } = supabaseBrowser.storage
+          .from("goods")
+          .getPublicUrl(fileName);
+
+        fd.set(`imageUrl_${i}`, urlData.publicUrl);
         hasFile = true;
       }
     }
