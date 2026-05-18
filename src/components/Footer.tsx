@@ -1,8 +1,8 @@
 import Link from "next/link";
 
-export default function Footer() {
+export default function Footer({ className = "" }: { className?: string }) {
   return (
-    <footer className="border-t border-pink-100 bg-white">
+    <footer className={`border-t border-pink-100 bg-white ${className}`}>
       <div className="mx-auto max-w-6xl px-4 py-8">
         <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
           {/* 左侧品牌 */}
