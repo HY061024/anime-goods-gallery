@@ -84,7 +84,7 @@ public/goods/
 - 2026-05-18: 添加底部导航栏 — BottomNav 组件，手机端底部固定三 Tab（首页/痛柜/我的），PC 端左侧固定侧边栏，Navbar 精简为仅 Logo+用户下拉，新建 /profile 个人中心页
 - 2026-05-18: 图片上传改为浏览器直传 Supabase Storage — 绕过 Vercel Hobby 计划 4.5MB 请求体限制。supabaseBrowser.ts 使用 @supabase/ssr createBrowserClient 携带用户登录会话通过 Storage RLS
 - 2026-05-18: 添加图片压缩 — compressImage.ts，上传前在浏览器端将图片最长边缩至 1920px、转 JPEG 质量 0.8，手机照片从 10MB 降到 ~300KB，解决慢和 "Failed to fetch" 问题
-- 已配置 git SOCKS5 代理 (127.0.0.1:10808) 用于 GitHub 推送
+- 2026-05-19: 完善"别人痛柜 + 加好友"闭环 — 新增痛柜广场页 /cabinets，商品卡片/详情页上传者头像昵称可点击进入主页，FriendButton 覆盖全部8种状态（已发送/收到申请/接受/拒绝/取消/发消息），好友列表页加入 Tab 切换，/users/[userId] 已是好友时显示"发消息"按钮，首页增加痛柜广场推广区块，profiles.ts 新增 getSubmitterInfos/getPublicCabinetUsers，friends.ts 新增 getFriendshipDetails/cancelFriendRequest
 
 ## 管理员路由结构
 
