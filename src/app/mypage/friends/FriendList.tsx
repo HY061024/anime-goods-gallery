@@ -23,6 +23,7 @@ export default function FriendList({
   currentUserId: string;
   currentUserName: string;
 }) {
+  const [activeTab, setActiveTab] = useState<"friends" | "incoming" | "outgoing">("friends");
   const [localFriends, setLocalFriends] = useState(friends);
   const [localIncoming, setLocalIncoming] = useState(incoming);
   const [localOutgoing, setLocalOutgoing] = useState(outgoing);
@@ -51,14 +52,39 @@ export default function FriendList({
     });
   }
 
+  const tabOptions = [
+    { key: "friends" as const, label: "我的好友", count: localFriends.length },
+    { key: "incoming" as const, label: "收到的申请", count: localIncoming.length },
+    { key: "outgoing" as const, label: "发出的申请", count: localOutgoing.length },
+  ];
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      {/* Tab bar */}
+      <div className="flex rounded-xl bg-white p-1 shadow-sm ring-1 ring-gray-100">
+        {tabOptions.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`flex-1 rounded-lg py-2 text-sm font-medium transition ${
+              activeTab === tab.key
+                ? "bg-pink-500 text-white"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            {tab.label}
+            {tab.count > 0 && (
+              <span className={`ml-1 text-xs ${activeTab === tab.key ? "text-pink-100" : "text-gray-300"}`}>
+                ({tab.count})
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
       {/* Incoming requests */}
-      {localIncoming.length > 0 && (
-        <div>
-          <h2 className="mb-2 text-sm font-semibold text-gray-500">
-            待处理的好友请求 ({localIncoming.length})
-          </h2>
+      {activeTab === "incoming" && (
+        localIncoming.length > 0 ? (
           <div className="space-y-2">
             {localIncoming.map((req) => (
               <div
@@ -99,15 +125,16 @@ export default function FriendList({
               </div>
             ))}
           </div>
-        </div>
+        ) : (
+          <div className="rounded-xl bg-white p-8 text-center shadow-sm ring-1 ring-gray-100">
+            <p className="text-sm text-gray-400">暂无收到的好友申请</p>
+          </div>
+        )
       )}
 
       {/* Outgoing requests */}
-      {localOutgoing.length > 0 && (
-        <div>
-          <h2 className="mb-2 text-sm font-semibold text-gray-500">
-            已发送的请求 ({localOutgoing.length})
-          </h2>
+      {activeTab === "outgoing" && (
+        localOutgoing.length > 0 ? (
           <div className="space-y-2">
             {localOutgoing.map((req) => (
               <div
@@ -130,19 +157,16 @@ export default function FriendList({
               </div>
             ))}
           </div>
-        </div>
+        ) : (
+          <div className="rounded-xl bg-white p-8 text-center shadow-sm ring-1 ring-gray-100">
+            <p className="text-sm text-gray-400">暂无发出的好友申请</p>
+          </div>
+        )
       )}
 
       {/* Friends list */}
-      <div>
-        <h2 className="mb-2 text-sm font-semibold text-gray-500">
-          我的好友 ({localFriends.length})
-        </h2>
-        {localFriends.length === 0 ? (
-          <div className="rounded-xl bg-white p-8 text-center shadow-sm ring-1 ring-gray-100">
-            <p className="text-sm text-gray-400">暂无好友，去逛逛别人的痛柜认识新朋友吧</p>
-          </div>
-        ) : (
+      {activeTab === "friends" && (
+        localFriends.length > 0 ? (
           <div className="space-y-2">
             {localFriends.map((f) => (
               <div
@@ -187,8 +211,15 @@ export default function FriendList({
               </div>
             ))}
           </div>
-        )}
-      </div>
+        ) : (
+          <div className="rounded-xl bg-white p-8 text-center shadow-sm ring-1 ring-gray-100">
+            <p className="text-sm text-gray-400">暂无好友，去逛逛别人的痛柜认识新朋友吧</p>
+            <Link href="/cabinets" className="mt-2 inline-block text-sm font-medium text-pink-500">
+              去痛柜广场 &rarr;
+            </Link>
+          </div>
+        )
+      )}
     </div>
   );
 }

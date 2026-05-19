@@ -22,12 +22,16 @@ function relativeTime(dateStr: string) {
 export default function ItemCard({
   item,
   submitterName,
+  submitterId,
+  submitterAvatar,
   showCollectButton = false,
   collected = false,
   onCollect,
 }: {
   item: Item;
   submitterName?: string;
+  submitterId?: string;
+  submitterAvatar?: string | null;
   showCollectButton?: boolean;
   collected?: boolean;
   onCollect?: (itemId: number) => void;
@@ -67,12 +71,30 @@ export default function ItemCard({
           </p>
 
           {/* 提交者 + 时间 */}
-          {submitterName && (
+          {submitterId ? (
+            <Link
+              href={`/users/${submitterId}`}
+              onClick={(e) => e.stopPropagation()}
+              className="mt-1.5 flex items-center gap-1.5 text-xs text-gray-400 hover:text-pink-500 transition-colors"
+            >
+              <span className="h-5 w-5 shrink-0 overflow-hidden rounded-full bg-pink-100">
+                {submitterAvatar ? (
+                  <img src={submitterAvatar} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <span className="flex h-full w-full items-center justify-center text-[10px] text-pink-400">
+                    {(submitterName ?? "?")[0]}
+                  </span>
+                )}
+              </span>
+              <span>{submitterName ?? `用户${submitterId.slice(0, 6)}`}</span>
+              {item.created_at && <span>· {relativeTime(item.created_at)}</span>}
+            </Link>
+          ) : submitterName ? (
             <p className="mt-1.5 text-xs text-gray-400">
               {submitterName}
               {item.created_at ? ` · ${relativeTime(item.created_at)}` : ""}
             </p>
-          )}
+          ) : null}
         </div>
       </Link>
 

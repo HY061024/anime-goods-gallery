@@ -86,6 +86,44 @@ export async function getSubmitterNames(userIds: string[]): Promise<Map<string, 
   return names;
 }
 
+export async function getSubmitterInfos(userIds: string[]): Promise<
+  Map<string, { displayName: string; avatarUrl: string | null }>
+> {
+  const infos = new Map<string, { displayName: string; avatarUrl: string | null }>();
+  const unique = [...new Set(userIds.filter(Boolean))];
+  if (unique.length === 0) return infos;
+
+  const { data } = await supabaseAdmin
+    .from("profiles")
+    .select("user_id, display_name, avatar_url")
+    .in("user_id", unique);
+
+  for (const row of data ?? []) {
+    infos.set(row.user_id, {
+      displayName: row.display_name ?? `用户${row.user_id.slice(0, 6)}`,
+      avatarUrl: row.avatar_url ?? null,
+    });
+  }
+
+  for (const id of unique) {
+    if (!infos.has(id)) {
+      infos.set(id, { displayName: `用户${id.slice(0, 6)}`, avatarUrl: null });
+    }
+  }
+
+  return infos;
+}
+
+export async function getPublicCabinetUsers(): Promise<Profile[]> {
+  const { data } = await supabaseAdmin
+    .from("profiles")
+    .select("*")
+    .eq("cabinet_public", true)
+    .order("cabinet_views", { ascending: false });
+
+  return (data ?? []) as Profile[];
+}
+
 export async function getPublicCabinet(userId: string) {
   // 检查痛柜是否公开
   const profile = await getProfile(userId);

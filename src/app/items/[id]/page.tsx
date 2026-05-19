@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getItemById } from "@/lib/items";
 import { createClient } from "@/lib/supabaseServer";
-import { getSubmitterNames } from "@/lib/profiles";
+import { getSubmitterInfos } from "@/lib/profiles";
 import { isInCollection } from "@/lib/collections";
 import DeleteRequestButton from "./DeleteRequestButton";
 import CollectButton from "./CollectButton";
@@ -38,12 +38,13 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
   const { data: { user } } = await supabase.auth.getUser();
 
   const submitterId = item.submitter_id ?? "";
-  const [submitterNames, collected] = await Promise.all([
-    submitterId ? getSubmitterNames([submitterId]) : Promise.resolve(new Map<string, string>()),
+  const [submitterInfos, collected] = await Promise.all([
+    submitterId ? getSubmitterInfos([submitterId]) : Promise.resolve(new Map()),
     user ? isInCollection(user.id, item.id) : Promise.resolve(false),
   ]);
 
-  const submitterName = submitterNames.get(submitterId);
+  const submitterInfo = submitterInfos.get(submitterId);
+  const submitterName = submitterInfo?.displayName;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
@@ -79,12 +80,29 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
           </div>
 
           {/* 提交者信息 */}
-          {submitterName && (
+          {submitterId ? (
+            <Link
+              href={`/users/${submitterId}`}
+              className="mt-3 inline-flex items-center gap-2 text-xs text-gray-400 hover:text-pink-500 transition-colors"
+            >
+              <span className="h-6 w-6 shrink-0 overflow-hidden rounded-full bg-pink-100">
+                {submitterInfo?.avatarUrl ? (
+                  <img src={submitterInfo.avatarUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <span className="flex h-full w-full items-center justify-center text-[10px] text-pink-400">
+                    {(submitterName ?? "?")[0]}
+                  </span>
+                )}
+              </span>
+              <span className="font-medium">{submitterName ?? `用户${submitterId.slice(0, 6)}`}</span>
+              {item.created_at && <span>· {relativeTime(item.created_at)}</span>}
+            </Link>
+          ) : submitterName ? (
             <p className="mt-3 text-xs text-gray-400">
               {submitterName}
               {item.created_at ? ` · ${relativeTime(item.created_at)}` : ""}
             </p>
-          )}
+          ) : null}
 
           {/* 价格 */}
           <div className="mt-6 flex items-baseline gap-1">

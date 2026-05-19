@@ -4,70 +4,108 @@ import { getPublicCabinet, getProfile } from "@/lib/profiles";
 import { createClient } from "@/lib/supabaseServer";
 import ItemCard from "@/components/ItemCard";
 import FriendButton from "@/components/FriendButton";
-import { getFriendshipStatus } from "@/lib/friends";
+import { getFriendshipDetails } from "@/lib/friends";
+import type { FriendButtonState } from "@/lib/friends";
 import ViewTracker from "./ViewTracker";
 
 type Props = {
   params: Promise<{ userId: string }>;
 };
 
-export default async function PublicCabinetPage({ params }: Props) {
-  const { userId } = await params;
-  const cabinet = await getPublicCabinet(userId);
+async function CabinetNotPublic({
+  userId,
+  profile,
+}: {
+  userId: string;
+  profile: Awaited<ReturnType<typeof getProfile>>;
+}) {
+  const supabase = await createClient();
+  const { data: { user: visitor } } = await supabase.auth.getUser();
+  const isOwner = visitor?.id === userId;
+  const displayName = profile.display_name ?? `用户${userId.slice(0, 6)}`;
 
-  if (!cabinet) {
-    const profile = await getProfile(userId).catch(() => null);
-    const supabaseForNotPublic = await createClient();
-    const { data: { user: visitor } } = await supabaseForNotPublic.auth.getUser();
-    const isOwnerNotPublic = visitor?.id === userId;
-    let fsNotPublic: string | null = null;
-    if (visitor && !isOwnerNotPublic) {
-      fsNotPublic = await getFriendshipStatus(visitor.id, userId);
-    }
+  let fs: { state: FriendButtonState; friendshipId: number | null } | null = null;
+  if (visitor && !isOwner) {
+    fs = await getFriendshipDetails(visitor.id, userId);
+  }
 
-    return (
-      <div className="mx-auto max-w-4xl px-4 py-8">
-        {/* Banner */}
-        <div className="mb-6 h-32 overflow-hidden rounded-2xl bg-gradient-to-r from-pink-200 via-pink-100 to-purple-200">
-          {profile?.banner_url && (
+  return (
+    <div className="mx-auto max-w-4xl px-4 py-8">
+      <Link href="/" className="text-sm font-medium text-pink-500 transition hover:text-pink-600">
+        &larr; 返回首页
+      </Link>
+
+      {/* Banner */}
+      <div className="mt-4 mb-6 h-32 overflow-hidden rounded-2xl bg-gradient-to-r from-pink-200 via-pink-100 to-purple-200">
+        {profile.banner_url && (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img src={profile.banner_url} alt="" className="h-full w-full object-cover" />
+        )}
+      </div>
+
+      {/* Profile info */}
+      <div className="flex items-end gap-4 -mt-10 mb-6 px-2">
+        <div className="h-20 w-20 overflow-hidden rounded-full ring-4 ring-white bg-pink-100 shrink-0">
+          {profile.avatar_url ? (
             /* eslint-disable-next-line @next/next/no-img-element */
-            <img src={profile.banner_url} alt="" className="h-full w-full object-cover" />
-          )}
-        </div>
-
-        <div className="flex items-end gap-4 -mt-8 mb-6 px-2">
-          <div className="h-16 w-16 overflow-hidden rounded-full ring-4 ring-white bg-pink-100">
-            {profile?.avatar_url ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-xl text-pink-400">
-                {(profile?.display_name ?? "?")[0]}
-              </div>
-            )}
-          </div>
-          <div className="flex-1">
-            <h1 className="text-xl font-bold text-gray-900">
-              {profile?.display_name ?? `用户${userId.slice(0, 6)}`}
-            </h1>
-            <p className="text-sm text-gray-400">{profile?.bio || "该用户未公开痛柜"}</p>
-          </div>
-          {!isOwnerNotPublic && visitor && (
-            <div className="pt-2 shrink-0">
-              <FriendButton userId={visitor.id} targetId={userId} initialStatus={fsNotPublic} />
+            <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-2xl text-pink-400">
+              {displayName[0]}
             </div>
           )}
         </div>
 
-        <div className="rounded-3xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-100">
-          <p className="text-lg font-semibold text-gray-900">该用户未公开痛柜</p>
-          <p className="mt-2 text-gray-500">Ta 还没有开启痛柜的公开分享</p>
-          <Link href="/" className="mt-4 inline-block text-sm font-medium text-pink-500">
-            ← 返回首页
-          </Link>
+        <div className="flex-1 min-w-0 pt-10">
+          <h1 className="text-2xl font-bold text-gray-900">{displayName}</h1>
+          {profile.bio && <p className="text-sm text-gray-500 mt-0.5">{profile.bio}</p>}
+          <p className="text-xs text-gray-400 mt-1">{profile.cabinet_views} 次浏览</p>
+        </div>
+
+        <div className="pt-10 shrink-0">
+          {isOwner ? (
+            <Link
+              href="/mypage"
+              className="inline-block rounded-lg border border-pink-200 px-3 py-1.5 text-xs font-medium text-pink-500 hover:bg-pink-50 transition"
+            >
+              管理我的痛柜
+            </Link>
+          ) : visitor ? (
+            <div className="flex items-center gap-2">
+              <FriendButton
+                userId={visitor.id}
+                targetId={userId}
+                initialState={fs?.state ?? null}
+                initialFriendshipId={fs?.friendshipId ?? null}
+              />
+            </div>
+          ) : null}
         </div>
       </div>
-    );
+
+      {/* Not public notice */}
+      <div className="rounded-3xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-100">
+        <p className="text-lg font-semibold text-gray-900">TA 的痛柜暂未公开</p>
+        <p className="mt-2 text-gray-500">Ta 还没有开启痛柜的公开分享</p>
+        {!visitor && (
+          <Link href="/auth/login" className="mt-4 inline-block text-sm font-medium text-pink-500">
+            登录后加好友
+          </Link>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default async function PublicCabinetPage({ params }: Props) {
+  const { userId } = await params;
+  const cabinet = await getPublicCabinet(userId);
+
+  // 痛柜未公开
+  if (!cabinet) {
+    const profile = await getProfile(userId).catch(() => null);
+    if (!profile) notFound();
+    return <CabinetNotPublic userId={userId} profile={profile} />;
   }
 
   const { profile, items } = cabinet;
@@ -77,9 +115,9 @@ export default async function PublicCabinetPage({ params }: Props) {
   const { data: { user } } = await supabase.auth.getUser();
   const isOwner = user?.id === userId;
 
-  let friendshipStatus: string | null = null;
+  let fs: { state: FriendButtonState; friendshipId: number | null } | null = null;
   if (user && !isOwner) {
-    friendshipStatus = await getFriendshipStatus(user.id, userId);
+    fs = await getFriendshipDetails(user.id, userId);
   }
 
   return (
@@ -87,7 +125,7 @@ export default async function PublicCabinetPage({ params }: Props) {
       <ViewTracker userId={userId} isOwner={isOwner} />
 
       <Link href="/" className="text-sm font-medium text-pink-500 transition hover:text-pink-600">
-        ← 返回首页
+        &larr; 返回首页
       </Link>
 
       {/* Banner */}
@@ -113,22 +151,30 @@ export default async function PublicCabinetPage({ params }: Props) {
 
         <div className="flex-1 min-w-0 pt-10">
           <h1 className="text-2xl font-bold text-gray-900">{displayName} 的痛柜</h1>
-          <p className="text-sm text-gray-400 mt-0.5">
-            {profile.bio || ""}
-          </p>
+          {profile.bio && <p className="text-sm text-gray-500 mt-0.5">{profile.bio}</p>}
           <p className="text-xs text-gray-400 mt-1">
-            {items.length} 件周边 · {profile.cabinet_views} 次浏览
+            {items.length} 件周边 &middot; {profile.cabinet_views} 次浏览
           </p>
         </div>
 
         <div className="pt-10 shrink-0">
-          {!isOwner && user && (
-            <FriendButton
-              userId={user.id}
-              targetId={userId}
-              initialStatus={friendshipStatus}
-            />
-          )}
+          {isOwner ? (
+            <Link
+              href="/mypage"
+              className="inline-block rounded-lg border border-pink-200 px-3 py-1.5 text-xs font-medium text-pink-500 hover:bg-pink-50 transition"
+            >
+              管理我的痛柜
+            </Link>
+          ) : user ? (
+            <div className="flex items-center gap-2">
+              <FriendButton
+                userId={user.id}
+                targetId={userId}
+                initialState={fs?.state ?? null}
+                initialFriendshipId={fs?.friendshipId ?? null}
+              />
+            </div>
+          ) : null}
         </div>
       </div>
 
@@ -142,17 +188,6 @@ export default async function PublicCabinetPage({ params }: Props) {
           {items.map((item) => (
             <ItemCard key={item.id} item={item} />
           ))}
-        </div>
-      )}
-
-      {isOwner && (
-        <div className="mt-8 text-center">
-          <Link
-            href="/mypage"
-            className="inline-block rounded-xl bg-pink-500 px-6 py-3 text-sm font-medium text-white transition hover:bg-pink-600"
-          >
-            管理我的痛柜
-          </Link>
         </div>
       )}
     </div>

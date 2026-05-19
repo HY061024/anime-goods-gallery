@@ -193,6 +193,48 @@ export async function getFriendshipStatus(
   return row ? (row.status as FriendshipStatus) : null;
 }
 
+export type FriendButtonState =
+  | "none"
+  | "pending_sent"
+  | "pending_received"
+  | "accepted"
+  | "rejected";
+
+export async function getFriendshipDetails(
+  userId: string,
+  otherId: string
+): Promise<{ state: FriendButtonState; friendshipId: number | null }> {
+  const { data } = await supabaseAdmin
+    .from("friendships")
+    .select("id, sender_id, receiver_id, status")
+    .or(
+      `and(sender_id.eq.${userId},receiver_id.eq.${otherId}),and(sender_id.eq.${otherId},receiver_id.eq.${userId})`
+    );
+
+  const row = (data ?? [])[0];
+  if (!row) return { state: "none", friendshipId: null };
+
+  if (row.status === "accepted") return { state: "accepted", friendshipId: row.id };
+  if (row.status === "rejected") return { state: "rejected", friendshipId: row.id };
+
+  // pending
+  if (row.sender_id === userId) return { state: "pending_sent", friendshipId: row.id };
+  return { state: "pending_received", friendshipId: row.id };
+}
+
+export async function cancelFriendRequest(
+  friendshipId: number
+): Promise<{ error?: string }> {
+  const { error } = await supabaseAdmin
+    .from("friendships")
+    .delete()
+    .eq("id", friendshipId)
+    .eq("status", "pending");
+
+  if (error) return { error: `取消失败：${error.message}` };
+  return {};
+}
+
 export async function removeFriend(
   userId: string,
   friendId: string

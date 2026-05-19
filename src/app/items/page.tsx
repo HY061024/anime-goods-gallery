@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { searchItems, getPopularWorks, getPopularCharacters } from "@/lib/items";
 import { createClient } from "@/lib/supabaseServer";
-import { getSubmitterNames } from "@/lib/profiles";
+import { getSubmitterInfos } from "@/lib/profiles";
 import { getCollectedItemIds } from "@/lib/collections";
 import { getAllCategories } from "@/lib/categories";
 import { collectItem } from "@/app/actions";
@@ -43,8 +43,8 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const { data: { user } } = await supabase.auth.getUser();
 
   const submitterIds = filteredItems.map((i) => i.submitter_id).filter(Boolean) as string[];
-  const [submitterNames, collectedIds] = await Promise.all([
-    getSubmitterNames(submitterIds),
+  const [submitterInfos, collectedIds] = await Promise.all([
+    getSubmitterInfos(submitterIds),
     user ? getCollectedItemIds(user.id) : Promise.resolve(new Set<number>()),
   ]);
 
@@ -192,16 +192,21 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
       {/* 商品网格 */}
       {filteredItems.length > 0 ? (
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-          {filteredItems.map((item) => (
-            <ItemCard
-              key={item.id}
-              item={item}
-              submitterName={submitterNames.get(item.submitter_id ?? "")}
-              showCollectButton={!!user}
-              collected={collectedIds.has(item.id)}
-              onCollect={collectItem}
-            />
-          ))}
+          {filteredItems.map((item) => {
+            const info = submitterInfos.get(item.submitter_id ?? "");
+            return (
+              <ItemCard
+                key={item.id}
+                item={item}
+                submitterName={info?.displayName}
+                submitterId={item.submitter_id ?? undefined}
+                submitterAvatar={info?.avatarUrl}
+                showCollectButton={!!user}
+                collected={collectedIds.has(item.id)}
+                onCollect={collectItem}
+              />
+            );
+          })}
         </div>
       ) : (
         <div className="rounded-3xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-100">

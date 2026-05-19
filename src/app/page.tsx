@@ -1,25 +1,26 @@
 import Link from "next/link";
 import { searchItems, getPopularWorks, getPopularCharacters } from "@/lib/items";
 import { createClient } from "@/lib/supabaseServer";
-import { getSubmitterNames } from "@/lib/profiles";
+import { getSubmitterInfos, getPublicCabinetUsers } from "@/lib/profiles";
 import { getCollectedItemIds } from "@/lib/collections";
 import { getAllCategories } from "@/lib/categories";
 import { collectItem } from "@/app/actions";
 import ItemCard from "@/components/ItemCard";
 
 export default async function HomePage() {
-  const [items, categories, popularWorks, popularCharacters, supabase] = await Promise.all([
+  const [items, categories, popularWorks, popularCharacters, cabinetUsers, supabase] = await Promise.all([
     searchItems(),
     getAllCategories(),
     getPopularWorks(8),
     getPopularCharacters(12),
+    getPublicCabinetUsers(),
     createClient(),
   ]);
   const { data: { user } } = await supabase.auth.getUser();
 
   const submitterIds = items.map((i) => i.submitter_id).filter(Boolean) as string[];
-  const [submitterNames, collectedIds] = await Promise.all([
-    getSubmitterNames(submitterIds),
+  const [submitterInfos, collectedIds] = await Promise.all([
+    getSubmitterInfos(submitterIds),
     user ? getCollectedItemIds(user.id) : Promise.resolve(new Set<number>()),
   ]);
 
@@ -168,6 +169,63 @@ export default async function HomePage() {
         </section>
       )}
 
+      {/* 痛柜广场推广 */}
+      {cabinetUsers.length > 0 && (
+        <section className="mx-auto max-w-6xl px-4 pb-12">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">痛柜广场</h2>
+              <p className="mt-1 text-sm text-gray-500">发现其他二次元爱好者的公开痛柜</p>
+            </div>
+            <Link
+              href="/cabinets"
+              className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-pink-500 shadow-sm transition hover:bg-pink-50"
+            >
+              查看全部 &rarr;
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {cabinetUsers.slice(0, 4).map((u) => (
+              <Link
+                key={u.user_id}
+                href={`/users/${u.user_id}`}
+                className="group overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-pink-200"
+              >
+                <div className="h-16 bg-gradient-to-r from-pink-200 via-pink-100 to-purple-200">
+                  {u.banner_url && (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={u.banner_url} alt="" className="h-full w-full object-cover" />
+                  )}
+                </div>
+                <div className="px-3 pb-3">
+                  <div className="flex items-end gap-2 -mt-6">
+                    <div className="h-10 w-10 overflow-hidden rounded-full ring-2 ring-white bg-pink-100 shrink-0">
+                      {u.avatar_url ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img src={u.avatar_url} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-sm text-pink-400">
+                          {(u.display_name ?? "?")[0]}
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0 pt-6">
+                      <p className="truncate text-sm font-semibold text-gray-900 group-hover:text-pink-500">
+                        {u.display_name ?? `用户${u.user_id.slice(0, 6)}`}
+                      </p>
+                    </div>
+                  </div>
+                  {u.bio && (
+                    <p className="mt-1.5 line-clamp-1 text-xs text-gray-400">{u.bio}</p>
+                  )}
+                  <p className="mt-1 text-xs text-gray-300">{u.cabinet_views} 次浏览</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* 最新收录 */}
       <section className="mx-auto max-w-6xl px-4 pb-12">
         <div className="mb-8 flex items-center justify-between">
@@ -185,16 +243,21 @@ export default async function HomePage() {
 
         {items.length > 0 ? (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-            {items.slice(0, 8).map((item) => (
-              <ItemCard
-                key={item.id}
-                item={item}
-                submitterName={submitterNames.get(item.submitter_id ?? "")}
-                showCollectButton={!!user}
-                collected={collectedIds.has(item.id)}
-                onCollect={collectItem}
-              />
-            ))}
+            {items.slice(0, 8).map((item) => {
+              const info = submitterInfos.get(item.submitter_id ?? "");
+              return (
+                <ItemCard
+                  key={item.id}
+                  item={item}
+                  submitterName={info?.displayName}
+                  submitterId={item.submitter_id ?? undefined}
+                  submitterAvatar={info?.avatarUrl}
+                  showCollectButton={!!user}
+                  collected={collectedIds.has(item.id)}
+                  onCollect={collectItem}
+                />
+              );
+            })}
           </div>
         ) : (
           <div className="rounded-3xl bg-white p-12 text-center shadow-sm">
