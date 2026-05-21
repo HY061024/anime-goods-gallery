@@ -57,7 +57,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
         <Link href="/" className="text-sm font-medium text-pink-500 transition hover:text-pink-600">
           ← 返回首页
         </Link>
-        <h1 className="mt-3 text-3xl font-bold text-gray-900">谷子图鉴</h1>
+        <h1 className="mt-3 text-3xl font-bold text-gray-900">照影图鉴</h1>
         <p className="mt-2 text-gray-500">按 IP（作品）、角色或分类浏览所有二次元周边</p>
       </div>
 

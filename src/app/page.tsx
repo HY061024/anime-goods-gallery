@@ -38,11 +38,11 @@ export default async function HomePage() {
 
         <div className="relative mx-auto max-w-6xl px-4 py-16 md:py-24">
           <div className="text-center">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-pink-200">
-              Anime Goods Gallery
+            <p className="mb-3 text-sm font-semibold tracking-wider text-pink-200">
+              光影之间，留下你的收藏记忆
             </p>
             <h1 className="mb-4 text-4xl font-extrabold text-white md:text-5xl">
-              二次元周边图鉴
+              照影
             </h1>
             <p className="mx-auto mb-10 max-w-xl text-lg text-pink-100">
               按 IP（作品）、角色自由浏览，支持关键字搜索，找到你喜欢的周边

@@ -10,6 +10,10 @@ type ItemRow = {
   id: number;
   imageFile: File | null;
   preview: string | null;
+  officialImageFile: File | null;
+  officialPreview: string | null;
+  realImageFile: File | null;
+  realPreview: string | null;
   title: string;
   work: string;
   character: string;
@@ -25,6 +29,10 @@ function createRow(): ItemRow {
     id: nextId++,
     imageFile: null,
     preview: null,
+    officialImageFile: null,
+    officialPreview: null,
+    realImageFile: null,
+    realPreview: null,
     title: "",
     work: "",
     character: "",
@@ -59,16 +67,32 @@ export default function BatchItemForm({
   const [result, setResult] = useState<{ successCount: number; errors?: string[] } | null>(null);
   const router = useRouter();
 
-  function handleFileChange(rowId: number, file: File | null) {
+  function handleFileChange(rowId: number, type: "official" | "real" | "old", file: File | null) {
     setRows((prev) =>
       prev.map((r) => {
         if (r.id !== rowId) return r;
-        if (r.preview) URL.revokeObjectURL(r.preview);
-        return {
-          ...r,
-          imageFile: file,
-          preview: file ? URL.createObjectURL(file) : null,
-        };
+        if (type === "official") {
+          if (r.officialPreview) URL.revokeObjectURL(r.officialPreview);
+          return {
+            ...r,
+            officialImageFile: file,
+            officialPreview: file ? URL.createObjectURL(file) : null,
+          };
+        } else if (type === "real") {
+          if (r.realPreview) URL.revokeObjectURL(r.realPreview);
+          return {
+            ...r,
+            realImageFile: file,
+            realPreview: file ? URL.createObjectURL(file) : null,
+          };
+        } else {
+          if (r.preview) URL.revokeObjectURL(r.preview);
+          return {
+            ...r,
+            imageFile: file,
+            preview: file ? URL.createObjectURL(file) : null,
+          };
+        }
       })
     );
   }
@@ -88,8 +112,33 @@ export default function BatchItemForm({
       if (prev.length <= 1) return prev;
       const row = prev.find((r) => r.id === rowId);
       if (row?.preview) URL.revokeObjectURL(row.preview);
+      if (row?.officialPreview) URL.revokeObjectURL(row.officialPreview);
+      if (row?.realPreview) URL.revokeObjectURL(row.realPreview);
       return prev.filter((r) => r.id !== rowId);
     });
+  }
+
+  async function uploadAndGetUrl(file: File): Promise<string> {
+    const compressed = await compressImage(file);
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+
+    const supabase = createBrowserSupabase();
+    const { error: uploadError } = await supabase.storage
+      .from("goods")
+      .upload(fileName, compressed, {
+        contentType: "image/jpeg",
+        upsert: false,
+      });
+
+    if (uploadError) {
+      throw new Error(uploadError.message);
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("goods")
+      .getPublicUrl(fileName);
+
+    return urlData.publicUrl;
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -102,7 +151,6 @@ export default function BatchItemForm({
     fd.set("work", sharedWork);
     fd.set("character", sharedCharacter);
 
-    let hasFile = false;
     for (let i = 0; i < rows.length; i++) {
       const r = rows[i];
       fd.set(`title_${i}`, r.title);
@@ -111,36 +159,57 @@ export default function BatchItemForm({
       fd.set(`category_${i}`, r.category);
       fd.set(`price_${i}`, r.price);
       if (r.description) fd.set(`description_${i}`, r.description);
+
+      // 旧版图片
       if (r.imageFile && r.imageFile.size > 0) {
-        setError(`正在处理第 ${i + 1} 件图片…`);
-        const compressed = await compressImage(r.imageFile);
-        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${i}.jpg`;
-
-        const supabase = createBrowserSupabase();
-        const { error: uploadError } = await supabase.storage
-          .from("goods")
-          .upload(fileName, compressed, {
-            contentType: "image/jpeg",
-            upsert: false,
-          });
-
-        if (uploadError) {
-          setError(`第 ${i + 1} 件图片上传失败: ${uploadError.message}`);
+        try {
+          setError(`正在处理第 ${i + 1} 件图片…`);
+          const url = await uploadAndGetUrl(r.imageFile);
+          fd.set(`imageUrl_${i}`, url);
+        } catch (e) {
+          setError(`第 ${i + 1} 件图片上传失败: ${e instanceof Error ? e.message : "未知错误"}`);
           setSubmitting(false);
           return;
         }
+      }
 
-        const { data: urlData } = supabase.storage
-          .from("goods")
-          .getPublicUrl(fileName);
+      // 官图
+      if (r.officialImageFile && r.officialImageFile.size > 0) {
+        try {
+          setError(`正在处理第 ${i + 1} 件官图…`);
+          const url = await uploadAndGetUrl(r.officialImageFile);
+          fd.set(`officialImageUrl_${i}`, url);
+        } catch (e) {
+          setError(`第 ${i + 1} 件官图上传失败: ${e instanceof Error ? e.message : "未知错误"}`);
+          setSubmitting(false);
+          return;
+        }
+      }
 
-        fd.set(`imageUrl_${i}`, urlData.publicUrl);
-        hasFile = true;
+      // 实物图
+      if (r.realImageFile && r.realImageFile.size > 0) {
+        try {
+          setError(`正在处理第 ${i + 1} 件实物图…`);
+          const url = await uploadAndGetUrl(r.realImageFile);
+          fd.set(`realImageUrl_${i}`, url);
+        } catch (e) {
+          setError(`第 ${i + 1} 件实物图上传失败: ${e instanceof Error ? e.message : "未知错误"}`);
+          setSubmitting(false);
+          return;
+        }
       }
     }
 
-    if (!hasFile && !cabinet) {
-      setError("请至少为一个商品上传图片");
+    // 检查至少有一个商品有图片
+    let hasAnyImage = false;
+    for (let i = 0; i < rows.length; i++) {
+      if (fd.get(`imageUrl_${i}`) || fd.get(`officialImageUrl_${i}`) || fd.get(`realImageUrl_${i}`)) {
+        hasAnyImage = true;
+        break;
+      }
+    }
+    if (!hasAnyImage && !cabinet) {
+      setError("请至少为一件商品上传官图或实物图");
       setSubmitting(false);
       return;
     }
@@ -191,7 +260,7 @@ export default function BatchItemForm({
     <div className="mx-auto max-w-2xl px-4 py-8">
       <h1 className="mb-2 text-3xl font-bold text-gray-900">{title}</h1>
       <p className="mb-8 text-gray-500">
-        一次上传多件周边，共用作品和角色信息，每件可单独设置图片、标题、分类和价格
+        一次上传多件周边，共用作品和角色信息，每件可单独设置官图、实物图、标题、分类和价格
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -235,19 +304,20 @@ export default function BatchItemForm({
             </div>
 
             <div className="space-y-3">
-              {/* 图片上传 */}
+              {/* 官图上传 */}
               <div>
-                {row.preview ? (
+                <p className="mb-1 text-xs font-medium text-blue-600">官图（选填）</p>
+                {row.officialPreview ? (
                   <div className="relative mx-auto w-full max-w-[200px]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={row.preview}
-                      alt="预览"
-                      className="aspect-square w-full rounded-xl object-cover ring-1 ring-gray-200"
+                      src={row.officialPreview}
+                      alt="官图预览"
+                      className="aspect-square w-full rounded-xl object-cover ring-1 ring-blue-200"
                     />
                     <button
                       type="button"
-                      onClick={() => handleFileChange(row.id, null)}
+                      onClick={() => handleFileChange(row.id, "official", null)}
                       className="absolute -top-2 -right-2 rounded-full bg-white p-1 text-gray-400 shadow ring-1 ring-gray-200 hover:text-red-500"
                     >
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -256,15 +326,52 @@ export default function BatchItemForm({
                     </button>
                   </div>
                 ) : (
-                  <label className="flex cursor-pointer flex-col items-center gap-1 rounded-xl border-2 border-dashed border-gray-300 py-8 transition hover:border-pink-300 hover:bg-pink-50/50">
-                    <svg className="h-6 w-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <label className="flex cursor-pointer flex-col items-center gap-1 rounded-xl border-2 border-dashed border-blue-200 py-4 transition hover:border-blue-400 hover:bg-blue-50/50">
+                    <svg className="h-5 w-5 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
                     </svg>
-                    <span className="text-xs text-gray-400">点击上传图片</span>
+                    <span className="text-xs text-blue-400">点击上传官图</span>
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={(e) => handleFileChange(row.id, e.target.files?.[0] ?? null)}
+                      onChange={(e) => handleFileChange(row.id, "official", e.target.files?.[0] ?? null)}
+                      className="hidden"
+                    />
+                  </label>
+                )}
+              </div>
+
+              {/* 实物图上传 */}
+              <div>
+                <p className="mb-1 text-xs font-medium text-green-600">实物图（选填）</p>
+                {row.realPreview ? (
+                  <div className="relative mx-auto w-full max-w-[200px]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={row.realPreview}
+                      alt="实物图预览"
+                      className="aspect-square w-full rounded-xl object-cover ring-1 ring-green-200"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleFileChange(row.id, "real", null)}
+                      className="absolute -top-2 -right-2 rounded-full bg-white p-1 text-gray-400 shadow ring-1 ring-gray-200 hover:text-red-500"
+                    >
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex cursor-pointer flex-col items-center gap-1 rounded-xl border-2 border-dashed border-green-200 py-4 transition hover:border-green-400 hover:bg-green-50/50">
+                    <svg className="h-5 w-5 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span className="text-xs text-green-400">点击上传实物图</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleFileChange(row.id, "real", e.target.files?.[0] ?? null)}
                       className="hidden"
                     />
                   </label>
@@ -357,6 +464,10 @@ export default function BatchItemForm({
         {error && (
           <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-500">{error}</p>
         )}
+
+        <p className="text-xs text-gray-400 text-center">
+          每件商品至少需要上传官图或实物图中的一种
+        </p>
 
         <button
           type="submit"

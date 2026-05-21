@@ -51,6 +51,8 @@ async function batchSave(
     const imageName = (formData.get(`image_${i}`) as string)?.trim() ?? "";
     const imageFile = formData.get(`imageFile_${i}`) as File | null;
     const imageUrl = (formData.get(`imageUrl_${i}`) as string)?.trim() || undefined;
+    const officialImageUrl = (formData.get(`officialImageUrl_${i}`) as string)?.trim() || undefined;
+    const realImageUrl = (formData.get(`realImageUrl_${i}`) as string)?.trim() || undefined;
 
     if (!title) {
       errors.push(`第 ${i + 1} 个商品缺少标题`);
@@ -70,6 +72,8 @@ async function batchSave(
         imageUrl,
         userId,
         visibility,
+        officialImageUrl,
+        realImageUrl,
       },
       pending
     );

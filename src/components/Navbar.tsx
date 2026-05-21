@@ -25,10 +25,10 @@ export default function Navbar({
           href="/"
           className="flex items-center gap-2 font-bold text-xl text-gray-900"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-pink-500 text-white text-sm">
-            周边
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-pink-500 text-white text-sm font-bold">
+            照影
           </span>
-          二次元图鉴
+          照影
         </Link>
 
         {/* 用户区域 */}

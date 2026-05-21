@@ -44,6 +44,9 @@ export async function uploadToCabinet(formData: FormData) {
   if (!user) return { error: "请先登录" };
 
   const imageFile = formData.get("imageFile") as File | null;
+  const imageUrl = (formData.get("imageUrl") as string)?.trim() || undefined;
+  const officialImageUrl = (formData.get("officialImageUrl") as string)?.trim() || undefined;
+  const realImageUrl = (formData.get("realImageUrl") as string)?.trim() || undefined;
 
   const result = await saveItem(
     {
@@ -55,8 +58,11 @@ export async function uploadToCabinet(formData: FormData) {
       description: (formData.get("description") as string)?.trim() ?? "",
       imageName: (formData.get("image") as string)?.trim() ?? "",
       imageFile: imageFile && imageFile.size > 0 ? imageFile : null,
+      imageUrl,
       userId: user.id,
       visibility: "private",
+      officialImageUrl,
+      realImageUrl,
     },
     false // pending=false，无需审核
   );

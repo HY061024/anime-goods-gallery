@@ -10,6 +10,8 @@ export async function createItem(formData: FormData) {
 
     const imageFile = formData.get("imageFile") as File | null;
     const imageUrl = (formData.get("imageUrl") as string)?.trim() || undefined;
+    const officialImageUrl = (formData.get("officialImageUrl") as string)?.trim() || undefined;
+    const realImageUrl = (formData.get("realImageUrl") as string)?.trim() || undefined;
 
     const result = await saveItem({
       title: (formData.get("title") as string)?.trim() ?? "",
@@ -21,6 +23,8 @@ export async function createItem(formData: FormData) {
       imageName: (formData.get("image") as string)?.trim() ?? "",
       imageFile: imageFile && imageFile.size > 0 ? imageFile : null,
       imageUrl,
+      officialImageUrl,
+      realImageUrl,
     });
 
     if ("error" in result) return { error: result.error };

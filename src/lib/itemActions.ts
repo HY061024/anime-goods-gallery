@@ -13,6 +13,9 @@ export type SaveItemInput = {
   imageUrl?: string;
   userId?: string;
   visibility?: 'public' | 'private';
+  // 新增：官图和实物图
+  officialImageUrl?: string;
+  realImageUrl?: string;
 };
 
 export type SaveItemResult = { success: number } | { error: string };
@@ -44,6 +47,10 @@ async function doSaveItem(
   if (!category) return { error: "[验证] 请选择分类" };
   if (!price || price <= 0) return { error: "[验证] 请填写有效价格" };
 
+  // 图片验证：需要提供旧版图片 或 官图 或 实物图，至少一种
+  const hasOfficial = input.officialImageUrl && input.officialImageUrl.trim();
+  const hasReal = input.realImageUrl && input.realImageUrl.trim();
+
   let imagePath = "";
 
   if (imageFile && imageFile.size > 0) {
@@ -73,11 +80,15 @@ async function doSaveItem(
     imagePath = input.imageUrl;
   } else if (imageName) {
     imagePath = `/goods/${imageName}`;
-  } else {
-    return { error: "[验证] 请上传图片或填写图片文件名" };
+  }
+
+  // 校验：新图或旧图至少有一种
+  if (!hasOfficial && !hasReal && !imagePath) {
+    return { error: "[验证] 请至少上传官图或实物图中的一种" };
   }
 
   const finalDescription = pending ? `${PENDING_MARKER}${description}` : description;
+  const now = new Date().toISOString();
 
   const insertData: Record<string, unknown> = {
     title,
@@ -86,8 +97,30 @@ async function doSaveItem(
     category,
     price,
     description: finalDescription,
-    image: imagePath,
   };
+
+  // 旧版图片兼容
+  if (imagePath) {
+    insertData.image = imagePath;
+  }
+
+  // 新图字段
+  if (hasOfficial) {
+    insertData.official_image_url = input.officialImageUrl!.trim();
+    if (input.userId) {
+      insertData.official_image_submitter_id = input.userId;
+    }
+    insertData.official_image_created_at = now;
+  }
+
+  if (hasReal) {
+    insertData.real_image_url = input.realImageUrl!.trim();
+    if (input.userId) {
+      insertData.real_image_submitter_id = input.userId;
+    }
+    insertData.real_image_created_at = now;
+  }
+
   if (input.userId) {
     insertData.submitter_id = input.userId;
   }

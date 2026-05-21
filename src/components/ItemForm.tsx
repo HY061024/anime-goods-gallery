@@ -19,14 +19,43 @@ export default function ItemForm({ action, title, description, submitLabel, cate
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [statusText, setStatusText] = useState("");
-  const [preview, setPreview] = useState<string | null>(null);
+  const [officialPreview, setOfficialPreview] = useState<string | null>(null);
+  const [realPreview, setRealPreview] = useState<string | null>(null);
   const router = useRouter();
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleFileChange(type: "official" | "real", e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (preview) URL.revokeObjectURL(preview);
-    setPreview(URL.createObjectURL(file));
+    if (type === "official") {
+      if (officialPreview) URL.revokeObjectURL(officialPreview);
+      setOfficialPreview(URL.createObjectURL(file));
+    } else {
+      if (realPreview) URL.revokeObjectURL(realPreview);
+      setRealPreview(URL.createObjectURL(file));
+    }
+  }
+
+  async function uploadAndGetUrl(file: File): Promise<string> {
+    const compressed = await compressImage(file);
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+
+    const supabase = createBrowserSupabase();
+    const { error: uploadError } = await supabase.storage
+      .from("goods")
+      .upload(fileName, compressed, {
+        contentType: "image/jpeg",
+        upsert: false,
+      });
+
+    if (uploadError) {
+      throw new Error(`[Storage上传] ${uploadError.message}`);
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("goods")
+      .getPublicUrl(fileName);
+
+    return urlData.publicUrl;
   }
 
   async function handleSubmit(formData: FormData) {
@@ -34,32 +63,40 @@ export default function ItemForm({ action, title, description, submitLabel, cate
     setStatusText("");
     setSubmitting(true);
     try {
-      const file = formData.get("imageFile") as File | null;
-      if (file && file.size > 0) {
-        setStatusText("压缩图片中…");
-        const compressed = await compressImage(file);
+      const officialFile = formData.get("officialImageFile") as File | null;
+      const realFile = formData.get("realImageFile") as File | null;
+
+      // 至少上传一种图片的校验
+      const hasOfficial = officialFile && officialFile.size > 0;
+      const hasReal = realFile && realFile.size > 0;
+      if (!hasOfficial && !hasReal) {
+        setError("请至少上传官图或实物图中的一种");
+        setSubmitting(false);
+        return;
+      }
+
+      // 上传官图
+      if (hasOfficial) {
+        setStatusText("上传官图中…");
+        const url = await uploadAndGetUrl(officialFile!);
+        formData.set("officialImageUrl", url);
+        formData.delete("officialImageFile");
+      }
+
+      // 上传实物图
+      if (hasReal) {
+        setStatusText("上传实物图中…");
+        const url = await uploadAndGetUrl(realFile!);
+        formData.set("realImageUrl", url);
+        formData.delete("realImageFile");
+      }
+
+      // 兼容旧的单图上传（管理员新增页可能还在用）
+      const oldFile = formData.get("imageFile") as File | null;
+      if (oldFile && oldFile.size > 0) {
         setStatusText("上传图片中…");
-        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
-
-        const supabase = createBrowserSupabase();
-        const { error: uploadError } = await supabase.storage
-          .from("goods")
-          .upload(fileName, compressed, {
-            contentType: "image/jpeg",
-            upsert: false,
-          });
-
-        if (uploadError) {
-          setError(`[Storage上传] ${uploadError.message}`);
-          setSubmitting(false);
-          return;
-        }
-
-        const { data: urlData } = supabase.storage
-          .from("goods")
-          .getPublicUrl(fileName);
-
-        formData.set("imageUrl", urlData.publicUrl);
+        const url = await uploadAndGetUrl(oldFile);
+        formData.set("imageUrl", url);
         formData.delete("imageFile");
       }
 
@@ -153,35 +190,61 @@ export default function ItemForm({ action, title, description, submitLabel, cate
           />
         </Field>
 
-        <Field label="上传图片">
-          <input
-            type="file"
-            name="imageFile"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="w-full text-sm text-gray-700 file:mr-4 file:rounded-xl file:border-0 file:bg-pink-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-pink-600 hover:file:bg-pink-100"
-          />
-          {preview && (
-            <div className="mt-3 overflow-hidden rounded-xl border border-gray-200">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={preview}
-                alt="预览"
-                className="aspect-square w-full max-w-xs object-cover"
-              />
-            </div>
-          )}
-          <p className="mt-1.5 text-xs text-gray-400">
-            从手机或电脑选择图片，自动上传到云端存储
-          </p>
-        </Field>
+        {/* 官图上传 */}
+        <div className="rounded-2xl border-2 border-dashed border-blue-200 bg-blue-50/30 p-5">
+          <Field label="官方图（选填）">
+            <input
+              type="file"
+              name="officialImageFile"
+              accept="image/*"
+              onChange={(e) => handleFileChange("official", e)}
+              className="w-full text-sm text-gray-700 file:mr-4 file:rounded-xl file:border-0 file:bg-blue-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-600 hover:file:bg-blue-200"
+            />
+            {officialPreview && (
+              <div className="mt-3 overflow-hidden rounded-xl border border-gray-200">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={officialPreview}
+                  alt="官图预览"
+                  className="aspect-square w-full max-w-xs object-cover"
+                />
+              </div>
+            )}
+            <p className="mt-1.5 text-xs text-blue-500">
+              商品官方图、宣传图、官方展示图
+            </p>
+          </Field>
+        </div>
 
-        <Field label="或填写图片文件名">
-          <Input name="image" placeholder="例如：miku_16th.jpg（图片已放入 public/goods/）" />
-          <p className="mt-1.5 text-xs text-gray-400">
-            如果已通过电脑把图片放入 public/goods/ 目录，可在此填写。上传了图片则忽略此项
-          </p>
-        </Field>
+        {/* 实物图上传 */}
+        <div className="rounded-2xl border-2 border-dashed border-green-200 bg-green-50/30 p-5">
+          <Field label="实物图（选填）">
+            <input
+              type="file"
+              name="realImageFile"
+              accept="image/*"
+              onChange={(e) => handleFileChange("real", e)}
+              className="w-full text-sm text-gray-700 file:mr-4 file:rounded-xl file:border-0 file:bg-green-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-green-600 hover:file:bg-green-200"
+            />
+            {realPreview && (
+              <div className="mt-3 overflow-hidden rounded-xl border border-gray-200">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={realPreview}
+                  alt="实物图预览"
+                  className="aspect-square w-full max-w-xs object-cover"
+                />
+              </div>
+            )}
+            <p className="mt-1.5 text-xs text-green-600">
+              实际拍摄的实物图、到货图、摆拍图
+            </p>
+          </Field>
+        </div>
+
+        <p className="text-xs text-gray-400 text-center">
+          至少需要上传官图或实物图中的一种
+        </p>
 
         {error && (
           <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-500">

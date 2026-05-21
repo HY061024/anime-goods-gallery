@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import type { Item } from "@/data/items";
+import { getItemMainImage } from "@/data/items";
 
 function relativeTime(dateStr: string) {
   const now = Date.now();
@@ -42,7 +43,7 @@ export default function ItemCard({
         {/* 图片区域 */}
         <div className="relative aspect-square overflow-hidden bg-gray-100">
           <img
-            src={item.image}
+            src={getItemMainImage(item)}
             alt={item.title}
             className="h-full w-full object-cover transition group-hover:scale-105"
             loading="lazy"
@@ -52,6 +53,17 @@ export default function ItemCard({
           <span className="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium text-pink-500 shadow-sm backdrop-blur-sm">
             {item.category}
           </span>
+
+          {/* 图片类型标签 */}
+          {item.real_image_url ? (
+            <span className="absolute left-2 bottom-2 rounded-full bg-green-500/85 px-1.5 py-0.5 text-[10px] font-medium text-white shadow-sm backdrop-blur-sm">
+              实拍
+            </span>
+          ) : item.official_image_url ? (
+            <span className="absolute left-2 bottom-2 rounded-full bg-blue-500/85 px-1.5 py-0.5 text-[10px] font-medium text-white shadow-sm backdrop-blur-sm">
+              官图
+            </span>
+          ) : null}
 
           {/* 价格标签 */}
           <span className="absolute bottom-2 right-2 rounded-full bg-gray-900/80 px-2.5 py-1 text-sm font-bold text-white backdrop-blur-sm">

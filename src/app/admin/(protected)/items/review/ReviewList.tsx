@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useState, useTransition } from "react";
 import type { Item } from "@/data/items";
+import { getItemMainImage } from "@/data/items";
 import {
   approveItem,
   rejectItem,
@@ -174,7 +175,7 @@ export default function ReviewList({
               >
                 <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-gray-100">
                   <img
-                    src={item.image}
+                    src={getItemMainImage(item)}
                     alt={item.title}
                     className="h-full w-full object-cover"
                   />
@@ -224,10 +225,24 @@ export default function ReviewList({
                   {/* Larger image */}
                   <div className="mb-4 flex justify-center">
                     <img
-                      src={item.image}
+                      src={getItemMainImage(item)}
                       alt={item.title}
                       className="h-48 w-48 rounded-xl object-cover ring-1 ring-gray-200"
                     />
+                  </div>
+
+                  {/* 图片类型标签 */}
+                  <div className="mb-3 flex items-center gap-2 text-xs">
+                    {item.real_image_url ? (
+                      <span className="rounded-full bg-green-100 px-2 py-0.5 text-green-700">有实物图</span>
+                    ) : (
+                      <span className="rounded-full bg-gray-100 px-2 py-0.5 text-gray-400">待补充实物图</span>
+                    )}
+                    {item.official_image_url ? (
+                      <span className="rounded-full bg-blue-100 px-2 py-0.5 text-blue-700">有官图</span>
+                    ) : (
+                      <span className="rounded-full bg-gray-100 px-2 py-0.5 text-gray-400">待补充官图</span>
+                    )}
                   </div>
 
                   {/* Detail grid */}

@@ -8,6 +8,7 @@ import { getSubmitterInfos } from "@/lib/profiles";
 import { isInCollection } from "@/lib/collections";
 import DeleteRequestButton from "./DeleteRequestButton";
 import CollectButton from "./CollectButton";
+import SupplementImageButton from "./SupplementImageButton";
 
 type ItemDetailPageProps = {
   params: Promise<{ id: string }>;
@@ -38,13 +39,28 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
   const { data: { user } } = await supabase.auth.getUser();
 
   const submitterId = item.submitter_id ?? "";
+  const officialSubmitterId = item.official_image_submitter_id ?? "";
+  const realSubmitterId = item.real_image_submitter_id ?? "";
+
+  // 收集所有需要查询 profile 的用户 ID
+  const allSubmitterIds = [submitterId, officialSubmitterId, realSubmitterId].filter(Boolean);
+
   const [submitterInfos, collected] = await Promise.all([
-    submitterId ? getSubmitterInfos([submitterId]) : Promise.resolve(new Map()),
+    allSubmitterIds.length > 0 ? getSubmitterInfos(allSubmitterIds) : Promise.resolve(new Map()),
     user ? isInCollection(user.id, item.id) : Promise.resolve(false),
   ]);
 
   const submitterInfo = submitterInfos.get(submitterId);
   const submitterName = submitterInfo?.displayName;
+
+  const officialSubmitterInfo = submitterInfos.get(officialSubmitterId);
+  const realSubmitterInfo = submitterInfos.get(realSubmitterId);
+
+  const officialSubmitterName = officialSubmitterInfo?.displayName ?? (officialSubmitterId ? `用户${officialSubmitterId.slice(0, 6)}` : null);
+  const realSubmitterName = realSubmitterInfo?.displayName ?? (realSubmitterId ? `用户${realSubmitterId.slice(0, 6)}` : null);
+
+  const hasOfficial = !!item.official_image_url;
+  const hasReal = !!item.real_image_url;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
@@ -53,13 +69,43 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
       </Link>
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[480px_1fr]">
-        {/* 左侧图片 */}
-        <div className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-gray-100">
-          <img
-            src={item.image}
-            alt={item.title}
-            className="aspect-square w-full object-cover"
+        {/* 左侧：图片区域 */}
+        <div className="space-y-4">
+          {/* 实物图 */}
+          <ImageSection
+            label="实物图"
+            imageUrl={item.real_image_url}
+            submitterName={realSubmitterName}
+            submitterId={realSubmitterId}
+            submitterAvatar={realSubmitterInfo?.avatarUrl}
+            createdAt={item.real_image_created_at}
+            emptyText="暂无实物图，欢迎补充"
+            accentColor="green"
           />
+
+          {/* 官图 */}
+          <ImageSection
+            label="官图"
+            imageUrl={item.official_image_url}
+            submitterName={officialSubmitterName}
+            submitterId={officialSubmitterId}
+            submitterAvatar={officialSubmitterInfo?.avatarUrl}
+            createdAt={item.official_image_created_at}
+            emptyText="暂无官图，欢迎补充"
+            accentColor="blue"
+          />
+
+          {/* 兼容旧图片：只有当新字段都为空时才显示旧 image */}
+          {!hasOfficial && !hasReal && item.image && (
+            <div className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-gray-100">
+              <img
+                src={item.image}
+                alt={item.title}
+                className="aspect-square w-full object-cover"
+              />
+              <p className="px-4 py-2 text-xs text-gray-400">旧版图片（迁移中）</p>
+            </div>
+          )}
         </div>
 
         {/* 右侧信息 */}
@@ -79,7 +125,7 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
             <span className="rounded-lg bg-gray-100 px-2 py-0.5 text-sm">{item.character}</span>
           </div>
 
-          {/* 提交者信息 */}
+          {/* 条目提交者信息 */}
           {submitterId ? (
             <Link
               href={`/users/${submitterId}`}
@@ -136,6 +182,29 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
           <div className="mt-8 border-t border-gray-100 pt-6">
             <DeleteRequestButton itemId={item.id} />
           </div>
+
+          {/* 补充图片入口 */}
+          {user && (!hasOfficial || !hasReal) && (
+            <div className="mt-6 border-t border-gray-100 pt-6">
+              <h3 className="mb-3 text-sm font-semibold text-gray-700">补充图片</h3>
+              <div className="flex flex-wrap gap-2">
+                {!hasOfficial && <SupplementImageButton itemId={item.id} type="official" />}
+                {!hasReal && <SupplementImageButton itemId={item.id} type="real" />}
+              </div>
+            </div>
+          )}
+          {user && hasOfficial && hasReal && (
+            <div className="mt-6 border-t border-gray-100 pt-6">
+              <p className="text-xs text-green-600 font-medium">图片已完整</p>
+            </div>
+          )}
+          {!user && (!hasOfficial || !hasReal) && (
+            <div className="mt-6 border-t border-gray-100 pt-6">
+              <p className="text-xs text-gray-400">
+                登录后可补充图鉴图片
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -150,3 +219,71 @@ function Info({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+function ImageSection({
+  label,
+  imageUrl,
+  submitterName,
+  submitterId,
+  submitterAvatar,
+  createdAt,
+  emptyText,
+  accentColor,
+}: {
+  label: string;
+  imageUrl?: string | null;
+  submitterName?: string | null;
+  submitterId?: string;
+  submitterAvatar?: string | null;
+  createdAt?: string | null;
+  emptyText: string;
+  accentColor: "green" | "blue";
+}) {
+  const borderColor = accentColor === "green" ? "ring-green-200" : "ring-blue-200";
+  const labelBg = accentColor === "green" ? "bg-green-500" : "bg-blue-500";
+
+  return (
+    <div className={`overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ${imageUrl ? ringGray : borderColor}`}>
+      {imageUrl ? (
+        <>
+          <img
+            src={imageUrl}
+            alt={label}
+            className="aspect-square w-full object-cover"
+          />
+          <div className="px-4 py-3 space-y-1">
+            <span className={`inline-block rounded-full ${labelBg} px-2 py-0.5 text-xs font-medium text-white`}>
+              {label}
+            </span>
+            {submitterName && (
+              <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                <span>图片由</span>
+                {submitterId ? (
+                  <Link href={`/users/${submitterId}`} className="flex items-center gap-1 hover:text-pink-500 transition-colors">
+                    {submitterAvatar && (
+                      <img src={submitterAvatar} alt="" className="h-4 w-4 rounded-full object-cover" />
+                    )}
+                    <span className="font-medium">{submitterName}</span>
+                  </Link>
+                ) : (
+                  <span className="font-medium">{submitterName}</span>
+                )}
+                <span>上传</span>
+                {createdAt && <span>· {relativeTime(createdAt)}</span>}
+              </div>
+            )}
+          </div>
+        </>
+      ) : (
+        <div className="flex aspect-square w-full flex-col items-center justify-center bg-gray-50 text-gray-400">
+          <svg className="h-10 w-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <p className="text-sm">{emptyText}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const ringGray = "ring-gray-100";

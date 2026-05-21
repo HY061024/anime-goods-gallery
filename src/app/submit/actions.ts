@@ -8,6 +8,8 @@ export async function submitItem(formData: FormData) {
   try {
     const imageFile = formData.get("imageFile") as File | null;
     const imageUrl = (formData.get("imageUrl") as string)?.trim() || undefined;
+    const officialImageUrl = (formData.get("officialImageUrl") as string)?.trim() || undefined;
+    const realImageUrl = (formData.get("realImageUrl") as string)?.trim() || undefined;
 
     const supabase = await createClient();
     const {
@@ -27,6 +29,8 @@ export async function submitItem(formData: FormData) {
         imageUrl,
         userId: user?.id,
         visibility: "public",
+        officialImageUrl,
+        realImageUrl,
       },
       true
     );

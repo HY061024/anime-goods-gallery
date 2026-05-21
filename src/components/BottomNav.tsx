@@ -46,7 +46,7 @@ export default function BottomNav({ userEmail, unreadMessages }: BottomNavProps)
           href="/"
           className="mt-4 flex h-10 w-10 items-center justify-center rounded-xl bg-pink-500 text-white text-xs font-bold"
         >
-          周边
+          照影
         </Link>
 
         {/* 三个 Tab（居中） */}

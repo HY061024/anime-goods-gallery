@@ -18,8 +18,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "二次元周边图鉴",
-  description: "收录手办、吧唧、亚克力、色纸、挂件等二次元周边",
+  title: "照影 - 二次元周边图鉴",
+  description: "照影 — 收录手办、吧唧、亚克力、色纸、挂件等二次元周边，光影之间，留下你的收藏记忆",
 };
 
 export default async function RootLayout({
