@@ -85,6 +85,10 @@ public/goods/
 - 2026-05-18: 图片上传改为浏览器直传 Supabase Storage — 绕过 Vercel Hobby 计划 4.5MB 请求体限制。supabaseBrowser.ts 使用 @supabase/ssr createBrowserClient 携带用户登录会话通过 Storage RLS
 - 2026-05-18: 添加图片压缩 — compressImage.ts，上传前在浏览器端将图片最长边缩至 1920px、转 JPEG 质量 0.8，手机照片从 10MB 降到 ~300KB，解决慢和 "Failed to fetch" 问题
 - 2026-05-19: 完善"别人痛柜 + 加好友"闭环 — 新增痛柜广场页 /cabinets，商品卡片/详情页上传者头像昵称可点击进入主页，FriendButton 覆盖全部8种状态（已发送/收到申请/接受/拒绝/取消/发消息），好友列表页加入 Tab 切换，/users/[userId] 已是好友时显示"发消息"按钮，首页增加痛柜广场推广区块，profiles.ts 新增 getSubmitterInfos/getPublicCabinetUsers，friends.ts 新增 getFriendshipDetails/cancelFriendRequest
+- 2026-05-21: 网站品牌重命名 "照影" — 5 处文字更新（layout metadata、Navbar Logo、BottomNav sidebar Logo、首页 Hero、图鉴标题）
+- 2026-05-21: 图片结构升级 — 新增 official_image_url（官图）和 real_image_url（实物图），修改 items 表 + 6 个表单/组件 + SupplementImageButton + getItemMainImage 辅助函数，保持向后兼容
+- 2026-05-21: 修复 ProfileCard "换背景" 按钮无响应 — 三个迭代后使用 label+htmlFor 模式（Safari 兼容），头像和背景各自独立状态
+- 2026-05-23: 新增照影灵感社区 — 4 张数据库表（inspiration_posts/comments/likes/favorites）+ RLS，类型定义(data/inspiration.ts)，CRUD 库(lib/inspiration.ts, lib/inspirationComments.ts)，InspirationCard/CommentSection 组件，/inspiration /inspiration/new /inspiration/[id] 三个页面，BottomNav 新增"灵感" Tab，首页新增灵感推广模块
 
 ## 管理员路由结构
 

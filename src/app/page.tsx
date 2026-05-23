@@ -4,24 +4,29 @@ import { createClient } from "@/lib/supabaseServer";
 import { getSubmitterInfos, getPublicCabinetUsers } from "@/lib/profiles";
 import { getCollectedItemIds } from "@/lib/collections";
 import { getAllCategories } from "@/lib/categories";
+import { getInspirationPosts, getInspirationPostAuthors } from "@/lib/inspiration";
 import { collectItem } from "@/app/actions";
 import ItemCard from "@/components/ItemCard";
+import InspirationCard from "@/components/InspirationCard";
 
 export default async function HomePage() {
-  const [items, categories, popularWorks, popularCharacters, cabinetUsers, supabase] = await Promise.all([
+  const [items, categories, popularWorks, popularCharacters, cabinetUsers, inspirationPosts, supabase] = await Promise.all([
     searchItems(),
     getAllCategories(),
     getPopularWorks(8),
     getPopularCharacters(12),
     getPublicCabinetUsers(),
+    getInspirationPosts({ limit: 4 }),
     createClient(),
   ]);
   const { data: { user } } = await supabase.auth.getUser();
 
   const submitterIds = items.map((i) => i.submitter_id).filter(Boolean) as string[];
-  const [submitterInfos, collectedIds] = await Promise.all([
+  const inspirationAuthorIds = inspirationPosts.map((p) => p.user_id);
+  const [submitterInfos, collectedIds, inspirationAuthors] = await Promise.all([
     getSubmitterInfos(submitterIds),
     user ? getCollectedItemIds(user.id) : Promise.resolve(new Set<number>()),
+    getInspirationPostAuthors(inspirationAuthorIds),
   ]);
 
   const hotCategories = categories.slice(0, 8);
@@ -221,6 +226,34 @@ export default async function HomePage() {
                   <p className="mt-1 text-xs text-gray-300">{u.cabinet_views} 次浏览</p>
                 </div>
               </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 照影灵感 */}
+      {inspirationPosts.length > 0 && (
+        <section className="mx-auto max-w-6xl px-4 pb-12">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">照影灵感</h2>
+              <p className="mt-1 text-sm text-gray-500">二次元爱好者的灵感分享</p>
+            </div>
+            <Link
+              href="/inspiration"
+              className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-pink-500 shadow-sm transition hover:bg-pink-50"
+            >
+              查看全部 →
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {inspirationPosts.map((post) => (
+              <InspirationCard
+                key={post.id}
+                post={post}
+                authorName={inspirationAuthors.get(post.user_id)?.displayName}
+                authorAvatar={inspirationAuthors.get(post.user_id)?.avatarUrl}
+              />
             ))}
           </div>
         </section>
