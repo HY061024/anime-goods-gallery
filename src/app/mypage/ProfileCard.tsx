@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { useState, useRef, useTransition } from "react";
+import { useState, useTransition } from "react";
 import type { Profile, ProfileUpdates } from "@/lib/profiles";
 import { updateProfile } from "@/lib/profiles";
 import { uploadProfileImage } from "@/lib/uploadAvatar";
@@ -20,7 +20,6 @@ export default function ProfileCard({
   const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url ?? "");
   const [bannerUrl, setBannerUrl] = useState(profile.banner_url ?? "");
 
-  // 上传状态
   const [avatarStatus, setAvatarStatus] = useState<"idle" | "uploading" | "done" | "error">("idle");
   const [avatarError, setAvatarError] = useState("");
   const [bannerStatus, setBannerStatus] = useState<"idle" | "uploading" | "done" | "error">("idle");
@@ -28,12 +27,9 @@ export default function ProfileCard({
 
   const [isPending, startTransition] = useTransition();
 
-  // ref 用于手动触发 file input
-  const avatarInputRef = useRef<HTMLInputElement>(null);
-  const bannerInputRef = useRef<HTMLInputElement>(null);
-
   async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
+    console.log("handleAvatarChange 执行了", file);
     if (!file) return;
     setAvatarStatus("uploading");
     setAvatarError("");
@@ -54,21 +50,25 @@ export default function ProfileCard({
       setAvatarStatus("error");
       setAvatarError(e instanceof Error ? e.message : "上传失败");
     }
-    // 重置 input 以便再次选择同一文件
-    if (avatarInputRef.current) avatarInputRef.current.value = "";
   }
 
   async function handleBannerChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (!file) return;
+    console.log("handleBannerChange 执行了", file);
+    if (!file) {
+      setBannerError("未选择文件");
+      return;
+    }
     setBannerStatus("uploading");
     setBannerError("");
     try {
       const compressed = await compressImage(file);
+      console.log("压缩完成，大小:", compressed.size);
       const fd = new FormData();
       fd.set("file", compressed);
       fd.set("path", `banners/${userId}.jpg`);
       const url = await uploadProfileImage(fd);
+      console.log("上传结果 URL:", url);
       if (url) {
         setBannerUrl(url);
         setBannerStatus("done");
@@ -80,7 +80,6 @@ export default function ProfileCard({
       setBannerStatus("error");
       setBannerError(e instanceof Error ? e.message : "上传失败");
     }
-    if (bannerInputRef.current) bannerInputRef.current.value = "";
   }
 
   function save() {
@@ -113,29 +112,44 @@ export default function ProfileCard({
           <img src={bannerUrl} alt="" className="h-full w-full object-cover" />
         )}
         {editing && (
-          <div className="absolute bottom-2 right-2 flex items-center gap-1">
+          <div className="absolute bottom-2 right-2 z-10 flex items-center gap-1 flex-wrap">
             {bannerStatus === "uploading" && (
-              <span className="rounded-lg bg-white/80 px-2 py-1 text-xs text-pink-500">上传中…</span>
+              <span className="rounded-lg bg-white/90 px-2 py-1 text-xs text-pink-500 font-medium">正在上传…</span>
             )}
             {bannerStatus === "done" && (
-              <span className="rounded-lg bg-green-50 px-2 py-1 text-xs text-green-600">已上传</span>
+              <span className="rounded-lg bg-green-50 px-2 py-1 text-xs text-green-600 font-medium">上传成功</span>
             )}
             {bannerStatus === "error" && (
               <span className="rounded-lg bg-red-50 px-2 py-1 text-xs text-red-500">{bannerError}</span>
             )}
-            <button
-              type="button"
-              onClick={() => bannerInputRef.current?.click()}
-              className="cursor-pointer rounded-lg bg-white/80 px-2 py-1 text-xs text-gray-600 hover:bg-white"
+            <label
+              htmlFor="banner-upload-input"
+              className="cursor-pointer inline-flex items-center rounded-lg bg-white/90 px-2 py-1 text-xs font-medium text-gray-700 shadow-sm hover:bg-white"
+              onClick={() => {
+                console.log("换背景 label 被点击");
+              }}
             >
               换背景
-            </button>
+            </label>
             <input
-              ref={bannerInputRef}
+              id="banner-upload-input"
               type="file"
               accept="image/*"
-              className="hidden"
+              className="sr-only"
               onChange={handleBannerChange}
+              onClick={(e) => {
+                console.log("banner input 被点击");
+                // 允许重复选择同一文件
+                (e.target as HTMLInputElement).value = "";
+              }}
+            />
+            {/* 调试用可见 input */}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleBannerChange}
+              className="text-[10px] text-gray-400 w-24"
+              title="调试：可见的文件选择"
             />
           </div>
         )}
@@ -156,24 +170,26 @@ export default function ProfileCard({
             </div>
             {editing && (
               <>
-                <button
-                  type="button"
-                  onClick={() => avatarInputRef.current?.click()}
-                  className="absolute bottom-0 right-0 cursor-pointer rounded-full bg-pink-500 p-1 text-white hover:bg-pink-600"
+                <label
+                  htmlFor="avatar-upload-input"
+                  className="absolute bottom-0 right-0 z-10 cursor-pointer rounded-full bg-pink-500 p-1 text-white hover:bg-pink-600"
                 >
                   <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
-                </button>
+                </label>
                 <input
-                  ref={avatarInputRef}
+                  id="avatar-upload-input"
                   type="file"
                   accept="image/*"
-                  className="hidden"
+                  className="sr-only"
                   onChange={handleAvatarChange}
+                  onClick={(e) => {
+                    (e.target as HTMLInputElement).value = "";
+                  }}
                 />
                 {avatarStatus === "uploading" && (
-                  <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] text-pink-500">
+                  <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] text-pink-500 font-medium">
                     上传中…
                   </span>
                 )}
@@ -221,6 +237,7 @@ export default function ProfileCard({
             {editing ? (
               <div className="flex gap-1">
                 <button
+                  type="button"
                   onClick={save}
                   disabled={isPending}
                   className="rounded-lg bg-pink-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-pink-600 disabled:opacity-50"
@@ -228,6 +245,7 @@ export default function ProfileCard({
                   保存
                 </button>
                 <button
+                  type="button"
                   onClick={() => setEditing(false)}
                   className="rounded-lg bg-gray-100 px-3 py-1.5 text-xs text-gray-500 hover:bg-gray-200"
                 >
@@ -236,6 +254,7 @@ export default function ProfileCard({
               </div>
             ) : (
               <button
+                type="button"
                 onClick={() => setEditing(true)}
                 className="rounded-lg bg-gray-100 px-3 py-1.5 text-xs text-gray-500 hover:bg-gray-200"
               >
