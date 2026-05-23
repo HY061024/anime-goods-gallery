@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Navbar from "@/components/Navbar";
 import BottomNav from "@/components/BottomNav";
 import Footer from "@/components/Footer";
 import { createClient } from "@/lib/supabaseServer";
@@ -18,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "照影 - 二次元周边图鉴",
-  description: "照影 — 收录手办、吧唧、亚克力、色纸、挂件等二次元周边，光影之间，留下你的收藏记忆",
+  title: "照影 - 二次元周边图鉴与同好灵感社区",
+  description: "照影 — 二次元周边图鉴与同好灵感社区，收录手办、吧唧、亚克力、色纸、挂件等周边，分享你的收藏记忆与灵感",
 };
 
 export default async function RootLayout({
@@ -47,11 +46,6 @@ export default async function RootLayout({
         <BottomNav
           userEmail={user?.email ?? null}
           unreadMessages={unreadMessages}
-        />
-        <Navbar
-          userEmail={user?.email ?? null}
-          unreadMessages={unreadMessages}
-          className="lg:hidden"
         />
         <main className="flex-1 lg:ml-[4.5rem] pb-14 lg:pb-0">
           {children}

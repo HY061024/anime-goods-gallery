@@ -7,9 +7,9 @@ export default function Footer({ className = "" }: { className?: string }) {
         <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
           {/* 左侧品牌 */}
           <div>
-            <p className="font-bold text-gray-900">二次元周边图鉴</p>
+            <p className="font-bold text-gray-900">照影</p>
             <p className="mt-1 text-sm text-gray-500">
-              收录手办、吧唧、亚克力、色纸、挂件等二次元周边
+              二次元周边图鉴与同好灵感社区
             </p>
           </div>
 
@@ -21,6 +21,9 @@ export default function Footer({ className = "" }: { className?: string }) {
             <Link href="/items" className="text-gray-500 transition hover:text-pink-500">
               商品搜索
             </Link>
+            <Link href="/inspiration" className="text-gray-500 transition hover:text-pink-500">
+              灵感
+            </Link>
             <Link href="/submit" className="text-gray-500 transition hover:text-pink-500">
               投稿
             </Link>
@@ -31,7 +34,7 @@ export default function Footer({ className = "" }: { className?: string }) {
         </div>
 
         <div className="mt-6 border-t border-gray-100 pt-4 text-center text-xs text-gray-400">
-          二次元周边图鉴 © {new Date().getFullYear()}
+          照影 &copy; {new Date().getFullYear()}
         </div>
       </div>
     </footer>

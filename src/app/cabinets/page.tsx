@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { getPublicCabinetUsers } from "@/lib/profiles";
+import { getCabinetPreviewItems } from "@/lib/collections";
 import { createClient } from "@/lib/supabaseServer";
 import { getFriendshipDetails } from "@/lib/friends";
+import { getItemMainImage } from "@/data/items";
 import FriendButton from "@/components/FriendButton";
 import type { FriendButtonState } from "@/lib/friends";
 
@@ -16,15 +18,21 @@ export default async function CabinetsPage() {
   ]);
   const { data: { user } } = await supabase.auth.getUser();
 
-  // 预加载所有好友状态
-  const friendshipMap = new Map<string, { state: FriendButtonState; friendshipId: number | null }>();
-  if (user) {
-    for (const u of users) {
-      if (u.user_id !== user.id) {
-        friendshipMap.set(u.user_id, await getFriendshipDetails(user.id, u.user_id));
+  const userIds = users.map((u) => u.user_id);
+  const [previewMap, friendshipMap] = await Promise.all([
+    getCabinetPreviewItems(userIds, 3),
+    (async () => {
+      const map = new Map<string, { state: FriendButtonState; friendshipId: number | null }>();
+      if (user) {
+        for (const u of users) {
+          if (u.user_id !== user.id) {
+            map.set(u.user_id, await getFriendshipDetails(user.id, u.user_id));
+          }
+        }
       }
-    }
-  }
+      return map;
+    })(),
+  ]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
@@ -54,6 +62,7 @@ export default async function CabinetsPage() {
             const displayName = u.display_name ?? `用户${u.user_id.slice(0, 6)}`;
             const isOwner = user?.id === u.user_id;
             const fs = friendshipMap.get(u.user_id);
+            const previewItems = previewMap.get(u.user_id) ?? [];
 
             return (
               <div
@@ -86,15 +95,38 @@ export default async function CabinetsPage() {
                       >
                         {displayName}
                       </Link>
-                      <p className="text-xs text-gray-400">
-                        {u.cabinet_views} 次浏览
-                      </p>
+                      <p className="text-xs text-gray-400">{u.cabinet_views} 次浏览</p>
                     </div>
                   </div>
 
                   {/* Bio */}
                   {u.bio && (
                     <p className="mt-3 text-sm text-gray-500 line-clamp-2">{u.bio}</p>
+                  )}
+
+                  {/* 商品预览缩略图 */}
+                  {previewItems.length > 0 && (
+                    <div className="mt-3 flex gap-1.5">
+                      {previewItems.map((item) => (
+                        <div key={item.id} className="h-14 w-14 overflow-hidden rounded-lg bg-gray-100 shrink-0">
+                          <img
+                            src={getItemMainImage(item)}
+                            alt={item.title}
+                            className="h-full w-full object-cover"
+                            loading="lazy"
+                          />
+                        </div>
+                      ))}
+                      {previewItems.length < 3 && (
+                        Array.from({ length: 3 - previewItems.length }).map((_, i) => (
+                          <div key={`empty-${i}`} className="h-14 w-14 rounded-lg bg-gray-50 shrink-0 flex items-center justify-center">
+                            <svg className="h-4 w-4 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                        ))
+                      )}
+                    </div>
                   )}
 
                   {/* Actions */}
@@ -105,13 +137,21 @@ export default async function CabinetsPage() {
                     >
                       进入痛柜
                     </Link>
-                    {!isOwner && (
+                    {!isOwner && user && (
                       <FriendButton
-                        userId={user?.id ?? ""}
+                        userId={user.id}
                         targetId={u.user_id}
                         initialState={fs?.state ?? null}
                         initialFriendshipId={fs?.friendshipId ?? null}
                       />
+                    )}
+                    {!isOwner && !user && (
+                      <Link
+                        href="/auth/login"
+                        className="rounded-lg bg-pink-500 px-3 py-2 text-xs font-medium text-white hover:bg-pink-600 transition"
+                      >
+                        加好友
+                      </Link>
                     )}
                   </div>
                 </div>

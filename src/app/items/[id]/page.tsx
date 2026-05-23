@@ -103,7 +103,6 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
                 alt={item.title}
                 className="aspect-square w-full object-cover"
               />
-              <p className="px-4 py-2 text-xs text-gray-400">旧版图片（迁移中）</p>
             </div>
           )}
         </div>

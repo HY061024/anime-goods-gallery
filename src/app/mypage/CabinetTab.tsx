@@ -140,7 +140,7 @@ export default function CabinetTab({
         <div className="rounded-3xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-100">
           <p className="text-lg font-semibold text-gray-900">痛柜还是空的</p>
           <p className="mt-2 text-gray-500">
-            去「谷子图鉴」逛逛，把喜欢的周边加入痛柜，或者点击上方手动上传
+            去「照影图鉴」逛逛，把喜欢的周边加入痛柜，或者点击上方手动上传
           </p>
         </div>
       ) : (

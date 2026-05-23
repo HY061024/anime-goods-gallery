@@ -66,3 +66,43 @@ export async function getCollectedItemIds(userId: string): Promise<Set<number>> 
   if (error || !data) return new Set();
   return new Set(data.map((r) => r.item_id));
 }
+
+/** 获取多位用户的痛柜预览（前 N 件商品），用于痛柜广场卡片 */
+export async function getCabinetPreviewItems(
+  userIds: string[],
+  limit = 3
+): Promise<Map<string, Item[]>> {
+  const result = new Map<string, Item[]>();
+  const unique = [...new Set(userIds.filter(Boolean))];
+  if (unique.length === 0) return result;
+
+  // 并行获取每位用户的私有上传 + 收藏
+  const rows = await Promise.all(
+    unique.map(async (userId) => {
+      const [privates, collected] = await Promise.all([
+        supabaseAdmin
+          .from("items")
+          .select("*")
+          .eq("submitter_id", userId)
+          .eq("visibility", "private")
+          .order("created_at", { ascending: false })
+          .limit(limit),
+        getUserCollection(userId),
+      ]);
+      // 合并：优先最近上传的
+      const all = [...(privates.data ?? []), ...collected] as Item[];
+      const seen = new Set<number>();
+      const deduped: Item[] = [];
+      for (const it of all) {
+        if (!seen.has(it.id)) { seen.add(it.id); deduped.push(it); }
+        if (deduped.length >= limit) break;
+      }
+      return { userId, items: deduped };
+    })
+  );
+
+  for (const { userId, items } of rows) {
+    result.set(userId, items);
+  }
+  return result;
+}

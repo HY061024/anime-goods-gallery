@@ -31,9 +31,14 @@ async function CabinetNotPublic({
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <Link href="/" className="text-sm font-medium text-pink-500 transition hover:text-pink-600">
-        &larr; 返回首页
-      </Link>
+      <div className="flex items-center gap-4">
+        <Link href="/" className="text-sm font-medium text-pink-500 transition hover:text-pink-600">
+          &larr; 返回首页
+        </Link>
+        <Link href="/cabinets" className="text-sm font-medium text-gray-400 transition hover:text-pink-500">
+          痛柜广场
+        </Link>
+      </div>
 
       {/* Banner */}
       <div className="mt-4 mb-6 h-32 overflow-hidden rounded-2xl bg-gradient-to-r from-pink-200 via-pink-100 to-purple-200">
@@ -62,7 +67,7 @@ async function CabinetNotPublic({
           <p className="text-xs text-gray-400 mt-1">{profile.cabinet_views} 次浏览</p>
         </div>
 
-        <div className="pt-10 shrink-0">
+        <div className="pt-10 shrink-0 flex flex-col items-end gap-1.5">
           {isOwner ? (
             <Link
               href="/mypage"
@@ -71,15 +76,30 @@ async function CabinetNotPublic({
               管理我的痛柜
             </Link>
           ) : visitor ? (
-            <div className="flex items-center gap-2">
+            <>
               <FriendButton
                 userId={visitor.id}
                 targetId={userId}
                 initialState={fs?.state ?? null}
                 initialFriendshipId={fs?.friendshipId ?? null}
               />
-            </div>
-          ) : null}
+              {fs?.state === "accepted" && (
+                <Link
+                  href={`/mypage/messages/${userId}`}
+                  className="rounded-lg bg-pink-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-pink-600 transition"
+                >
+                  发消息
+                </Link>
+              )}
+            </>
+          ) : (
+            <Link
+              href="/auth/login"
+              className="rounded-lg bg-pink-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-pink-600 transition"
+            >
+              登录后加好友
+            </Link>
+          )}
         </div>
       </div>
 
@@ -124,9 +144,14 @@ export default async function PublicCabinetPage({ params }: Props) {
     <div className="mx-auto max-w-4xl px-4 py-8">
       <ViewTracker userId={userId} isOwner={isOwner} />
 
-      <Link href="/" className="text-sm font-medium text-pink-500 transition hover:text-pink-600">
-        &larr; 返回首页
-      </Link>
+      <div className="flex items-center gap-4">
+        <Link href="/" className="text-sm font-medium text-pink-500 transition hover:text-pink-600">
+          &larr; 返回首页
+        </Link>
+        <Link href="/cabinets" className="text-sm font-medium text-gray-400 transition hover:text-pink-500">
+          痛柜广场
+        </Link>
+      </div>
 
       {/* Banner */}
       <div className="mt-4 mb-6 h-36 overflow-hidden rounded-2xl bg-gradient-to-r from-pink-200 via-pink-100 to-purple-200">
@@ -157,7 +182,8 @@ export default async function PublicCabinetPage({ params }: Props) {
           </p>
         </div>
 
-        <div className="pt-10 shrink-0">
+        {/* 社交操作区 */}
+        <div className="pt-10 shrink-0 flex flex-col items-end gap-1.5">
           {isOwner ? (
             <Link
               href="/mypage"
@@ -166,15 +192,32 @@ export default async function PublicCabinetPage({ params }: Props) {
               管理我的痛柜
             </Link>
           ) : user ? (
-            <div className="flex items-center gap-2">
+            <>
               <FriendButton
                 userId={user.id}
                 targetId={userId}
                 initialState={fs?.state ?? null}
                 initialFriendshipId={fs?.friendshipId ?? null}
               />
+              {fs?.state === "accepted" && (
+                <Link
+                  href={`/mypage/messages/${userId}`}
+                  className="rounded-lg bg-pink-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-pink-600 transition"
+                >
+                  发消息
+                </Link>
+              )}
+            </>
+          ) : (
+            <div className="flex items-center gap-1.5">
+              <Link
+                href="/auth/login"
+                className="rounded-lg bg-pink-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-pink-600 transition"
+              >
+                登录后加好友
+              </Link>
             </div>
-          ) : null}
+          )}
         </div>
       </div>
 

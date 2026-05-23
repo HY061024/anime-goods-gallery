@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabaseServer";
 import { getInspirationPosts, getInspirationPostAuthors, getPopularTags } from "@/lib/inspiration";
 import { getLikedPostIds, getFavoritedPostIds } from "@/lib/inspirationComments";
 import InspirationCard from "@/components/InspirationCard";
-import { TYPE_LABELS, TYPE_COLORS } from "@/data/inspiration";
+import { TYPE_LABELS } from "@/data/inspiration";
 import type { InspirationType } from "@/data/inspiration";
 import { likePost, favoritePost } from "./actions";
 
@@ -135,12 +135,49 @@ export default async function InspirationPage({ searchParams }: PageProps) {
           ))}
         </div>
       ) : (
-        <div className="rounded-3xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-100">
-          <p className="text-lg font-semibold text-gray-900">还没有灵感帖子</p>
-          <p className="mt-2 text-gray-500">成为第一个分享灵感的人吧</p>
-          <Link href="/inspiration/new" className="mt-4 inline-block text-sm font-medium text-pink-500">
-            发布灵感 →
-          </Link>
+        <div className="rounded-3xl bg-white p-12 shadow-sm ring-1 ring-gray-100">
+          <div className="text-center mb-8">
+            <svg className="mx-auto h-12 w-12 text-pink-300" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            <p className="mt-4 text-lg font-semibold text-gray-900">还没有灵感帖子</p>
+            <p className="mt-2 text-gray-500">成为第一个分享灵感的人吧</p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 max-w-lg mx-auto">
+            <Link
+              href="/inspiration/new"
+              className="group rounded-xl border border-gray-200 bg-white p-4 text-left transition hover:border-pink-300 hover:shadow-sm"
+            >
+              <span className="text-2xl">🎬</span>
+              <p className="mt-2 text-sm font-semibold text-gray-900 group-hover:text-pink-500">发布第一个剪辑视频</p>
+              <p className="mt-0.5 text-xs text-gray-400">分享你的二次元MAD、开箱视频</p>
+            </Link>
+            <Link
+              href="/inspiration/new"
+              className="group rounded-xl border border-gray-200 bg-white p-4 text-left transition hover:border-pink-300 hover:shadow-sm"
+            >
+              <span className="text-2xl">📝</span>
+              <p className="mt-2 text-sm font-semibold text-gray-900 group-hover:text-pink-500">分享痛柜布置灵感</p>
+              <p className="mt-0.5 text-xs text-gray-400">晒出你的痛柜布置心得与收藏故事</p>
+            </Link>
+            <Link
+              href="/inspiration/new"
+              className="group rounded-xl border border-gray-200 bg-white p-4 text-left transition hover:border-pink-300 hover:shadow-sm"
+            >
+              <span className="text-2xl">📦</span>
+              <p className="mt-2 text-sm font-semibold text-gray-900 group-hover:text-pink-500">分享素材</p>
+              <p className="mt-0.5 text-xs text-gray-400">分享壁纸、模板、图标等二次元素材</p>
+            </Link>
+            <Link
+              href="/inspiration/new"
+              className="group rounded-xl border border-gray-200 bg-white p-4 text-left transition hover:border-pink-300 hover:shadow-sm"
+            >
+              <span className="text-2xl">❓</span>
+              <p className="mt-2 text-sm font-semibold text-gray-900 group-hover:text-pink-500">提问求建议</p>
+              <p className="mt-0.5 text-xs text-gray-400">请教周边购买、鉴定、保养等问题</p>
+            </Link>
+          </div>
         </div>
       )}
     </div>
