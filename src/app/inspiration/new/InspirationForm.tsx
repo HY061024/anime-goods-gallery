@@ -60,77 +60,77 @@ export default function InspirationForm() {
   return (
     <form onSubmit={handleSubmit} className="mt-6 space-y-5">
       <div>
-        <label className="mb-2 block text-sm font-medium text-gray-700">类型</label>
+        <label className="mb-2 block text-sm font-medium text-slate-600">类型</label>
         <div className="grid grid-cols-4 gap-2">
           {TYPES.map((t) => (
             <button
               key={t}
               type="button"
               onClick={() => { setType(t); setVideoUrl(""); setMaterialUrl(""); }}
-              className={`rounded-xl px-3 py-2.5 text-sm font-medium transition ${type === t ? "bg-pink-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+              className={`rounded-xl px-3 py-2.5 text-sm font-medium transition ${type === t ? "bg-pink-500 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
             >
               {TYPE_LABELS[t]}
             </button>
           ))}
         </div>
-        <p className="mt-1.5 text-xs text-gray-400">{TYPE_HINTS[type]}</p>
+        <p className="mt-1.5 text-xs text-slate-400">{TYPE_HINTS[type]}</p>
       </div>
 
       {type !== "material" && (
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">标题</label>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={type === "question" ? "例如：这个手办值得入手吗？" : "给灵感起个标题…"} maxLength={100} className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400" />
+          <label className="mb-1 block text-sm font-medium text-slate-600">标题</label>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={type === "question" ? "例如：这个手办值得入手吗？" : "给灵感起个标题…"} maxLength={100} className="w-full rounded-xl border border-pink-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400" />
         </div>
       )}
 
       {type === "video" && (
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">视频链接</label>
-          <input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="粘贴视频 URL（B站、YouTube 等）" className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400" />
+          <label className="mb-1 block text-sm font-medium text-slate-600">视频链接</label>
+          <input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="粘贴视频 URL（B站、YouTube 等）" className="w-full rounded-xl border border-pink-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400" />
         </div>
       )}
 
       {type === "material" && (
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">素材链接</label>
-          <input value={materialUrl} onChange={(e) => setMaterialUrl(e.target.value)} placeholder="粘贴素材资源链接" className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400" />
+          <label className="mb-1 block text-sm font-medium text-slate-600">素材链接</label>
+          <input value={materialUrl} onChange={(e) => setMaterialUrl(e.target.value)} placeholder="粘贴素材资源链接" className="w-full rounded-xl border border-pink-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400" />
         </div>
       )}
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">封面图 URL（可选）</label>
-        <input value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} placeholder="粘贴图片链接作为封面" className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400" />
+        <label className="mb-1 block text-sm font-medium text-slate-600">封面图 URL（可选）</label>
+        <input value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} placeholder="粘贴图片链接作为封面" className="w-full rounded-xl border border-pink-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400" />
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">内容 <span className="text-red-400">*</span></label>
-        <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder={type === "question" ? "详细描述你的问题…" : type === "video" ? "简单介绍这个视频…" : "写下你的想法…"} rows={6} maxLength={5000} className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400 resize-none" />
+        <label className="mb-1 block text-sm font-medium text-slate-600">内容 <span className="text-red-400">*</span></label>
+        <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder={type === "question" ? "详细描述你的问题…" : type === "video" ? "简单介绍这个视频…" : "写下你的想法…"} rows={6} maxLength={5000} className="w-full rounded-xl border border-pink-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400 resize-none" />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">关联作品（可选）</label>
-          <input value={work} onChange={(e) => setWork(e.target.value)} placeholder="如：鬼灭之刃" className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400" />
+          <label className="mb-1 block text-sm font-medium text-slate-600">关联作品（可选）</label>
+          <input value={work} onChange={(e) => setWork(e.target.value)} placeholder="如：鬼灭之刃" className="w-full rounded-xl border border-pink-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400" />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">关联角色（可选）</label>
-          <input value={character} onChange={(e) => setCharacter(e.target.value)} placeholder="如：灶门炭治郎" className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400" />
+          <label className="mb-1 block text-sm font-medium text-slate-600">关联角色（可选）</label>
+          <input value={character} onChange={(e) => setCharacter(e.target.value)} placeholder="如：灶门炭治郎" className="w-full rounded-xl border border-pink-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400" />
         </div>
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">标签（用逗号或空格分隔）</label>
-        <input value={tagsStr} onChange={(e) => setTagsStr(e.target.value)} placeholder="如：手办, 开箱, 粘土人" className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400" />
+        <label className="mb-1 block text-sm font-medium text-slate-600">标签（用逗号或空格分隔）</label>
+        <input value={tagsStr} onChange={(e) => setTagsStr(e.target.value)} placeholder="如：手办, 开箱, 粘土人" className="w-full rounded-xl border border-pink-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400" />
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">可见范围</label>
+        <label className="mb-1 block text-sm font-medium text-slate-600">可见范围</label>
         <div className="flex gap-3">
-          <label className="flex items-center gap-1.5 text-sm text-gray-600 cursor-pointer">
+          <label className="flex items-center gap-1.5 text-sm text-slate-600 cursor-pointer">
             <input type="radio" name="visibility" value="public" checked={visibility === "public"} onChange={() => setVisibility("public")} className="accent-pink-500" />
             公开
           </label>
-          <label className="flex items-center gap-1.5 text-sm text-gray-600 cursor-pointer">
+          <label className="flex items-center gap-1.5 text-sm text-slate-600 cursor-pointer">
             <input type="radio" name="visibility" value="private" checked={visibility === "private"} onChange={() => setVisibility("private")} className="accent-pink-500" />
             仅自己可见
           </label>

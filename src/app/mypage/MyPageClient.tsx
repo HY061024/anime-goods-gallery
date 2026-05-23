@@ -47,7 +47,7 @@ export default function MyPageClient({
   return (
     <div>
       {/* Tab 切换 */}
-      <div className="mb-4 flex gap-1 rounded-2xl bg-white p-1.5 shadow-sm ring-1 ring-gray-100">
+      <div className="mb-4 flex gap-1 rounded-2xl bg-white p-1.5 shadow-sm border border-pink-100">
         {(
           [
             ["items", `我的投稿 (${items.length})`],
@@ -61,7 +61,7 @@ export default function MyPageClient({
             className={`flex-1 rounded-xl px-3 py-2 text-sm font-medium transition ${
               tab === key
                 ? "bg-pink-500 text-white"
-                : "text-gray-600 hover:bg-gray-100"
+                : "text-slate-600 hover:bg-slate-100"
             }`}
           >
             {label}
@@ -78,9 +78,9 @@ export default function MyPageClient({
             items.map((item) => (
               <div
                 key={item.id}
-                className="flex gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100"
+                className="flex gap-3 rounded-2xl bg-white p-4 shadow-sm border border-pink-100"
               >
-                <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-gray-100">
+                <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-slate-100">
                   <img
                     src={item.image}
                     alt={item.title}
@@ -93,17 +93,17 @@ export default function MyPageClient({
                       <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${item.status.color}`}>
                         {item.status.label}
                       </span>
-                      <span className="rounded-lg bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+                      <span className="rounded-lg bg-slate-100 px-2 py-0.5 text-xs text-slate-500">
                         {item.category}
                       </span>
                     </div>
-                    <h3 className="mt-1 font-semibold text-gray-900">{item.title}</h3>
-                    <p className="text-sm text-gray-500">
+                    <h3 className="mt-1 font-semibold text-slate-800">{item.title}</h3>
+                    <p className="text-sm text-slate-500">
                       {item.work} / {item.character}
                     </p>
                   </div>
                   {item.displayDescription && (
-                    <p className="mt-1 text-xs text-gray-400 line-clamp-1">{item.displayDescription}</p>
+                    <p className="mt-1 text-xs text-slate-400 line-clamp-1">{item.displayDescription}</p>
                   )}
                 </div>
                 <div className="flex shrink-0 items-center">
@@ -139,15 +139,15 @@ export default function MyPageClient({
                 <div
                   key={n.id}
                   className={`rounded-2xl p-4 shadow-sm ring-1 ${
-                    n.is_read ? "bg-white ring-gray-100" : "bg-pink-50 ring-pink-200"
+                    n.is_read ? "bg-white border-pink-100" : "bg-pink-50 ring-pink-200"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
-                      <p className={`text-sm ${n.is_read ? "text-gray-600" : "font-medium text-gray-900"}`}>
+                      <p className={`text-sm ${n.is_read ? "text-slate-600" : "font-medium text-slate-800"}`}>
                         {n.message}
                       </p>
-                      <p className="mt-1 text-xs text-gray-400">
+                      <p className="mt-1 text-xs text-slate-400">
                         {new Date(n.created_at).toLocaleString("zh-CN", {
                           month: "short",
                           day: "numeric",
@@ -177,9 +177,9 @@ export default function MyPageClient({
 
 function EmptyState({ message, hint }: { message: string; hint: string }) {
   return (
-    <div className="rounded-3xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-100">
-      <p className="text-lg font-semibold text-gray-900">{message}</p>
-      <p className="mt-2 text-gray-500">{hint}</p>
+    <div className="rounded-3xl bg-white p-12 text-center shadow-sm border border-pink-100">
+      <p className="text-lg font-semibold text-slate-800">{message}</p>
+      <p className="mt-2 text-slate-500">{hint}</p>
     </div>
   );
 }

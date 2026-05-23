@@ -16,15 +16,15 @@ export default function SignupPage() {
   return (
     <div className="flex min-h-[80vh] items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        <div className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-gray-100">
+        <div className="rounded-3xl bg-white p-8 shadow-sm border border-pink-100">
           <div className="mb-2 flex justify-center">
             <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-pink-500 text-lg text-white">
               周边
             </span>
           </div>
 
-          <h1 className="text-center text-2xl font-bold text-gray-900">用户注册</h1>
-          <p className="mb-6 mt-2 text-center text-sm text-gray-500">
+          <h1 className="text-center text-2xl font-bold text-slate-800">用户注册</h1>
+          <p className="mb-6 mt-2 text-center text-sm text-slate-500">
             注册后可投稿周边和接收审核通知
           </p>
 
@@ -34,21 +34,21 @@ export default function SignupPage() {
               type="email"
               placeholder="邮箱地址"
               autoComplete="email"
-              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
+              className="w-full rounded-xl border border-pink-200 px-4 py-3 text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
             />
             <input
               name="password"
               type="password"
               placeholder="密码（至少 6 位）"
               autoComplete="new-password"
-              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
+              className="w-full rounded-xl border border-pink-200 px-4 py-3 text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
             />
             <input
               name="confirm"
               type="password"
               placeholder="确认密码"
               autoComplete="new-password"
-              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
+              className="w-full rounded-xl border border-pink-200 px-4 py-3 text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
             />
 
             {error && (
@@ -61,13 +61,13 @@ export default function SignupPage() {
           </form>
         </div>
 
-        <p className="mt-4 text-center text-sm text-gray-400">
+        <p className="mt-4 text-center text-sm text-slate-400">
           已有账号？{" "}
           <Link href="/auth/login" className="font-medium text-pink-500 hover:text-pink-600">
             立即登录
           </Link>
         </p>
-        <p className="mt-4 text-center text-sm text-gray-400">
+        <p className="mt-4 text-center text-sm text-slate-400">
           <Link href="/" className="hover:text-pink-500 transition">← 返回首页</Link>
         </p>
       </div>

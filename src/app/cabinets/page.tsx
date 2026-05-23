@@ -35,17 +35,17 @@ export default async function CabinetsPage() {
   ]);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
+    <div className="mx-auto max-w-7xl px-6 py-8">
       <Link href="/" className="text-sm font-medium text-pink-500 transition hover:text-pink-600">
         &larr; 返回首页
       </Link>
-      <h1 className="mt-3 text-3xl font-bold text-gray-900">痛柜广场</h1>
-      <p className="mt-2 text-gray-500">发现其他二次元爱好者的公开痛柜</p>
+      <h1 className="mt-3 text-3xl font-bold text-slate-800">痛柜广场</h1>
+      <p className="mt-2 text-slate-500">发现其他二次元爱好者的公开痛柜</p>
 
       {users.length === 0 ? (
-        <div className="mt-8 rounded-3xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-100">
-          <p className="text-lg font-semibold text-gray-900">暂时还没有公开痛柜</p>
-          <p className="mt-2 text-gray-500">成为第一个公开痛柜的用户吧！去个人中心开启痛柜公开分享</p>
+        <div className="mt-8 rounded-3xl bg-white p-12 text-center shadow-sm border border-pink-100">
+          <p className="text-lg font-semibold text-slate-800">暂时还没有公开痛柜</p>
+          <p className="mt-2 text-slate-500">成为第一个公开痛柜的用户吧！去个人中心开启痛柜公开分享</p>
           {user ? (
             <Link href="/mypage" className="mt-4 inline-block rounded-xl bg-pink-500 px-6 py-3 text-sm font-medium text-white hover:bg-pink-600 transition">
               去我的痛柜
@@ -67,7 +67,7 @@ export default async function CabinetsPage() {
             return (
               <div
                 key={u.user_id}
-                className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100 transition hover:shadow-md hover:ring-pink-200"
+                className="overflow-hidden rounded-2xl bg-white shadow-sm border border-pink-100 transition hover:shadow-md hover:border-pink-200"
               >
                 {/* Banner */}
                 <div className="h-24 bg-gradient-to-r from-pink-200 via-pink-100 to-purple-200">
@@ -91,24 +91,24 @@ export default async function CabinetsPage() {
                     <div className="flex-1 min-w-0 pt-8">
                       <Link
                         href={`/users/${u.user_id}`}
-                        className="text-base font-bold text-gray-900 hover:text-pink-500 transition-colors"
+                        className="text-base font-bold text-slate-800 hover:text-pink-500 transition-colors"
                       >
                         {displayName}
                       </Link>
-                      <p className="text-xs text-gray-400">{u.cabinet_views} 次浏览</p>
+                      <p className="text-xs text-slate-400">{u.cabinet_views} 次浏览</p>
                     </div>
                   </div>
 
                   {/* Bio */}
                   {u.bio && (
-                    <p className="mt-3 text-sm text-gray-500 line-clamp-2">{u.bio}</p>
+                    <p className="mt-3 text-sm text-slate-500 line-clamp-2">{u.bio}</p>
                   )}
 
                   {/* 商品预览缩略图 */}
                   {previewItems.length > 0 && (
                     <div className="mt-3 flex gap-1.5">
                       {previewItems.map((item) => (
-                        <div key={item.id} className="h-14 w-14 overflow-hidden rounded-lg bg-gray-100 shrink-0">
+                        <div key={item.id} className="h-14 w-14 overflow-hidden rounded-lg bg-slate-100 shrink-0">
                           <img
                             src={getItemMainImage(item)}
                             alt={item.title}
@@ -119,8 +119,8 @@ export default async function CabinetsPage() {
                       ))}
                       {previewItems.length < 3 && (
                         Array.from({ length: 3 - previewItems.length }).map((_, i) => (
-                          <div key={`empty-${i}`} className="h-14 w-14 rounded-lg bg-gray-50 shrink-0 flex items-center justify-center">
-                            <svg className="h-4 w-4 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div key={`empty-${i}`} className="h-14 w-14 rounded-lg bg-slate-50 shrink-0 flex items-center justify-center">
+                            <svg className="h-4 w-4 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                           </div>

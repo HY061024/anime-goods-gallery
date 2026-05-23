@@ -42,7 +42,7 @@ export default async function RootLayout({
       lang="zh-CN"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-pink-50 font-sans">
+      <body className="flex min-h-full flex-col bg-[#faf5ff] font-sans">
         <BottomNav
           userEmail={user?.email ?? null}
           unreadMessages={unreadMessages}

@@ -54,8 +54,8 @@ export default function NotificationList({
 
   if (notifications.length === 0) {
     return (
-      <div className="rounded-2xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-100">
-        <p className="text-sm text-gray-400">暂无通知</p>
+      <div className="rounded-2xl bg-white p-12 text-center shadow-sm border border-pink-100">
+        <p className="text-sm text-slate-400">暂无通知</p>
       </div>
     );
   }
@@ -77,15 +77,15 @@ export default function NotificationList({
           key={n.id}
           className={`flex items-center gap-4 rounded-2xl p-4 shadow-sm ring-1 ${
             n.is_read
-              ? "bg-white ring-gray-100"
+              ? "bg-white border-pink-100"
               : "bg-pink-50 ring-pink-200"
           }`}
         >
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900">
+            <p className="text-sm font-medium text-slate-800">
               新投稿：{n.item_title}
             </p>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="text-xs text-slate-400 mt-0.5">
               {n.created_at ? relativeTime(n.created_at) : ""}
             </p>
           </div>
@@ -102,7 +102,7 @@ export default function NotificationList({
               <button
                 onClick={() => markRead(n.id)}
                 disabled={isPending}
-                className="rounded-lg px-3 py-1.5 text-xs text-gray-400 hover:text-gray-600 disabled:opacity-50"
+                className="rounded-lg px-3 py-1.5 text-xs text-slate-400 hover:text-slate-600 disabled:opacity-50"
               >
                 已读
               </button>

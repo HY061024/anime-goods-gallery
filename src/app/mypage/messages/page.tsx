@@ -13,8 +13,8 @@ export default async function MessagesPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="mb-1 text-2xl font-bold text-gray-900">消息</h1>
-      <p className="mb-6 text-sm text-gray-500">与好友的私信</p>
+      <h1 className="mb-1 text-2xl font-bold text-slate-800">消息</h1>
+      <p className="mb-6 text-sm text-slate-500">与好友的私信</p>
 
       <ConversationList conversations={conversations} />
     </div>

@@ -22,7 +22,7 @@ export function FavoriteButton({
       className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm transition ${
         favorited
           ? "bg-yellow-50 text-yellow-500"
-          : "bg-gray-50 text-gray-500 hover:bg-yellow-50 hover:text-yellow-400"
+          : "bg-slate-50 text-slate-500 hover:bg-yellow-50 hover:text-yellow-400"
       }`}
     >
       <svg className="h-5 w-5" fill={favorited ? "currentColor" : "none"} stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">

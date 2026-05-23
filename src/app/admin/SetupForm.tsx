@@ -20,7 +20,7 @@ export default function SetupForm() {
         placeholder="超级管理员邮箱"
         autoComplete="email"
         required
-        className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
+        className="w-full rounded-xl border border-pink-200 px-4 py-3 text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
       />
       <input
         name="password"
@@ -29,7 +29,7 @@ export default function SetupForm() {
         autoComplete="new-password"
         required
         minLength={6}
-        className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
+        className="w-full rounded-xl border border-pink-200 px-4 py-3 text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
       />
       <input
         name="verifyCode"
@@ -37,14 +37,14 @@ export default function SetupForm() {
         placeholder="初始化验证码"
         autoComplete="off"
         required
-        className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
+        className="w-full rounded-xl border border-pink-200 px-4 py-3 text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
       />
 
       {error && (
         <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-500">{error}</p>
       )}
 
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-slate-400">
         初始化验证码即当前 .env.local 中的 ADMIN_CREATE_PASSWORD 值。此页面仅在首次配置时出现。
       </p>
 

@@ -34,42 +34,39 @@ export default async function HomePage() {
   return (
     <>
       {/* Hero 区域 */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-pink-500 via-pink-400 to-purple-500">
-        {/* 装饰背景 */}
-        <div className="absolute inset-0 opacity-10">
+      <section className="relative overflow-hidden bg-gradient-to-br from-pink-400 via-pink-300 to-purple-400">
+        <div className="absolute inset-0 opacity-[0.08]">
           <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-white" />
           <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-white" />
         </div>
 
-        <div className="relative mx-auto max-w-6xl px-4 py-16 md:py-24">
+        <div className="relative mx-auto max-w-7xl px-6 py-16 md:py-24">
           <div className="text-center">
-            <p className="mb-3 text-sm font-semibold tracking-wider text-pink-200">
+            <p className="mb-3 text-sm font-semibold tracking-wider text-white/80">
               光影之间，留下你的收藏记忆
             </p>
             <h1 className="mb-4 text-4xl font-extrabold text-white md:text-5xl">
               照影
             </h1>
-            <p className="mx-auto mb-10 max-w-xl text-lg text-pink-100">
+            <p className="mx-auto mb-10 max-w-xl text-lg text-white/80">
               按 IP（作品）、角色自由浏览，支持关键字搜索，找到你喜欢的周边
             </p>
 
-            {/* 搜索框 */}
             <form action="/items" className="mx-auto flex max-w-lg gap-2">
               <input
                 name="q"
                 placeholder="搜索角色、作品或周边名称…"
-                className="flex-1 rounded-xl border-0 bg-white/95 px-5 py-3.5 text-gray-900 shadow-lg outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-white/50"
+                className="flex-1 rounded-xl border-0 bg-white px-5 py-3.5 text-slate-800 shadow-lg outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-pink-300"
               />
               <button className="rounded-xl bg-gray-900 px-6 py-3.5 font-medium text-white shadow-lg transition hover:bg-gray-800">
                 搜索
               </button>
             </form>
 
-            {/* 快捷入口：分类 + 投稿 */}
             <div className="mt-6 space-y-3">
               {hotCategories.length > 0 && (
                 <div className="flex flex-wrap items-center justify-center gap-2">
-                  <span className="text-sm text-pink-200">热门分类：</span>
+                  <span className="text-sm text-white/70">热门分类：</span>
                   {hotCategories.map((cat) => (
                     <Link
                       key={cat}
@@ -83,7 +80,6 @@ export default async function HomePage() {
               )}
             </div>
 
-            {/* 投稿 CTA */}
             <div className="mt-8">
               <Link
                 href="/submit"
@@ -95,9 +91,8 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* 底部波浪 */}
         <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 60" className="h-8 w-full fill-pink-50">
+          <svg viewBox="0 0 1440 60" className="h-8 w-full fill-[#faf5ff]">
             <path d="M0 30C240 60 480 0 720 30s480 0 720-30v60H0V30z" />
           </svg>
         </div>
@@ -105,15 +100,15 @@ export default async function HomePage() {
 
       {/* 按 IP 浏览 */}
       {popularWorks.length > 0 && (
-        <section className="mx-auto max-w-6xl px-4 py-12">
+        <section className="mx-auto max-w-7xl px-6 py-12">
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">按 IP 浏览</h2>
-              <p className="mt-1 text-sm text-gray-500">按作品系列查找周边</p>
+              <h2 className="text-2xl font-bold text-slate-800">按 IP 浏览</h2>
+              <p className="mt-1 text-sm text-slate-500">按作品系列查找周边</p>
             </div>
             <Link
               href="/items"
-              className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-pink-500 shadow-sm transition hover:bg-pink-50"
+              className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-pink-500 border border-pink-100 shadow-sm transition hover:bg-pink-50"
             >
               全部作品 →
             </Link>
@@ -124,17 +119,17 @@ export default async function HomePage() {
               <Link
                 key={w.name}
                 href={`/items?work=${encodeURIComponent(w.name)}`}
-                className="group rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-pink-200"
+                className="group rounded-2xl bg-white p-4 border border-pink-100 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
               >
                 <div className="flex items-center gap-2">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-pink-400 to-purple-500 text-sm font-bold text-white">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-pink-400 to-purple-400 text-sm font-bold text-white">
                     {w.name.charAt(0)}
                   </div>
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-gray-900 group-hover:text-pink-500">
+                    <p className="truncate text-sm font-semibold text-slate-800 group-hover:text-pink-500">
                       {w.name}
                     </p>
-                    <p className="text-xs text-gray-400">{w.count} 件周边</p>
+                    <p className="text-xs text-slate-400">{w.count} 件周边</p>
                   </div>
                 </div>
               </Link>
@@ -145,15 +140,15 @@ export default async function HomePage() {
 
       {/* 按角色浏览 */}
       {popularCharacters.length > 0 && (
-        <section className="mx-auto max-w-6xl px-4 pb-12">
+        <section className="mx-auto max-w-7xl px-6 pb-12">
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">按角色浏览</h2>
-              <p className="mt-1 text-sm text-gray-500">按角色查找周边</p>
+              <h2 className="text-2xl font-bold text-slate-800">按角色浏览</h2>
+              <p className="mt-1 text-sm text-slate-500">按角色查找周边</p>
             </div>
             <Link
               href="/items"
-              className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-pink-500 shadow-sm transition hover:bg-pink-50"
+              className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-pink-500 border border-pink-100 shadow-sm transition hover:bg-pink-50"
             >
               全部角色 →
             </Link>
@@ -164,10 +159,10 @@ export default async function HomePage() {
               <Link
                 key={c.name}
                 href={`/items?character=${encodeURIComponent(c.name)}`}
-                className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-gray-600 shadow-sm transition hover:border-pink-300 hover:bg-pink-50 hover:text-pink-500"
+                className="rounded-full border border-pink-100 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm transition hover:border-pink-300 hover:bg-pink-50 hover:text-pink-500"
               >
                 {c.name}
-                <span className="ml-1.5 text-xs text-gray-300">{c.count}</span>
+                <span className="ml-1.5 text-xs text-slate-300">{c.count}</span>
               </Link>
             ))}
           </div>
@@ -176,15 +171,15 @@ export default async function HomePage() {
 
       {/* 痛柜广场推广 */}
       {cabinetUsers.length > 0 && (
-        <section className="mx-auto max-w-6xl px-4 pb-12">
+        <section className="mx-auto max-w-7xl px-6 pb-12">
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">痛柜广场</h2>
-              <p className="mt-1 text-sm text-gray-500">发现其他二次元爱好者的公开痛柜</p>
+              <h2 className="text-2xl font-bold text-slate-800">痛柜广场</h2>
+              <p className="mt-1 text-sm text-slate-500">发现其他二次元爱好者的公开痛柜</p>
             </div>
             <Link
               href="/cabinets"
-              className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-pink-500 shadow-sm transition hover:bg-pink-50"
+              className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-pink-500 border border-pink-100 shadow-sm transition hover:bg-pink-50"
             >
               查看全部 &rarr;
             </Link>
@@ -194,7 +189,7 @@ export default async function HomePage() {
               <Link
                 key={u.user_id}
                 href={`/users/${u.user_id}`}
-                className="group overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-pink-200"
+                className="group overflow-hidden rounded-2xl bg-white border border-pink-100 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
               >
                 <div className="h-16 bg-gradient-to-r from-pink-200 via-pink-100 to-purple-200">
                   {u.banner_url && (
@@ -215,15 +210,15 @@ export default async function HomePage() {
                       )}
                     </div>
                     <div className="min-w-0 pt-6">
-                      <p className="truncate text-sm font-semibold text-gray-900 group-hover:text-pink-500">
+                      <p className="truncate text-sm font-semibold text-slate-800 group-hover:text-pink-500">
                         {u.display_name ?? `用户${u.user_id.slice(0, 6)}`}
                       </p>
                     </div>
                   </div>
                   {u.bio && (
-                    <p className="mt-1.5 line-clamp-1 text-xs text-gray-400">{u.bio}</p>
+                    <p className="mt-1.5 line-clamp-1 text-xs text-slate-400">{u.bio}</p>
                   )}
-                  <p className="mt-1 text-xs text-gray-300">{u.cabinet_views} 次浏览</p>
+                  <p className="mt-1 text-xs text-slate-300">{u.cabinet_views} 次浏览</p>
                 </div>
               </Link>
             ))}
@@ -233,15 +228,15 @@ export default async function HomePage() {
 
       {/* 照影灵感 */}
       {inspirationPosts.length > 0 && (
-        <section className="mx-auto max-w-6xl px-4 pb-12">
+        <section className="mx-auto max-w-7xl px-6 pb-12">
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">照影灵感</h2>
-              <p className="mt-1 text-sm text-gray-500">二次元爱好者的灵感分享</p>
+              <h2 className="text-2xl font-bold text-slate-800">照影灵感</h2>
+              <p className="mt-1 text-sm text-slate-500">二次元爱好者的灵感分享</p>
             </div>
             <Link
               href="/inspiration"
-              className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-pink-500 shadow-sm transition hover:bg-pink-50"
+              className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-pink-500 border border-pink-100 shadow-sm transition hover:bg-pink-50"
             >
               查看全部 →
             </Link>
@@ -260,15 +255,15 @@ export default async function HomePage() {
       )}
 
       {/* 最新收录 */}
-      <section className="mx-auto max-w-6xl px-4 pb-12">
+      <section className="mx-auto max-w-7xl px-6 pb-12">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">最新收录</h2>
-            <p className="mt-1 text-sm text-gray-500">最近添加的周边商品</p>
+            <h2 className="text-2xl font-bold text-slate-800">最新收录</h2>
+            <p className="mt-1 text-sm text-slate-500">最近添加的周边商品</p>
           </div>
           <Link
             href="/items"
-            className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-pink-500 shadow-sm transition hover:bg-pink-50"
+            className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-pink-500 border border-pink-100 shadow-sm transition hover:bg-pink-50"
           >
             查看全部 →
           </Link>
@@ -293,8 +288,8 @@ export default async function HomePage() {
             })}
           </div>
         ) : (
-          <div className="rounded-3xl bg-white p-12 text-center shadow-sm">
-            <p className="text-gray-500">还没有收录任何周边</p>
+          <div className="rounded-3xl bg-white border border-pink-100 p-12 text-center shadow-sm">
+            <p className="text-slate-500">还没有收录任何周边</p>
             <Link href="/submit" className="mt-3 inline-block text-sm font-medium text-pink-500">
               去投稿 →
             </Link>

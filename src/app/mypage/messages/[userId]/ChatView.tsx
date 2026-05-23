@@ -59,18 +59,18 @@ export default function ChatView({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-10rem)] rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
+    <div className="flex flex-col h-[calc(100vh-10rem)] rounded-2xl bg-white shadow-sm border border-pink-100">
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-pink-100">
         <Link
           href="/mypage/messages"
-          className="text-gray-400 hover:text-gray-600 shrink-0"
+          className="text-slate-400 hover:text-slate-600 shrink-0"
         >
           ← 返回
         </Link>
         <Link
           href={`/users/${partnerId}`}
-          className="text-sm font-medium text-gray-900 hover:text-pink-500"
+          className="text-sm font-medium text-slate-800 hover:text-pink-500"
         >
           {partnerName}
         </Link>
@@ -79,7 +79,7 @@ export default function ChatView({
       {/* Messages area */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
         {messages.length === 0 && (
-          <p className="text-center text-sm text-gray-400 mt-8">暂无消息，打个招呼吧</p>
+          <p className="text-center text-sm text-slate-400 mt-8">暂无消息，打个招呼吧</p>
         )}
         {messages.map((msg) => {
           const isMine = msg.sender_id === currentUserId;
@@ -92,7 +92,7 @@ export default function ChatView({
                 className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
                   isMine
                     ? "bg-pink-500 text-white rounded-br-md"
-                    : "bg-gray-100 text-gray-800 rounded-bl-md"
+                    : "bg-slate-100 text-slate-700 rounded-bl-md"
                 }`}
               >
                 {msg.content}
@@ -104,7 +104,7 @@ export default function ChatView({
       </div>
 
       {/* Input area */}
-      <div className="border-t border-gray-100 px-4 py-3">
+      <div className="border-t border-pink-100 px-4 py-3">
         <div className="flex gap-2">
           <textarea
             value={text}
@@ -112,7 +112,7 @@ export default function ChatView({
             onKeyDown={handleKeyDown}
             placeholder="输入消息…（Enter 发送）"
             rows={1}
-            className="flex-1 resize-none rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400"
+            className="flex-1 resize-none rounded-xl border border-pink-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400"
           />
           <button
             onClick={handleSend}

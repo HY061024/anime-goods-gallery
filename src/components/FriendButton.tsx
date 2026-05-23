@@ -98,7 +98,7 @@ export default function FriendButton({
         <button
           onClick={handleCancel}
           disabled={isPending}
-          className="rounded-lg bg-gray-100 px-2 py-1 text-xs text-gray-400 hover:bg-red-50 hover:text-red-500 disabled:opacity-50 transition"
+          className="rounded-lg bg-slate-100 px-2 py-1 text-xs text-slate-400 hover:bg-red-50 hover:text-red-500 disabled:opacity-50 transition"
         >
           取消
         </button>
@@ -119,7 +119,7 @@ export default function FriendButton({
         <button
           onClick={handleReject}
           disabled={isPending}
-          className="rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-200 disabled:opacity-50 transition"
+          className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-200 disabled:opacity-50 transition"
         >
           拒绝
         </button>

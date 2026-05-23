@@ -24,8 +24,8 @@ export default function ConversationList({
 }) {
   if (conversations.length === 0) {
     return (
-      <div className="rounded-xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-100">
-        <p className="text-sm text-gray-400">暂无消息，去加个好友聊聊天吧</p>
+      <div className="rounded-xl bg-white p-12 text-center shadow-sm border border-pink-100">
+        <p className="text-sm text-slate-400">暂无消息，去加个好友聊聊天吧</p>
         <Link href="/mypage/friends" className="mt-3 inline-block text-sm font-medium text-pink-500">
           前往好友页面 →
         </Link>
@@ -39,7 +39,7 @@ export default function ConversationList({
         <Link
           key={conv.userId}
           href={`/mypage/messages/${conv.userId}`}
-          className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-sm ring-1 ring-gray-100 hover:ring-pink-200 transition"
+          className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-sm border border-pink-100 hover:ring-pink-200 transition"
         >
           <div className="h-10 w-10 rounded-full bg-pink-100 flex items-center justify-center shrink-0 overflow-hidden">
             {conv.avatar_url ? (
@@ -52,16 +52,16 @@ export default function ConversationList({
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <p className="text-sm font-medium text-gray-900">{conv.display_name}</p>
+              <p className="text-sm font-medium text-slate-800">{conv.display_name}</p>
               {conv.unreadCount > 0 && (
                 <span className="rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] text-white">
                   {conv.unreadCount > 99 ? "99+" : conv.unreadCount}
                 </span>
               )}
             </div>
-            <p className="text-xs text-gray-400 truncate">{conv.lastMessage}</p>
+            <p className="text-xs text-slate-400 truncate">{conv.lastMessage}</p>
           </div>
-          <span className="text-xs text-gray-300 shrink-0">{relativeTime(conv.lastTime)}</span>
+          <span className="text-xs text-slate-300 shrink-0">{relativeTime(conv.lastTime)}</span>
         </Link>
       ))}
     </div>

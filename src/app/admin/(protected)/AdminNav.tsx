@@ -14,7 +14,7 @@ export default function AdminNav({
   const pathname = usePathname();
 
   return (
-    <nav className="mb-6 flex items-center gap-1 rounded-2xl bg-white p-1.5 shadow-sm ring-1 ring-gray-100">
+    <nav className="mb-6 flex items-center gap-1 rounded-2xl bg-white p-1.5 shadow-sm border border-pink-100">
       <NavLink href="/admin/items/new" active={pathname === "/admin/items/new"}>
         新增周边
       </NavLink>
@@ -51,12 +51,12 @@ export default function AdminNav({
       )}
 
       <div className="ml-auto flex items-center gap-3 px-3">
-        <span className="text-xs text-gray-400">
+        <span className="text-xs text-slate-400">
           {role === "super_admin" ? "超级管理员" : "副管理员"}
         </span>
         <span className="h-2 w-2 rounded-full bg-green-400" />
         <form action={adminLogout}>
-          <button className="text-xs text-gray-400 hover:text-red-500 transition">
+          <button className="text-xs text-slate-400 hover:text-red-500 transition">
             退出
           </button>
         </form>
@@ -80,7 +80,7 @@ function NavLink({
       className={`inline-flex items-center rounded-xl px-3 py-2 text-sm font-medium transition ${
         active
           ? "bg-pink-500 text-white shadow-sm"
-          : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+          : "text-slate-500 hover:bg-slate-100 hover:text-slate-600"
       }`}
     >
       {children}

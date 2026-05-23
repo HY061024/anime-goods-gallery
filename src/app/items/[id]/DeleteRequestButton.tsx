@@ -18,7 +18,7 @@ export default function DeleteRequestButton({ itemId }: { itemId: number }) {
 
   return (
     <div>
-      <p className="mb-3 text-sm text-gray-500">
+      <p className="mb-3 text-sm text-slate-500">
         如果你发现该周边信息有误或需要移除，可以申请删除。管理员审核通过后生效。
       </p>
       <button

@@ -230,14 +230,14 @@ export default function BatchItemForm({
   if (result) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-8">
-        <div className="rounded-3xl bg-white p-8 text-center shadow-sm ring-1 ring-gray-100">
+        <div className="rounded-3xl bg-white p-8 text-center shadow-sm border border-pink-100">
           <p className="text-2xl">🎉</p>
-          <p className="mt-4 text-lg font-semibold text-gray-900">
+          <p className="mt-4 text-lg font-semibold text-slate-800">
             成功上传 {result.successCount} 件商品
           </p>
           {result.errors && result.errors.length > 0 && (
             <div className="mt-4 text-left">
-              <p className="text-sm font-medium text-gray-700">以下商品提交失败：</p>
+              <p className="text-sm font-medium text-slate-600">以下商品提交失败：</p>
               <ul className="mt-2 space-y-1 text-sm text-red-500">
                 {result.errors.map((err, i) => (
                   <li key={i}>{err}</li>
@@ -258,28 +258,28 @@ export default function BatchItemForm({
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="mb-2 text-3xl font-bold text-gray-900">{title}</h1>
-      <p className="mb-8 text-gray-500">
+      <h1 className="mb-2 text-3xl font-bold text-slate-800">{title}</h1>
+      <p className="mb-8 text-slate-500">
         一次上传多件周边，共用作品和角色信息，每件可单独设置官图、实物图、标题、分类和价格
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* 共用信息 */}
-        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-          <h2 className="mb-3 text-sm font-semibold text-gray-700">共用信息（可被各行覆盖）</h2>
+        <div className="rounded-2xl bg-white p-5 shadow-sm border border-pink-100">
+          <h2 className="mb-3 text-sm font-semibold text-slate-600">共用信息（可被各行覆盖）</h2>
           <div className="grid gap-3 sm:grid-cols-2">
             <input
               value={sharedWork}
               onChange={(e) => setSharedWork(e.target.value)}
               list="batch-work-list"
               placeholder="作品名称（如：初音未来）"
-              className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400"
+              className="rounded-xl border border-pink-200 px-4 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400"
             />
             <input
               value={sharedCharacter}
               onChange={(e) => setSharedCharacter(e.target.value)}
               placeholder="角色名称（如：Miku）"
-              className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400"
+              className="rounded-xl border border-pink-200 px-4 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400"
             />
           </div>
         </div>
@@ -288,10 +288,10 @@ export default function BatchItemForm({
         {rows.map((row, index) => (
           <div
             key={row.id}
-            className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100"
+            className="rounded-2xl bg-white p-5 shadow-sm border border-pink-100"
           >
             <div className="mb-3 flex items-center justify-between">
-              <span className="text-sm font-semibold text-gray-500">第 {index + 1} 件</span>
+              <span className="text-sm font-semibold text-slate-500">第 {index + 1} 件</span>
               {rows.length > 1 && (
                 <button
                   type="button"
@@ -318,7 +318,7 @@ export default function BatchItemForm({
                     <button
                       type="button"
                       onClick={() => handleFileChange(row.id, "official", null)}
-                      className="absolute -top-2 -right-2 rounded-full bg-white p-1 text-gray-400 shadow ring-1 ring-gray-200 hover:text-red-500"
+                      className="absolute -top-2 -right-2 rounded-full bg-white p-1 text-slate-400 shadow border border-pink-200 hover:text-red-500"
                     >
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -355,7 +355,7 @@ export default function BatchItemForm({
                     <button
                       type="button"
                       onClick={() => handleFileChange(row.id, "real", null)}
-                      className="absolute -top-2 -right-2 rounded-full bg-white p-1 text-gray-400 shadow ring-1 ring-gray-200 hover:text-red-500"
+                      className="absolute -top-2 -right-2 rounded-full bg-white p-1 text-slate-400 shadow border border-pink-200 hover:text-red-500"
                     >
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -384,7 +384,7 @@ export default function BatchItemForm({
                 onChange={(e) => updateRow(row.id, "title", e.target.value)}
                 placeholder="商品标题 *"
                 required
-                className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400"
+                className="w-full rounded-xl border border-pink-200 px-4 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400"
               />
 
               {/* 作品 / 角色（可选覆盖） */}
@@ -394,13 +394,13 @@ export default function BatchItemForm({
                   onChange={(e) => updateRow(row.id, "work", e.target.value)}
                   list="batch-work-list"
                   placeholder={`作品${sharedWork ? `（共用: ${sharedWork}）` : ""}`}
-                  className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400"
+                  className="rounded-xl border border-pink-200 px-4 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400"
                 />
                 <input
                   value={row.character}
                   onChange={(e) => updateRow(row.id, "character", e.target.value)}
                   placeholder={`角色${sharedCharacter ? `（共用: ${sharedCharacter}）` : ""}`}
-                  className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400"
+                  className="rounded-xl border border-pink-200 px-4 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400"
                 />
               </div>
 
@@ -412,7 +412,7 @@ export default function BatchItemForm({
                   list="batch-category-list"
                   placeholder="分类 *"
                   required
-                  className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400"
+                  className="rounded-xl border border-pink-200 px-4 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400"
                 />
                 <input
                   value={row.price}
@@ -422,7 +422,7 @@ export default function BatchItemForm({
                   min="0"
                   placeholder="价格 *"
                   required
-                  className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400"
+                  className="rounded-xl border border-pink-200 px-4 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400"
                 />
               </div>
 
@@ -431,7 +431,7 @@ export default function BatchItemForm({
                 value={row.description}
                 onChange={(e) => updateRow(row.id, "description", e.target.value)}
                 placeholder="简介（选填）"
-                className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400"
+                className="w-full rounded-xl border border-pink-200 px-4 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400"
               />
             </div>
           </div>
@@ -465,7 +465,7 @@ export default function BatchItemForm({
           <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-500">{error}</p>
         )}
 
-        <p className="text-xs text-gray-400 text-center">
+        <p className="text-xs text-slate-400 text-center">
           每件商品至少需要上传官图或实物图中的一种
         </p>
 

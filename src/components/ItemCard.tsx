@@ -38,10 +38,10 @@ export default function ItemCard({
   onCollect?: (itemId: number) => void;
 }) {
   return (
-    <div className="group relative overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100 transition hover:-translate-y-1 hover:shadow-lg hover:ring-pink-200">
+    <div className="group relative overflow-hidden rounded-2xl bg-white border border-pink-100 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
       <Link href={`/items/${item.id}`} className="block">
         {/* 图片区域 */}
-        <div className="relative aspect-square overflow-hidden bg-gray-100">
+        <div className="relative aspect-square overflow-hidden bg-slate-100">
           <img
             src={getItemMainImage(item)}
             alt={item.title}
@@ -73,11 +73,11 @@ export default function ItemCard({
 
         {/* 信息区域 */}
         <div className="p-3">
-          <h2 className="line-clamp-2 text-sm font-semibold text-gray-900 group-hover:text-pink-600 transition-colors">
+          <h2 className="line-clamp-2 text-sm font-semibold text-slate-800 group-hover:text-pink-600 transition-colors">
             {item.title}
           </h2>
 
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-slate-500">
             {item.work}
             {item.character ? ` / ${item.character}` : ""}
           </p>
@@ -87,7 +87,7 @@ export default function ItemCard({
             <Link
               href={`/users/${submitterId}`}
               onClick={(e) => e.stopPropagation()}
-              className="mt-1.5 flex items-center gap-1.5 text-xs text-gray-400 hover:text-pink-500 transition-colors"
+              className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-400 hover:text-pink-500 transition-colors"
             >
               <span className="h-5 w-5 shrink-0 overflow-hidden rounded-full bg-pink-100">
                 {submitterAvatar ? (
@@ -102,7 +102,7 @@ export default function ItemCard({
               {item.created_at && <span>· {relativeTime(item.created_at)}</span>}
             </Link>
           ) : submitterName ? (
-            <p className="mt-1.5 text-xs text-gray-400">
+            <p className="mt-1.5 text-xs text-slate-400">
               {submitterName}
               {item.created_at ? ` · ${relativeTime(item.created_at)}` : ""}
             </p>

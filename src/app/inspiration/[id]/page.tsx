@@ -76,15 +76,15 @@ export default async function InspirationDetailPage({ params }: Props) {
         <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${TYPE_COLORS[post.type]}`}>
           {TYPE_LABELS[post.type]}
         </span>
-        <span className="text-xs text-gray-400">{relativeTime(post.created_at)}</span>
+        <span className="text-xs text-slate-400">{relativeTime(post.created_at)}</span>
         {post.visibility === "private" && (
-          <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">仅自己可见</span>
+          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500">仅自己可见</span>
         )}
       </div>
 
       {/* 标题 */}
       {post.title && (
-        <h1 className="mt-3 text-2xl font-bold text-gray-900">{post.title}</h1>
+        <h1 className="mt-3 text-2xl font-bold text-slate-800">{post.title}</h1>
       )}
 
       {/* 作者信息 */}
@@ -99,7 +99,7 @@ export default async function InspirationDetailPage({ params }: Props) {
               </span>
             )}
           </span>
-          <span className="text-sm font-medium text-gray-900">
+          <span className="text-sm font-medium text-slate-800">
             {author?.displayName ?? `用户${post.user_id.slice(0, 6)}`}
           </span>
         </Link>
@@ -132,7 +132,7 @@ export default async function InspirationDetailPage({ params }: Props) {
       )}
 
       {/* 内容 */}
-      <div className="mt-5 whitespace-pre-wrap text-sm leading-relaxed text-gray-800">
+      <div className="mt-5 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
         {post.content}
       </div>
 
@@ -154,7 +154,7 @@ export default async function InspirationDetailPage({ params }: Props) {
       )}
 
       {/* 关联信息 */}
-      <div className="mt-5 flex flex-wrap gap-3 text-sm text-gray-500">
+      <div className="mt-5 flex flex-wrap gap-3 text-sm text-slate-500">
         {post.work && <span>作品：{post.work}</span>}
         {post.character && <span>角色：{post.character}</span>}
         {post.related_item_id && (
@@ -171,7 +171,7 @@ export default async function InspirationDetailPage({ params }: Props) {
             <Link
               key={tag}
               href={`/inspiration?tag=${encodeURIComponent(tag)}`}
-              className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-500 hover:bg-pink-50 hover:text-pink-500 transition"
+              className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs text-slate-500 hover:bg-pink-50 hover:text-pink-500 transition"
             >
               #{tag}
             </Link>
@@ -180,13 +180,13 @@ export default async function InspirationDetailPage({ params }: Props) {
       )}
 
       {/* 操作栏 */}
-      <div className="mt-6 flex items-center gap-4 border-t border-gray-100 pt-4">
+      <div className="mt-6 flex items-center gap-4 border-t border-pink-100 pt-4">
         <LikeButton postId={postId} liked={liked} likeCount={post.like_count} onLike={likePost} />
         <FavoriteButton postId={postId} favorited={favorited} favoriteCount={post.favorite_count} onFavorite={favoritePost} />
       </div>
 
       {/* 评论 */}
-      <div className="mt-8 border-t border-gray-100 pt-6">
+      <div className="mt-8 border-t border-pink-100 pt-6">
         <CommentSection
           comments={comments}
           authors={authors}

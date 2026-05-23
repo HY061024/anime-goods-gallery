@@ -10,8 +10,8 @@ export default function MyPageError({
   return (
     <div className="mx-auto max-w-lg px-4 py-16 text-center">
       <p className="text-4xl">&#x1F614;</p>
-      <h2 className="mt-4 text-xl font-bold text-gray-900">加载失败</h2>
-      <p className="mt-2 text-sm text-gray-500">
+      <h2 className="mt-4 text-xl font-bold text-slate-800">加载失败</h2>
+      <p className="mt-2 text-sm text-slate-500">
         {error.message || "请稍后再试"}
       </p>
       <button

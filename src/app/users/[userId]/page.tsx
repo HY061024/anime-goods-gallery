@@ -35,7 +35,7 @@ async function CabinetNotPublic({
         <Link href="/" className="text-sm font-medium text-pink-500 transition hover:text-pink-600">
           &larr; 返回首页
         </Link>
-        <Link href="/cabinets" className="text-sm font-medium text-gray-400 transition hover:text-pink-500">
+        <Link href="/cabinets" className="text-sm font-medium text-slate-400 transition hover:text-pink-500">
           痛柜广场
         </Link>
       </div>
@@ -62,9 +62,9 @@ async function CabinetNotPublic({
         </div>
 
         <div className="flex-1 min-w-0 pt-10">
-          <h1 className="text-2xl font-bold text-gray-900">{displayName}</h1>
-          {profile.bio && <p className="text-sm text-gray-500 mt-0.5">{profile.bio}</p>}
-          <p className="text-xs text-gray-400 mt-1">{profile.cabinet_views} 次浏览</p>
+          <h1 className="text-2xl font-bold text-slate-800">{displayName}</h1>
+          {profile.bio && <p className="text-sm text-slate-500 mt-0.5">{profile.bio}</p>}
+          <p className="text-xs text-slate-400 mt-1">{profile.cabinet_views} 次浏览</p>
         </div>
 
         <div className="pt-10 shrink-0 flex flex-col items-end gap-1.5">
@@ -104,9 +104,9 @@ async function CabinetNotPublic({
       </div>
 
       {/* Not public notice */}
-      <div className="rounded-3xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-100">
-        <p className="text-lg font-semibold text-gray-900">TA 的痛柜暂未公开</p>
-        <p className="mt-2 text-gray-500">Ta 还没有开启痛柜的公开分享</p>
+      <div className="rounded-3xl bg-white p-12 text-center shadow-sm border border-pink-100">
+        <p className="text-lg font-semibold text-slate-800">TA 的痛柜暂未公开</p>
+        <p className="mt-2 text-slate-500">Ta 还没有开启痛柜的公开分享</p>
         {!visitor && (
           <Link href="/auth/login" className="mt-4 inline-block text-sm font-medium text-pink-500">
             登录后加好友
@@ -148,7 +148,7 @@ export default async function PublicCabinetPage({ params }: Props) {
         <Link href="/" className="text-sm font-medium text-pink-500 transition hover:text-pink-600">
           &larr; 返回首页
         </Link>
-        <Link href="/cabinets" className="text-sm font-medium text-gray-400 transition hover:text-pink-500">
+        <Link href="/cabinets" className="text-sm font-medium text-slate-400 transition hover:text-pink-500">
           痛柜广场
         </Link>
       </div>
@@ -175,9 +175,9 @@ export default async function PublicCabinetPage({ params }: Props) {
         </div>
 
         <div className="flex-1 min-w-0 pt-10">
-          <h1 className="text-2xl font-bold text-gray-900">{displayName} 的痛柜</h1>
-          {profile.bio && <p className="text-sm text-gray-500 mt-0.5">{profile.bio}</p>}
-          <p className="text-xs text-gray-400 mt-1">
+          <h1 className="text-2xl font-bold text-slate-800">{displayName} 的痛柜</h1>
+          {profile.bio && <p className="text-sm text-slate-500 mt-0.5">{profile.bio}</p>}
+          <p className="text-xs text-slate-400 mt-1">
             {items.length} 件周边 &middot; {profile.cabinet_views} 次浏览
           </p>
         </div>
@@ -222,9 +222,9 @@ export default async function PublicCabinetPage({ params }: Props) {
       </div>
 
       {items.length === 0 ? (
-        <div className="rounded-3xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-100">
-          <p className="text-lg font-semibold text-gray-900">痛柜还是空的</p>
-          <p className="mt-2 text-gray-500">Ta 还没有添加任何周边</p>
+        <div className="rounded-3xl bg-white p-12 text-center shadow-sm border border-pink-100">
+          <p className="text-lg font-semibold text-slate-800">痛柜还是空的</p>
+          <p className="mt-2 text-slate-500">Ta 还没有添加任何周边</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">

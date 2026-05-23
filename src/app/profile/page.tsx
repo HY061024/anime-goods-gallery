@@ -20,12 +20,12 @@ export default async function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="mb-6 text-xl font-bold text-gray-900">个人中心</h1>
+      <h1 className="mb-6 text-xl font-bold text-slate-800">个人中心</h1>
 
       {user ? (
         <>
           {/* 用户信息卡片 */}
-          <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
+          <div className="rounded-2xl bg-white p-6 shadow-sm border border-pink-100">
             <div className="flex items-center gap-4">
               {profile?.avatar_url ? (
                 <img
@@ -39,10 +39,10 @@ export default async function ProfilePage() {
                 </div>
               )}
               <div>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-lg font-semibold text-slate-800">
                   {profile?.display_name ?? "未设置昵称"}
                 </p>
-                <p className="text-sm text-gray-500">{user.email}</p>
+                <p className="text-sm text-slate-500">{user.email}</p>
               </div>
             </div>
             <div className="mt-4">
@@ -88,7 +88,7 @@ export default async function ProfilePage() {
       ) : (
         <>
           {/* 未登录 */}
-          <div className="rounded-2xl bg-white p-8 text-center shadow-sm ring-1 ring-gray-100">
+          <div className="rounded-2xl bg-white p-8 text-center shadow-sm border border-pink-100">
             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-pink-100">
               <svg
                 className="h-10 w-10 text-pink-500"
@@ -104,10 +104,10 @@ export default async function ProfilePage() {
                 />
               </svg>
             </div>
-            <p className="mb-2 text-lg font-semibold text-gray-900">
+            <p className="mb-2 text-lg font-semibold text-slate-800">
               登录后使用完整功能
             </p>
-            <p className="mb-6 text-sm text-gray-500">
+            <p className="mb-6 text-sm text-slate-500">
               登录后可管理投稿、痛柜、好友和消息
             </p>
             <div className="flex justify-center gap-3">
@@ -137,7 +137,7 @@ export default async function ProfilePage() {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <p className="px-1 text-xs font-medium uppercase tracking-wider text-gray-400">
+    <p className="px-1 text-xs font-medium uppercase tracking-wider text-slate-400">
       {children}
     </p>
   );
@@ -155,14 +155,14 @@ function ProfileLink({
   return (
     <Link
       href={href}
-      className="flex items-center gap-3 rounded-xl bg-white px-4 py-3 shadow-sm ring-1 ring-gray-100 transition hover:bg-pink-50"
+      className="flex items-center gap-3 rounded-xl bg-white px-4 py-3 shadow-sm border border-pink-100 transition hover:bg-pink-50"
     >
       <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-pink-50 text-pink-500">
         {icon}
       </span>
-      <span className="text-sm font-medium text-gray-700">{label}</span>
+      <span className="text-sm font-medium text-slate-600">{label}</span>
       <svg
-        className="ml-auto h-4 w-4 text-gray-300"
+        className="ml-auto h-4 w-4 text-slate-300"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"

@@ -28,7 +28,7 @@ export default function HomeLoading() {
         </div>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
+            <div key={i} className="overflow-hidden rounded-2xl bg-white shadow-sm border border-pink-100">
               <div className="skeleton aspect-square w-full rounded-none" />
               <div className="space-y-2 p-4">
                 <div className="skeleton h-4 w-full rounded" />

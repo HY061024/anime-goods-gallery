@@ -105,9 +105,9 @@ export default function ReviewList({
 
   if (localSubmissions.length === 0 && localDeletes.length === 0) {
     return (
-      <div className="rounded-3xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-100">
-        <p className="text-lg font-semibold text-gray-900">暂无待审核内容</p>
-        <p className="mt-2 text-sm text-gray-500">所有投稿和删除申请都已处理完毕</p>
+      <div className="rounded-3xl bg-white p-12 text-center shadow-sm border border-pink-100">
+        <p className="text-lg font-semibold text-slate-800">暂无待审核内容</p>
+        <p className="mt-2 text-sm text-slate-500">所有投稿和删除申请都已处理完毕</p>
       </div>
     );
   }
@@ -115,19 +115,19 @@ export default function ReviewList({
   return (
     <div>
       {/* Tabs */}
-      <div className="mb-4 flex gap-1 rounded-2xl bg-white p-1.5 shadow-sm ring-1 ring-gray-100">
+      <div className="mb-4 flex gap-1 rounded-2xl bg-white p-1.5 shadow-sm border border-pink-100">
         <button
           onClick={() => { setTab("submissions"); setExpandedId(null); }}
           className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-medium transition ${
             tab === "submissions"
               ? "bg-pink-500 text-white shadow-sm"
-              : "text-gray-500 hover:text-gray-700"
+              : "text-slate-500 hover:text-slate-600"
           }`}
         >
           待审核投稿
           {localSubmissions.length > 0 && (
             <span className={`ml-1.5 rounded-full px-2 py-0.5 text-xs ${
-              tab === "submissions" ? "bg-pink-400" : "bg-gray-100"
+              tab === "submissions" ? "bg-pink-400" : "bg-slate-100"
             }`}>
               {localSubmissions.length}
             </span>
@@ -138,13 +138,13 @@ export default function ReviewList({
           className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-medium transition ${
             tab === "deleteRequests"
               ? "bg-pink-500 text-white shadow-sm"
-              : "text-gray-500 hover:text-gray-700"
+              : "text-slate-500 hover:text-slate-600"
           }`}
         >
           删除申请
           {localDeletes.length > 0 && (
             <span className={`ml-1.5 rounded-full px-2 py-0.5 text-xs ${
-              tab === "deleteRequests" ? "bg-pink-400" : "bg-gray-100"
+              tab === "deleteRequests" ? "bg-pink-400" : "bg-slate-100"
             }`}>
               {localDeletes.length}
             </span>
@@ -163,7 +163,7 @@ export default function ReviewList({
           return (
             <div
               key={item.id}
-              className={`rounded-2xl bg-white shadow-sm ring-1 ring-gray-100 transition-all duration-200 ${
+              className={`rounded-2xl bg-white shadow-sm border border-pink-100 transition-all duration-200 ${
                 isRemoving ? "scale-95 opacity-0" : ""
               }`}
             >
@@ -173,7 +173,7 @@ export default function ReviewList({
                 onClick={() => setExpandedId(isExpanded ? null : item.id)}
                 className="flex w-full items-center gap-4 p-4 text-left"
               >
-                <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-gray-100">
+                <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-slate-100">
                   <img
                     src={getItemMainImage(item)}
                     alt={item.title}
@@ -192,17 +192,17 @@ export default function ReviewList({
                         待审核
                       </span>
                     )}
-                    <span className="rounded-lg bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+                    <span className="rounded-lg bg-slate-100 px-2 py-0.5 text-xs text-slate-500">
                       {item.category}
                     </span>
-                    <span className="ml-auto shrink-0 text-xs text-gray-400">
+                    <span className="ml-auto shrink-0 text-xs text-slate-400">
                       {item.created_at ? relativeTime(item.created_at) : ""}
                     </span>
                   </div>
-                  <h2 className="mt-1 truncate text-sm font-semibold text-gray-900">
+                  <h2 className="mt-1 truncate text-sm font-semibold text-slate-800">
                     {item.title}
                   </h2>
-                  <p className="truncate text-xs text-gray-500">
+                  <p className="truncate text-xs text-slate-500">
                     {item.work} / {item.character}
                     <span className="ml-2 font-medium text-pink-500">¥{item.price}</span>
                   </p>
@@ -210,7 +210,7 @@ export default function ReviewList({
 
                 {/* Expand indicator */}
                 <svg
-                  className={`h-5 w-5 shrink-0 text-gray-300 transition ${isExpanded ? "rotate-180" : ""}`}
+                  className={`h-5 w-5 shrink-0 text-slate-300 transition ${isExpanded ? "rotate-180" : ""}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -221,13 +221,13 @@ export default function ReviewList({
 
               {/* Expanded panel */}
               {isExpanded && (
-                <div className="border-t border-gray-100 px-4 pb-4 pt-3">
+                <div className="border-t border-pink-100 px-4 pb-4 pt-3">
                   {/* Larger image */}
                   <div className="mb-4 flex justify-center">
                     <img
                       src={getItemMainImage(item)}
                       alt={item.title}
-                      className="h-48 w-48 rounded-xl object-cover ring-1 ring-gray-200"
+                      className="h-48 w-48 rounded-xl object-cover border border-pink-200"
                     />
                   </div>
 
@@ -236,47 +236,47 @@ export default function ReviewList({
                     {item.real_image_url ? (
                       <span className="rounded-full bg-green-100 px-2 py-0.5 text-green-700">有实物图</span>
                     ) : (
-                      <span className="rounded-full bg-gray-100 px-2 py-0.5 text-gray-400">待补充实物图</span>
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-slate-400">待补充实物图</span>
                     )}
                     {item.official_image_url ? (
                       <span className="rounded-full bg-blue-100 px-2 py-0.5 text-blue-700">有官图</span>
                     ) : (
-                      <span className="rounded-full bg-gray-100 px-2 py-0.5 text-gray-400">待补充官图</span>
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-slate-400">待补充官图</span>
                     )}
                   </div>
 
                   {/* Detail grid */}
                   <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                    <dt className="text-gray-400">商品标题</dt>
-                    <dd className="font-medium text-gray-900">{item.title}</dd>
+                    <dt className="text-slate-400">商品标题</dt>
+                    <dd className="font-medium text-slate-800">{item.title}</dd>
 
-                    <dt className="text-gray-400">作品名称</dt>
-                    <dd className="text-gray-700">{item.work}</dd>
+                    <dt className="text-slate-400">作品名称</dt>
+                    <dd className="text-slate-600">{item.work}</dd>
 
-                    <dt className="text-gray-400">角色名称</dt>
-                    <dd className="text-gray-700">{item.character}</dd>
+                    <dt className="text-slate-400">角色名称</dt>
+                    <dd className="text-slate-600">{item.character}</dd>
 
-                    <dt className="text-gray-400">分类</dt>
-                    <dd className="text-gray-700">{item.category}</dd>
+                    <dt className="text-slate-400">分类</dt>
+                    <dd className="text-slate-600">{item.category}</dd>
 
-                    <dt className="text-gray-400">价格</dt>
+                    <dt className="text-slate-400">价格</dt>
                     <dd className="font-medium text-pink-500">¥{item.price}</dd>
 
-                    <dt className="text-gray-400">提交时间</dt>
-                    <dd className="text-gray-700" title={item.created_at ? formatDate(item.created_at) : ""}>
+                    <dt className="text-slate-400">提交时间</dt>
+                    <dd className="text-slate-600" title={item.created_at ? formatDate(item.created_at) : ""}>
                       {item.created_at ? formatDate(item.created_at) : "—"}
                     </dd>
 
-                    <dt className="text-gray-400">提交者</dt>
-                    <dd className="font-mono text-xs text-gray-500">
+                    <dt className="text-slate-400">提交者</dt>
+                    <dd className="font-mono text-xs text-slate-500">
                       {item.submitter_id ? `${item.submitter_id.slice(0, 8)}...` : "—"}
                     </dd>
                   </dl>
 
                   {cleanDesc && (
-                    <div className="mt-3 rounded-xl bg-gray-50 p-3">
-                      <p className="text-xs text-gray-400 mb-1">描述</p>
-                      <p className="text-sm text-gray-700 whitespace-pre-wrap">{cleanDesc}</p>
+                    <div className="mt-3 rounded-xl bg-slate-50 p-3">
+                      <p className="text-xs text-slate-400 mb-1">描述</p>
+                      <p className="text-sm text-slate-600 whitespace-pre-wrap">{cleanDesc}</p>
                     </div>
                   )}
 
@@ -336,8 +336,8 @@ export default function ReviewList({
         })}
 
         {items.length === 0 && (
-          <div className="rounded-2xl bg-white p-8 text-center shadow-sm ring-1 ring-gray-100">
-            <p className="text-sm text-gray-400">
+          <div className="rounded-2xl bg-white p-8 text-center shadow-sm border border-pink-100">
+            <p className="text-sm text-slate-400">
               {tab === "submissions" ? "没有待审核投稿" : "没有待处理删除申请"}
             </p>
           </div>

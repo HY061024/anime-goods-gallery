@@ -37,7 +37,7 @@ export default function InspirationCard({
   onFavorite?: (postId: number) => Promise<unknown> | void;
 }) {
   return (
-    <div className="group relative overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100 transition hover:-translate-y-1 hover:shadow-lg hover:ring-pink-200">
+    <div className="group relative overflow-hidden rounded-2xl bg-white shadow-sm border border-pink-100 transition hover:-translate-y-1 hover:shadow-lg hover:border-pink-200">
       <Link href={`/inspiration/${post.id}`} className="block">
         {/* 封面图 / 占位 */}
         <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-pink-100 to-purple-100">
@@ -66,12 +66,12 @@ export default function InspirationCard({
 
         {/* 信息 */}
         <div className="p-3">
-          <h2 className="line-clamp-1 text-sm font-semibold text-gray-900 group-hover:text-pink-600 transition-colors">
+          <h2 className="line-clamp-1 text-sm font-semibold text-slate-800 group-hover:text-pink-600 transition-colors">
             {post.title || post.content.slice(0, 50) || "无标题"}
           </h2>
 
           {post.work && (
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-slate-500">
               {post.work}
               {post.character ? ` / ${post.character}` : ""}
             </p>
@@ -83,7 +83,7 @@ export default function InspirationCard({
               {post.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] text-gray-500"
+                  className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-500"
                 >
                   #{tag}
                 </span>
@@ -99,7 +99,7 @@ export default function InspirationCard({
         <Link
           href={`/users/${post.user_id}`}
           onClick={(e) => e.stopPropagation()}
-          className="flex min-w-0 flex-1 items-center gap-1.5 text-xs text-gray-400 hover:text-pink-500 transition-colors"
+          className="flex min-w-0 flex-1 items-center gap-1.5 text-xs text-slate-400 hover:text-pink-500 transition-colors"
         >
           <span className="h-5 w-5 shrink-0 overflow-hidden rounded-full bg-pink-100">
             {authorAvatar ? (
@@ -122,7 +122,7 @@ export default function InspirationCard({
             onLike?.(post.id);
           }}
           className={`flex items-center gap-1 text-xs transition-colors ${
-            liked ? "text-red-500" : "text-gray-400 hover:text-red-400"
+            liked ? "text-red-500" : "text-slate-400 hover:text-red-400"
           }`}
         >
           <svg className="h-4 w-4" fill={liked ? "currentColor" : "none"} stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
@@ -138,7 +138,7 @@ export default function InspirationCard({
             onFavorite?.(post.id);
           }}
           className={`flex items-center gap-1 text-xs transition-colors ${
-            favorited ? "text-yellow-500" : "text-gray-400 hover:text-yellow-400"
+            favorited ? "text-yellow-500" : "text-slate-400 hover:text-yellow-400"
           }`}
         >
           <svg className="h-4 w-4" fill={favorited ? "currentColor" : "none"} stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
@@ -148,7 +148,7 @@ export default function InspirationCard({
         </button>
 
         {/* 评论数 */}
-        <span className="flex items-center gap-1 text-xs text-gray-400">
+        <span className="flex items-center gap-1 text-xs text-slate-400">
           <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>

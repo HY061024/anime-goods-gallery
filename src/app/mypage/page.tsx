@@ -75,16 +75,16 @@ export default async function MyPage() {
 function StatCard({
   label,
   value,
-  color = "text-gray-900",
+  color = "text-slate-800",
 }: {
   label: string;
   value: number;
   color?: string;
 }) {
   return (
-    <div className="rounded-2xl bg-white p-4 text-center shadow-sm ring-1 ring-gray-100">
+    <div className="rounded-2xl bg-white p-4 text-center shadow-sm border border-pink-100">
       <p className={`text-2xl font-bold ${color}`}>{value}</p>
-      <p className="mt-1 text-xs text-gray-500">{label}</p>
+      <p className="mt-1 text-xs text-slate-500">{label}</p>
     </div>
   );
 }

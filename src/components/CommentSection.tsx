@@ -46,7 +46,7 @@ export default function CommentSection({
 
   return (
     <div>
-      <h3 className="mb-4 text-sm font-semibold text-gray-900">
+      <h3 className="mb-4 text-sm font-semibold text-slate-800">
         评论 ({comments.length})
       </h3>
 
@@ -69,12 +69,12 @@ export default function CommentSection({
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-xs">
-                    <span className="font-medium text-gray-900">
+                    <span className="font-medium text-slate-800">
                       {author?.displayName ?? `用户${c.user_id.slice(0, 6)}`}
                     </span>
-                    <span className="ml-1.5 text-gray-400">{relativeTime(c.created_at)}</span>
+                    <span className="ml-1.5 text-slate-400">{relativeTime(c.created_at)}</span>
                   </p>
-                  <p className="mt-0.5 text-sm text-gray-700">{c.content}</p>
+                  <p className="mt-0.5 text-sm text-slate-600">{c.content}</p>
                   {isOwner && onDeleteComment && (
                     <button
                       onClick={async () => {
@@ -83,7 +83,7 @@ export default function CommentSection({
                         setDeletingId(null);
                       }}
                       disabled={deletingId === c.id}
-                      className="mt-0.5 text-[10px] text-gray-400 hover:text-red-500 disabled:opacity-50"
+                      className="mt-0.5 text-[10px] text-slate-400 hover:text-red-500 disabled:opacity-50"
                     >
                       {deletingId === c.id ? "删除中…" : "删除"}
                     </button>
@@ -94,7 +94,7 @@ export default function CommentSection({
           })}
         </div>
       ) : (
-        <p className="mb-4 text-sm text-gray-400">暂无评论，来说两句吧</p>
+        <p className="mb-4 text-sm text-slate-400">暂无评论，来说两句吧</p>
       )}
 
       {/* 评论输入框 */}
@@ -105,7 +105,7 @@ export default function CommentSection({
             onChange={(e) => setText(e.target.value)}
             placeholder="写评论…"
             maxLength={500}
-            className="flex-1 rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-pink-400"
+            className="flex-1 rounded-xl border border-pink-200 px-3 py-2 text-sm outline-none focus:border-pink-400"
           />
           <button
             type="submit"
@@ -116,7 +116,7 @@ export default function CommentSection({
           </button>
         </form>
       ) : currentUserId ? null : (
-        <p className="text-sm text-gray-400">
+        <p className="text-sm text-slate-400">
           <a href="/auth/login" className="text-pink-500 hover:underline">登录</a> 后即可评论
         </p>
       )}

@@ -18,7 +18,7 @@ export function DeletePostButton({
     return (
       <button
         onClick={() => setConfirming(true)}
-        className="ml-auto text-xs text-gray-400 hover:text-red-500 transition"
+        className="ml-auto text-xs text-slate-400 hover:text-red-500 transition"
       >
         删除
       </button>
@@ -27,7 +27,7 @@ export function DeletePostButton({
 
   return (
     <span className="ml-auto flex items-center gap-1.5 text-xs">
-      <span className="text-gray-400">确认删除？</span>
+      <span className="text-slate-400">确认删除？</span>
       <button
         onClick={async () => {
           setDeleting(true);
@@ -45,7 +45,7 @@ export function DeletePostButton({
       </button>
       <button
         onClick={() => setConfirming(false)}
-        className="text-gray-400 hover:text-gray-500"
+        className="text-slate-400 hover:text-slate-500"
       >
         取消
       </button>

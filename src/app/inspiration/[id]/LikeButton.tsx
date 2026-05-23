@@ -22,7 +22,7 @@ export function LikeButton({
       className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm transition ${
         liked
           ? "bg-red-50 text-red-500"
-          : "bg-gray-50 text-gray-500 hover:bg-red-50 hover:text-red-400"
+          : "bg-slate-50 text-slate-500 hover:bg-red-50 hover:text-red-400"
       }`}
     >
       <svg className="h-5 w-5" fill={liked ? "currentColor" : "none"} stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">

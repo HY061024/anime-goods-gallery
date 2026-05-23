@@ -23,9 +23,9 @@ export default function FeedbackForm() {
 
   if (ok) {
     return (
-      <div className="rounded-2xl bg-white p-8 text-center shadow-sm ring-1 ring-gray-100">
+      <div className="rounded-2xl bg-white p-8 text-center shadow-sm border border-pink-100">
         <p className="text-lg font-semibold text-green-600">感谢你的反馈！</p>
-        <p className="mt-2 text-sm text-gray-400">我们会认真查看每一条意见</p>
+        <p className="mt-2 text-sm text-slate-400">我们会认真查看每一条意见</p>
         <button
           onClick={() => setOk(false)}
           className="mt-4 rounded-lg bg-pink-500 px-4 py-2 text-sm font-medium text-white hover:bg-pink-600"
@@ -37,9 +37,9 @@ export default function FeedbackForm() {
   }
 
   return (
-    <form action={handleSubmit} ref={formRef} className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100 space-y-4">
+    <form action={handleSubmit} ref={formRef} className="rounded-2xl bg-white p-6 shadow-sm border border-pink-100 space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-slate-600 mb-1">
           反馈内容 <span className="text-red-400">*</span>
         </label>
         <textarea
@@ -47,19 +47,19 @@ export default function FeedbackForm() {
           required
           rows={5}
           placeholder="请描述你的问题、建议或想法…"
-          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-pink-400 resize-none"
+          className="w-full rounded-xl border border-pink-200 px-4 py-3 text-sm outline-none focus:border-pink-400 resize-none"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          联系方式 <span className="text-gray-400 text-xs">(选填)</span>
+        <label className="block text-sm font-medium text-slate-600 mb-1">
+          联系方式 <span className="text-slate-400 text-xs">(选填)</span>
         </label>
         <input
           name="email"
           type="email"
           placeholder="邮箱，方便我们回复"
-          className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400"
+          className="w-full rounded-xl border border-pink-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400"
         />
       </div>
 

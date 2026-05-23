@@ -51,14 +51,14 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
   const activeFilterCount = [q, category, work, character, params.minPrice, params.maxPrice].filter(Boolean).length;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
+    <div className="mx-auto max-w-7xl px-6 py-8">
       {/* 页面标题 */}
       <div className="mb-8">
         <Link href="/" className="text-sm font-medium text-pink-500 transition hover:text-pink-600">
           ← 返回首页
         </Link>
-        <h1 className="mt-3 text-3xl font-bold text-gray-900">照影图鉴</h1>
-        <p className="mt-2 text-gray-500">按 IP（作品）、角色或分类浏览所有二次元周边</p>
+        <h1 className="mt-3 text-3xl font-bold text-slate-800">照影图鉴</h1>
+        <p className="mt-2 text-slate-500">按 IP（作品）、角色或分类浏览所有二次元周边</p>
       </div>
 
       {/* 投稿成功提示 */}
@@ -76,13 +76,13 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
       )}
 
       {/* 搜索和筛选表单 */}
-      <form className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
+      <form className="mb-4 overflow-hidden rounded-2xl bg-white border border-pink-100 shadow-sm">
         <div className="grid gap-3 p-5 md:grid-cols-[1fr_160px_160px_100px]">
           <input
             name="q"
             defaultValue={q}
             placeholder="搜索角色、作品或周边名称…"
-            className="rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
+            className="rounded-xl border border-pink-200 px-4 py-3 text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
           />
 
           <input
@@ -90,7 +90,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
             defaultValue={category}
             list="category-list"
             placeholder="分类筛选…"
-            className="rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
+            className="rounded-xl border border-pink-200 px-4 py-3 text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
           />
           <datalist id="category-list">
             {categories.map((c) => (
@@ -103,7 +103,7 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
             defaultValue={work}
             list="work-list"
             placeholder="IP／作品…"
-            className="rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
+            className="rounded-xl border border-pink-200 px-4 py-3 text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
           />
           <datalist id="work-list">
             {ips.map((ip) => (
@@ -116,8 +116,8 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
           </button>
         </div>
 
-        <div className="flex items-center gap-3 border-t border-gray-50 px-5 pb-5">
-          <span className="text-xs text-gray-400 shrink-0">价格区间</span>
+        <div className="flex items-center gap-3 border-t border-pink-50 px-5 pb-5">
+          <span className="text-xs text-slate-400 shrink-0">价格区间</span>
           <input
             name="minPrice"
             type="number"
@@ -125,9 +125,9 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
             step="0.01"
             defaultValue={params.minPrice ?? ""}
             placeholder="最低价"
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400"
+            className="w-full rounded-xl border border-pink-200 px-3 py-2 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400"
           />
-          <span className="text-xs text-gray-300">—</span>
+          <span className="text-xs text-slate-300">—</span>
           <input
             name="maxPrice"
             type="number"
@@ -135,16 +135,16 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
             step="0.01"
             defaultValue={params.maxPrice ?? ""}
             placeholder="最高价"
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400"
+            className="w-full rounded-xl border border-pink-200 px-3 py-2 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400"
           />
         </div>
 
         {/* 结果统计 */}
-        <div className="flex items-center justify-between border-t border-gray-50 bg-gray-50/50 px-5 py-3">
-          <p className="text-sm text-gray-500">
+        <div className="flex items-center justify-between border-t border-pink-50 bg-slate-50/50 px-5 py-3">
+          <p className="text-sm text-slate-500">
             找到 <span className="font-semibold text-pink-500">{filteredItems.length}</span> 条记录
             {activeFilterCount > 0 && (
-              <span className="ml-1 text-gray-400">（已筛选）</span>
+              <span className="ml-1 text-slate-400">（已筛选）</span>
             )}
           </p>
           {activeFilterCount > 0 && (
@@ -158,15 +158,15 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
       {/* 热门 IP 快捷标签 */}
       {!activeFilterCount && popularWorks.length > 0 && (
         <div className="mb-3 flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium text-gray-400">热门IP：</span>
+          <span className="text-xs font-medium text-slate-400">热门IP：</span>
           {popularWorks.map((w) => (
             <Link
               key={w.name}
               href={`/items?work=${encodeURIComponent(w.name)}`}
-              className="rounded-full bg-white px-3 py-1.5 text-xs text-gray-600 shadow-sm ring-1 ring-gray-150 transition hover:bg-pink-50 hover:text-pink-500 hover:ring-pink-200"
+              className="rounded-full bg-white border border-pink-100 px-3 py-1.5 text-xs text-slate-600 shadow-sm transition hover:bg-pink-50 hover:text-pink-500"
             >
               {w.name}
-              <span className="ml-1 text-gray-300">{w.count}</span>
+              <span className="ml-1 text-slate-300">{w.count}</span>
             </Link>
           ))}
         </div>
@@ -175,15 +175,15 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
       {/* 热门角色快捷标签 */}
       {!activeFilterCount && popularCharacters.length > 0 && (
         <div className="mb-6 flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium text-gray-400">热门角色：</span>
+          <span className="text-xs font-medium text-slate-400">热门角色：</span>
           {popularCharacters.map((c) => (
             <Link
               key={c.name}
               href={`/items?character=${encodeURIComponent(c.name)}`}
-              className="rounded-full bg-white px-3 py-1.5 text-xs text-gray-600 shadow-sm ring-1 ring-gray-150 transition hover:bg-pink-50 hover:text-pink-500 hover:ring-pink-200"
+              className="rounded-full bg-white border border-pink-100 px-3 py-1.5 text-xs text-slate-600 shadow-sm transition hover:bg-pink-50 hover:text-pink-500"
             >
               {c.name}
-              <span className="ml-1 text-gray-300">{c.count}</span>
+              <span className="ml-1 text-slate-300">{c.count}</span>
             </Link>
           ))}
         </div>
@@ -209,9 +209,9 @@ export default async function ItemsPage({ searchParams }: ItemsPageProps) {
           })}
         </div>
       ) : (
-        <div className="rounded-3xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-100">
-          <p className="text-lg font-semibold text-gray-900">没有找到相关周边</p>
-          <p className="mt-2 text-gray-500">可以换一个角色名、作品名或分类再试试</p>
+        <div className="rounded-3xl bg-white border border-pink-100 p-12 text-center shadow-sm">
+          <p className="text-lg font-semibold text-slate-800">没有找到相关周边</p>
+          <p className="mt-2 text-slate-500">可以换一个角色名、作品名或分类再试试</p>
           <Link href="/items" className="mt-4 inline-block text-sm font-medium text-pink-500">
             查看全部商品
           </Link>

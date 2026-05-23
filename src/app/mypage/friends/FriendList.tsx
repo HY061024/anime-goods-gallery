@@ -61,7 +61,7 @@ export default function FriendList({
   return (
     <div className="space-y-4">
       {/* Tab bar */}
-      <div className="flex rounded-xl bg-white p-1 shadow-sm ring-1 ring-gray-100">
+      <div className="flex rounded-xl bg-white p-1 shadow-sm border border-pink-100">
         {tabOptions.map((tab) => (
           <button
             key={tab.key}
@@ -69,12 +69,12 @@ export default function FriendList({
             className={`flex-1 rounded-lg py-2 text-sm font-medium transition ${
               activeTab === tab.key
                 ? "bg-pink-500 text-white"
-                : "text-gray-500 hover:text-gray-700"
+                : "text-slate-500 hover:text-slate-600"
             }`}
           >
             {tab.label}
             {tab.count > 0 && (
-              <span className={`ml-1 text-xs ${activeTab === tab.key ? "text-pink-100" : "text-gray-300"}`}>
+              <span className={`ml-1 text-xs ${activeTab === tab.key ? "text-pink-100" : "text-slate-300"}`}>
                 ({tab.count})
               </span>
             )}
@@ -89,7 +89,7 @@ export default function FriendList({
             {localIncoming.map((req) => (
               <div
                 key={req.id}
-                className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-sm ring-1 ring-gray-100"
+                className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-sm border border-pink-100"
               >
                 <div className="h-10 w-10 rounded-full bg-pink-100 flex items-center justify-center shrink-0 overflow-hidden">
                   {req.sender_avatar_url ? (
@@ -101,10 +101,10 @@ export default function FriendList({
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-slate-800">
                     {req.sender_display_name}
                   </p>
-                  <p className="text-xs text-gray-400">想加你为好友</p>
+                  <p className="text-xs text-slate-400">想加你为好友</p>
                 </div>
                 <div className="flex gap-1">
                   <button
@@ -117,7 +117,7 @@ export default function FriendList({
                   <button
                     onClick={() => handleReject(req.id)}
                     disabled={isPending}
-                    className="rounded-lg bg-gray-100 px-3 py-1 text-xs text-gray-500 hover:bg-gray-200 disabled:opacity-50"
+                    className="rounded-lg bg-slate-100 px-3 py-1 text-xs text-slate-500 hover:bg-slate-200 disabled:opacity-50"
                   >
                     拒绝
                   </button>
@@ -126,8 +126,8 @@ export default function FriendList({
             ))}
           </div>
         ) : (
-          <div className="rounded-xl bg-white p-8 text-center shadow-sm ring-1 ring-gray-100">
-            <p className="text-sm text-gray-400">暂无收到的好友申请</p>
+          <div className="rounded-xl bg-white p-8 text-center shadow-sm border border-pink-100">
+            <p className="text-sm text-slate-400">暂无收到的好友申请</p>
           </div>
         )
       )}
@@ -139,18 +139,18 @@ export default function FriendList({
             {localOutgoing.map((req) => (
               <div
                 key={req.id}
-                className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-sm ring-1 ring-gray-100"
+                className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-sm border border-pink-100"
               >
-                <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
+                <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0 overflow-hidden">
                   {req.receiver_avatar_url ? (
                     <img src={req.receiver_avatar_url} alt="" className="h-full w-full object-cover" />
                   ) : (
-                    <span className="text-sm text-gray-400">
+                    <span className="text-sm text-slate-400">
                       {req.receiver_display_name[0]}
                     </span>
                   )}
                 </div>
-                <p className="flex-1 text-sm text-gray-500">
+                <p className="flex-1 text-sm text-slate-500">
                   {req.receiver_display_name}
                 </p>
                 <span className="text-xs text-amber-500">等待回复</span>
@@ -158,8 +158,8 @@ export default function FriendList({
             ))}
           </div>
         ) : (
-          <div className="rounded-xl bg-white p-8 text-center shadow-sm ring-1 ring-gray-100">
-            <p className="text-sm text-gray-400">暂无发出的好友申请</p>
+          <div className="rounded-xl bg-white p-8 text-center shadow-sm border border-pink-100">
+            <p className="text-sm text-slate-400">暂无发出的好友申请</p>
           </div>
         )
       )}
@@ -171,7 +171,7 @@ export default function FriendList({
             {localFriends.map((f) => (
               <div
                 key={f.user_id}
-                className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-sm ring-1 ring-gray-100"
+                className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-sm border border-pink-100"
               >
                 <Link
                   href={`/users/${f.user_id}`}
@@ -189,11 +189,11 @@ export default function FriendList({
                   href={`/users/${f.user_id}`}
                   className="flex-1 min-w-0"
                 >
-                  <p className="text-sm font-medium text-gray-900 hover:text-pink-500">
+                  <p className="text-sm font-medium text-slate-800 hover:text-pink-500">
                     {f.display_name || `用户${f.user_id.slice(0, 6)}`}
                   </p>
                   {f.bio && (
-                    <p className="text-xs text-gray-400 truncate">{f.bio}</p>
+                    <p className="text-xs text-slate-400 truncate">{f.bio}</p>
                   )}
                 </Link>
                 <Link
@@ -204,7 +204,7 @@ export default function FriendList({
                 </Link>
                 <button
                   onClick={() => handleRemove(f.user_id)}
-                  className="rounded-lg px-2 py-1 text-xs text-gray-300 hover:text-red-500"
+                  className="rounded-lg px-2 py-1 text-xs text-slate-300 hover:text-red-500"
                 >
                   删除
                 </button>
@@ -212,8 +212,8 @@ export default function FriendList({
             ))}
           </div>
         ) : (
-          <div className="rounded-xl bg-white p-8 text-center shadow-sm ring-1 ring-gray-100">
-            <p className="text-sm text-gray-400">暂无好友，去逛逛别人的痛柜认识新朋友吧</p>
+          <div className="rounded-xl bg-white p-8 text-center shadow-sm border border-pink-100">
+            <p className="text-sm text-slate-400">暂无好友，去逛逛别人的痛柜认识新朋友吧</p>
             <Link href="/cabinets" className="mt-2 inline-block text-sm font-medium text-pink-500">
               去痛柜广场 &rarr;
             </Link>

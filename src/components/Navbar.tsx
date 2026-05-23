@@ -23,7 +23,7 @@ export default function Navbar({
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2 font-bold text-xl text-gray-900"
+          className="flex items-center gap-2 font-bold text-xl text-slate-800"
         >
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-pink-500 text-white text-sm font-bold">
             照影
@@ -38,7 +38,7 @@ export default function Navbar({
               {/* 消息图标 + 未读红点 */}
               <Link
                 href="/mypage/messages"
-                className="relative rounded-lg p-2 text-gray-500 transition hover:bg-pink-50 hover:text-pink-500"
+                className="relative rounded-lg p-2 text-slate-500 transition hover:bg-pink-50 hover:text-pink-500"
               >
                 <svg
                   className="h-5 w-5"
@@ -82,11 +82,11 @@ export default function Navbar({
                   </svg>
                 </button>
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-1 w-48 rounded-xl bg-white p-1.5 shadow-lg ring-1 ring-gray-200">
+                  <div className="absolute right-0 top-full mt-1 w-48 rounded-xl bg-white p-1.5 shadow-lg border border-pink-200">
                     <Link
                       href="/profile"
                       onClick={() => setUserMenuOpen(false)}
-                      className="block w-full rounded-lg px-3 py-2 text-left text-sm text-gray-600 transition hover:bg-pink-50 hover:text-pink-500"
+                      className="block w-full rounded-lg px-3 py-2 text-left text-sm text-slate-600 transition hover:bg-pink-50 hover:text-pink-500"
                     >
                       个人中心
                     </Link>
@@ -95,7 +95,7 @@ export default function Navbar({
                         setUserMenuOpen(false);
                         logout();
                       }}
-                      className="w-full rounded-lg px-3 py-2 text-left text-sm text-gray-600 transition hover:bg-red-50 hover:text-red-500"
+                      className="w-full rounded-lg px-3 py-2 text-left text-sm text-slate-600 transition hover:bg-red-50 hover:text-red-500"
                     >
                       退出登录
                     </button>
@@ -104,7 +104,7 @@ export default function Navbar({
                         setUserMenuOpen(false);
                         switchAccount();
                       }}
-                      className="w-full rounded-lg px-3 py-2 text-left text-sm text-gray-400 transition hover:bg-gray-50 hover:text-gray-500"
+                      className="w-full rounded-lg px-3 py-2 text-left text-sm text-slate-400 transition hover:bg-slate-50 hover:text-slate-500"
                     >
                       切换账号
                     </button>
@@ -116,7 +116,7 @@ export default function Navbar({
             <div className="flex items-center gap-1">
               <Link
                 href="/auth/login"
-                className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-pink-50 hover:text-pink-600"
+                className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-pink-50 hover:text-pink-600"
               >
                 登录
               </Link>

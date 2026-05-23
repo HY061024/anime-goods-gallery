@@ -24,8 +24,8 @@ function relativeTime(dateStr: string): string {
 export default function FeedbackList({ feedbacks }: { feedbacks: FeedbackEntry[] }) {
   if (feedbacks.length === 0) {
     return (
-      <div className="rounded-xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-100">
-        <p className="text-sm text-gray-400">暂无反馈</p>
+      <div className="rounded-xl bg-white p-12 text-center shadow-sm border border-pink-100">
+        <p className="text-sm text-slate-400">暂无反馈</p>
       </div>
     );
   }
@@ -35,11 +35,11 @@ export default function FeedbackList({ feedbacks }: { feedbacks: FeedbackEntry[]
       {feedbacks.map((fb) => (
         <div
           key={fb.id}
-          className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-100"
+          className="rounded-xl bg-white p-4 shadow-sm border border-pink-100"
         >
           <div className="flex items-start justify-between gap-3 mb-2">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-sm font-medium text-slate-600">
                 {fb.email || "匿名用户"}
               </span>
               {fb.user_id && (
@@ -48,12 +48,12 @@ export default function FeedbackList({ feedbacks }: { feedbacks: FeedbackEntry[]
                 </span>
               )}
             </div>
-            <span className="text-xs text-gray-400 shrink-0">
+            <span className="text-xs text-slate-400 shrink-0">
               {new Date(fb.created_at).toLocaleString("zh-CN")}
             </span>
           </div>
-          <p className="text-sm text-gray-600 whitespace-pre-wrap">{fb.content}</p>
-          <p className="mt-2 text-xs text-gray-300">{relativeTime(fb.created_at)}</p>
+          <p className="text-sm text-slate-600 whitespace-pre-wrap">{fb.content}</p>
+          <p className="mt-2 text-xs text-slate-300">{relativeTime(fb.created_at)}</p>
         </div>
       ))}
     </div>

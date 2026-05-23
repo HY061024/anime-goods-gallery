@@ -66,7 +66,7 @@ export default function BottomNav({ userEmail, unreadMessages }: BottomNavProps)
                 className={`relative flex w-full flex-col items-center gap-0.5 px-3 py-3 transition-colors duration-200 ${
                   isActive
                     ? "text-pink-500"
-                    : "text-gray-400 hover:text-gray-500"
+                    : "text-slate-400 hover:text-slate-500"
                 }`}
               >
                 {/* 左侧激活指示条 */}
@@ -97,7 +97,7 @@ export default function BottomNav({ userEmail, unreadMessages }: BottomNavProps)
         ) : (
           <Link
             href="/auth/login"
-            className="mb-4 flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-400 transition hover:ring-2 hover:ring-pink-200"
+            className="mb-4 flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition hover:ring-2 hover:ring-pink-200"
             title="登录"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -121,7 +121,7 @@ export default function BottomNav({ userEmail, unreadMessages }: BottomNavProps)
               className={`flex flex-1 flex-col items-center justify-center gap-0.5 transition-colors duration-200 border-t-2 ${
                 isActive
                   ? "border-pink-500 text-pink-500"
-                  : "border-transparent text-gray-400"
+                  : "border-transparent text-slate-400"
               }`}
             >
               <tab.icon active={isActive} />

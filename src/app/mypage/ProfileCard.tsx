@@ -105,7 +105,7 @@ export default function ProfileCard({
   }
 
   return (
-    <div className="mb-8 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
+    <div className="mb-8 overflow-hidden rounded-2xl bg-white shadow-sm border border-pink-100">
       {/* Banner */}
       <div className="relative h-32 bg-gradient-to-r from-pink-200 via-pink-100 to-purple-200">
         {bannerUrl && (
@@ -124,7 +124,7 @@ export default function ProfileCard({
             )}
             <label
               htmlFor="banner-upload-input"
-              className="cursor-pointer inline-flex items-center rounded-lg bg-white/90 px-2 py-1 text-xs font-medium text-gray-700 shadow-sm hover:bg-white"
+              className="cursor-pointer inline-flex items-center rounded-lg bg-white/90 px-2 py-1 text-xs font-medium text-slate-600 shadow-sm hover:bg-white"
               onClick={() => {
                 console.log("换背景 label 被点击");
               }}
@@ -148,7 +148,7 @@ export default function ProfileCard({
               type="file"
               accept="image/*"
               onChange={handleBannerChange}
-              className="text-[10px] text-gray-400 w-24"
+              className="text-[10px] text-slate-400 w-24"
               title="调试：可见的文件选择"
             />
           </div>
@@ -210,7 +210,7 @@ export default function ProfileCard({
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="昵称"
                   maxLength={20}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm outline-none focus:border-pink-400"
+                  className="w-full rounded-lg border border-pink-200 px-3 py-1.5 text-sm outline-none focus:border-pink-400"
                 />
                 <textarea
                   value={bio}
@@ -218,15 +218,15 @@ export default function ProfileCard({
                   placeholder="写一句简介…"
                   maxLength={100}
                   rows={2}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm outline-none focus:border-pink-400 resize-none"
+                  className="w-full rounded-lg border border-pink-200 px-3 py-1.5 text-sm outline-none focus:border-pink-400 resize-none"
                 />
               </div>
             ) : (
               <>
-                <h2 className="text-lg font-bold text-gray-900">
+                <h2 className="text-lg font-bold text-slate-800">
                   {displayName || "未设置昵称"}
                 </h2>
-                <p className="text-sm text-gray-400 mt-0.5">
+                <p className="text-sm text-slate-400 mt-0.5">
                   {bio || "这个人很懒，什么都没写…"}
                 </p>
               </>
@@ -247,7 +247,7 @@ export default function ProfileCard({
                 <button
                   type="button"
                   onClick={() => setEditing(false)}
-                  className="rounded-lg bg-gray-100 px-3 py-1.5 text-xs text-gray-500 hover:bg-gray-200"
+                  className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs text-slate-500 hover:bg-slate-200"
                 >
                   取消
                 </button>
@@ -256,7 +256,7 @@ export default function ProfileCard({
               <button
                 type="button"
                 onClick={() => setEditing(true)}
-                className="rounded-lg bg-gray-100 px-3 py-1.5 text-xs text-gray-500 hover:bg-gray-200"
+                className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs text-slate-500 hover:bg-slate-200"
               >
                 编辑资料
               </button>

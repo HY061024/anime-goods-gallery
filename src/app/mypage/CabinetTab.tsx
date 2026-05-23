@@ -78,7 +78,7 @@ export default function CabinetTab({
           <button
             onClick={handleTogglePublic}
             className={`relative inline-flex h-7 w-12 items-center rounded-full transition ${
-              cabinetPublic ? "bg-pink-500" : "bg-gray-300"
+              cabinetPublic ? "bg-pink-500" : "bg-slate-300"
             }`}
           >
             <span
@@ -87,7 +87,7 @@ export default function CabinetTab({
               }`}
             />
           </button>
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-slate-600">
             {cabinetPublic ? "已公开" : "仅自己可见"}
           </span>
         </div>
@@ -102,7 +102,7 @@ export default function CabinetTab({
         )}
 
         {cabinetPublic && (
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-slate-400">
             {profile.cabinet_views} 次浏览
           </span>
         )}
@@ -137,9 +137,9 @@ export default function CabinetTab({
 
       {/* 商品网格 */}
       {localItems.length === 0 ? (
-        <div className="rounded-3xl bg-white p-12 text-center shadow-sm ring-1 ring-gray-100">
-          <p className="text-lg font-semibold text-gray-900">痛柜还是空的</p>
-          <p className="mt-2 text-gray-500">
+        <div className="rounded-3xl bg-white p-12 text-center shadow-sm border border-pink-100">
+          <p className="text-lg font-semibold text-slate-800">痛柜还是空的</p>
+          <p className="mt-2 text-slate-500">
             去「照影图鉴」逛逛，把喜欢的周边加入痛柜，或者点击上方手动上传
           </p>
         </div>

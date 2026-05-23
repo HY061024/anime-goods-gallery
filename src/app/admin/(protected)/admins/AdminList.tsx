@@ -56,16 +56,16 @@ export default function AdminList({
       {showForm ? (
         <form
           action={handleCreate}
-          className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100 space-y-3"
+          className="rounded-2xl bg-white p-5 shadow-sm border border-pink-100 space-y-3"
         >
-          <h2 className="text-sm font-semibold text-gray-700">添加副管理员</h2>
+          <h2 className="text-sm font-semibold text-slate-600">添加副管理员</h2>
           <div className="flex gap-3">
             <input
               name="email"
               type="email"
               placeholder="邮箱"
               required
-              className="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400"
+              className="flex-1 rounded-xl border border-pink-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400"
             />
             <input
               name="password"
@@ -73,7 +73,7 @@ export default function AdminList({
               placeholder="密码（至少6位）"
               required
               minLength={6}
-              className="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400"
+              className="flex-1 rounded-xl border border-pink-200 px-4 py-2.5 text-sm outline-none focus:border-pink-400"
             />
             <button
               type="submit"
@@ -85,7 +85,7 @@ export default function AdminList({
             <button
               type="button"
               onClick={() => setShowForm(false)}
-              className="rounded-xl bg-gray-100 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-200"
+              className="rounded-xl bg-slate-100 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-200"
             >
               取消
             </button>
@@ -112,11 +112,11 @@ export default function AdminList({
         {admins.map((admin) => (
           <div
             key={admin.id}
-            className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100"
+            className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm border border-pink-100"
           >
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900">{admin.email}</p>
-              <p className="text-xs text-gray-400">
+              <p className="text-sm font-medium text-slate-800">{admin.email}</p>
+              <p className="text-xs text-slate-400">
                 {admin.role === "super_admin" ? "超级管理员" : "副管理员"}
                 {" · "}
                 {new Date(admin.created_at).toLocaleDateString("zh-CN")}

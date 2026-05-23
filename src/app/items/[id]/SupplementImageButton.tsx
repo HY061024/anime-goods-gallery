@@ -93,11 +93,11 @@ export default function SupplementImageButton({
           : "rounded-2xl border-2 border-dashed border-green-200 bg-green-50/30 p-4"
       }>
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-medium text-gray-700">补充{label}</span>
+          <span className="text-sm font-medium text-slate-600">补充{label}</span>
           <button
             type="button"
             onClick={() => { setShowUpload(false); setPreview(null); setFile(null); setError(""); }}
-            className="text-xs text-gray-400 hover:text-gray-500"
+            className="text-xs text-slate-400 hover:text-slate-500"
           >
             取消
           </button>
@@ -109,7 +109,7 @@ export default function SupplementImageButton({
             <img
               src={preview}
               alt="预览"
-              className="aspect-square w-full max-w-[200px] rounded-xl object-cover ring-1 ring-gray-200"
+              className="aspect-square w-full max-w-[200px] rounded-xl object-cover border border-pink-200"
             />
             <div className="flex gap-2">
               <label className={
@@ -145,10 +145,10 @@ export default function SupplementImageButton({
                 ? "flex cursor-pointer flex-col items-center gap-1 rounded-xl border-2 border-dashed border-blue-200 py-6 px-4 transition hover:border-blue-400 hover:bg-blue-50/50 w-full"
                 : "flex cursor-pointer flex-col items-center gap-1 rounded-xl border-2 border-dashed border-green-200 py-6 px-4 transition hover:border-green-400 hover:bg-green-50/50 w-full"
             }>
-              <svg className="h-6 w-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-6 w-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
               </svg>
-              <span className="text-xs text-gray-400">点击选择{label}</span>
+              <span className="text-xs text-slate-400">点击选择{label}</span>
               <input
                 type="file"
                 accept="image/*"

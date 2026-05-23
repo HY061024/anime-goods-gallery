@@ -25,8 +25,8 @@ export default async function ReviewPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="mb-1 text-2xl font-bold text-gray-900">审核管理</h1>
-      <p className="mb-6 text-sm text-gray-500">
+      <h1 className="mb-1 text-2xl font-bold text-slate-800">审核管理</h1>
+      <p className="mb-6 text-sm text-slate-500">
         审核用户提交的周边信息和删除申请，按提交时间排序
       </p>
 

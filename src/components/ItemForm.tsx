@@ -128,10 +128,10 @@ export default function ItemForm({ action, title, description, submitLabel, cate
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="mb-2 text-3xl font-bold text-gray-900">{title}</h1>
-      <p className="mb-8 text-gray-500">{description}</p>
+      <h1 className="mb-2 text-3xl font-bold text-slate-800">{title}</h1>
+      <p className="mb-8 text-slate-500">{description}</p>
 
-      <form action={handleSubmit} className="space-y-5 rounded-3xl bg-white p-8 shadow-sm ring-1 ring-gray-100">
+      <form action={handleSubmit} className="space-y-5 rounded-3xl bg-white p-8 shadow-sm border border-pink-100">
         <Field label="商品标题" required>
           <Input name="title" placeholder="例如：初音未来 16周年 纪念亚克力立牌" />
         </Field>
@@ -141,7 +141,7 @@ export default function ItemForm({ action, title, description, submitLabel, cate
             name="work"
             list="work-list"
             placeholder="例如：初音未来、鸣潮、刀剑神域…也可自由输入"
-            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
+            className="w-full rounded-xl border border-pink-200 px-4 py-3 text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
           />
           <datalist id="work-list">
             {ips.map((ip) => (
@@ -159,7 +159,7 @@ export default function ItemForm({ action, title, description, submitLabel, cate
             name="category"
             list="category-list"
             placeholder="例如：手办、吧唧、亚克力、色纸…也可自由输入"
-            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
+            className="w-full rounded-xl border border-pink-200 px-4 py-3 text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
           />
           {categories.length > 0 && (
             <datalist id="category-list">
@@ -177,7 +177,7 @@ export default function ItemForm({ action, title, description, submitLabel, cate
             step="0.01"
             min="0"
             placeholder="例如：129.00"
-            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
+            className="w-full rounded-xl border border-pink-200 px-4 py-3 text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
           />
         </Field>
 
@@ -186,7 +186,7 @@ export default function ItemForm({ action, title, description, submitLabel, cate
             name="description"
             rows={4}
             placeholder="描述这件周边的特点、材质、尺寸等…"
-            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
+            className="w-full rounded-xl border border-pink-200 px-4 py-3 text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
           />
         </Field>
 
@@ -198,10 +198,10 @@ export default function ItemForm({ action, title, description, submitLabel, cate
               name="officialImageFile"
               accept="image/*"
               onChange={(e) => handleFileChange("official", e)}
-              className="w-full text-sm text-gray-700 file:mr-4 file:rounded-xl file:border-0 file:bg-blue-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-600 hover:file:bg-blue-200"
+              className="w-full text-sm text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-blue-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-600 hover:file:bg-blue-200"
             />
             {officialPreview && (
-              <div className="mt-3 overflow-hidden rounded-xl border border-gray-200">
+              <div className="mt-3 overflow-hidden rounded-xl border border-pink-200">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={officialPreview}
@@ -224,10 +224,10 @@ export default function ItemForm({ action, title, description, submitLabel, cate
               name="realImageFile"
               accept="image/*"
               onChange={(e) => handleFileChange("real", e)}
-              className="w-full text-sm text-gray-700 file:mr-4 file:rounded-xl file:border-0 file:bg-green-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-green-600 hover:file:bg-green-200"
+              className="w-full text-sm text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-green-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-green-600 hover:file:bg-green-200"
             />
             {realPreview && (
-              <div className="mt-3 overflow-hidden rounded-xl border border-gray-200">
+              <div className="mt-3 overflow-hidden rounded-xl border border-pink-200">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={realPreview}
@@ -242,7 +242,7 @@ export default function ItemForm({ action, title, description, submitLabel, cate
           </Field>
         </div>
 
-        <p className="text-xs text-gray-400 text-center">
+        <p className="text-xs text-slate-400 text-center">
           至少需要上传官图或实物图中的一种
         </p>
 
@@ -269,7 +269,7 @@ function Input({ name, placeholder }: { name: string; placeholder: string }) {
     <input
       name={name}
       placeholder={placeholder}
-      className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
+      className="w-full rounded-xl border border-pink-200 px-4 py-3 text-slate-800 outline-none placeholder:text-slate-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
     />
   );
 }
@@ -285,7 +285,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-medium text-gray-900">
+      <span className="mb-2 block text-sm font-medium text-slate-800">
         {label}
         {required && <span className="ml-1 text-pink-500">*</span>}
       </span>
