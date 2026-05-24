@@ -105,6 +105,14 @@ async function doSaveItem(
   }
 
   // 新图字段
+  if (hasReal) {
+    insertData.real_image_url = input.realImageUrl!.trim();
+    if (input.userId) {
+      insertData.real_image_submitter_id = input.userId;
+    }
+    insertData.real_image_created_at = now;
+  }
+
   if (hasOfficial) {
     insertData.official_image_url = input.officialImageUrl!.trim();
     if (input.userId) {
@@ -113,12 +121,13 @@ async function doSaveItem(
     insertData.official_image_created_at = now;
   }
 
-  if (hasReal) {
-    insertData.real_image_url = input.realImageUrl!.trim();
-    if (input.userId) {
-      insertData.real_image_submitter_id = input.userId;
+  // image 字段 fallback：兼容旧 NOT NULL 约束，优先实物图
+  if (!insertData.image) {
+    if (hasReal) {
+      insertData.image = input.realImageUrl!.trim();
+    } else if (hasOfficial) {
+      insertData.image = input.officialImageUrl!.trim();
     }
-    insertData.real_image_created_at = now;
   }
 
   if (input.userId) {

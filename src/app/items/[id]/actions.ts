@@ -25,14 +25,27 @@ export async function supplementImage(formData: FormData) {
 
   const updateData: Record<string, unknown> = {};
 
+  // 先查询当前图片状态，用于 image 字段 fallback
+  const { data: currentItem } = await supabaseAdmin
+    .from("items")
+    .select("image, official_image_url, real_image_url")
+    .eq("id", itemId)
+    .maybeSingle();
+
   if (imageType === "official") {
     updateData.official_image_url = imageUrl;
     updateData.official_image_submitter_id = user.id;
     updateData.official_image_created_at = now;
+    // 如果旧 image 字段为空，使用当前补充的图片作为 fallback
+    if (!currentItem?.image && !currentItem?.real_image_url) {
+      updateData.image = imageUrl;
+    }
   } else {
     updateData.real_image_url = imageUrl;
     updateData.real_image_submitter_id = user.id;
     updateData.real_image_created_at = now;
+    // 实物图优先：始终更新 image 为实物图
+    updateData.image = imageUrl;
   }
 
   const { error } = await supabaseAdmin
