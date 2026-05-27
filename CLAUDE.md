@@ -3,6 +3,27 @@
 **域名**: zyhy1000.com (Vercel 部署，Cloudflare CNAME)
 **GitHub**: https://github.com/HY061024/anime-goods-gallery.git (需 SOCKS5 代理 127.0.0.1:10808)
 
+---
+
+## 与 Codex 共享进度
+
+本项目同时使用 Claude Code 和 Codex。为保证双方进度互通，必须遵守以下规则：
+
+### 每次开始任务前，必须先读取
+1. `docs/PROJECT_STATUS.md` — 了解当前项目状态和待解决问题
+2. `docs/WORKLOG.md` — 了解上次做了什么、下一步是什么
+3. `AGENTS.md` — 了解 Codex 侧的指令和约束
+
+### 每次完成任务后，必须更新
+1. `docs/PROJECT_STATUS.md` — 如有状态变化（功能完成、问题解决、优先级调整）
+2. `docs/WORKLOG.md` — 追加本次修改记录（日期、修改者、任务、文件、完成内容、数据库操作、检查结果、下一步）
+
+### 重要
+- 不要只把进度写在 Claude 自己的 memory 里。所有重要进度必须写入仓库内的 Markdown 文件，方便 Codex 下一次接手。
+- 不要用 CLAUDE.md 完整覆盖 AGENTS.md，两者职责不同。
+
+---
+
 ## 回答要求
 
 - 全程使用中文
