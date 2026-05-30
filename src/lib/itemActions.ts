@@ -1,5 +1,6 @@
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { createAdminNotification } from "@/lib/adminNotifications";
+import { addItemImages } from "@/lib/itemImages";
 
 export type SaveItemInput = {
   title: string;
@@ -13,9 +14,12 @@ export type SaveItemInput = {
   imageUrl?: string;
   userId?: string;
   visibility?: 'public' | 'private';
-  // 新增：官图和实物图
+  // 单图兼容（旧接口）
   officialImageUrl?: string;
   realImageUrl?: string;
+  // 多图（新接口）
+  officialImageUrls?: string[];
+  realImageUrls?: string[];
 };
 
 export type SaveItemResult = { success: number } | { error: string };
@@ -47,9 +51,18 @@ async function doSaveItem(
   if (!category) return { error: "[验证] 请选择分类" };
   if (!price || price <= 0) return { error: "[验证] 请填写有效价格" };
 
-  // 图片验证：需要提供旧版图片 或 官图 或 实物图，至少一种
-  const hasOfficial = input.officialImageUrl && input.officialImageUrl.trim();
-  const hasReal = input.realImageUrl && input.realImageUrl.trim();
+  // 图片验证：合并单图和多图输入
+  const officialUrls = [
+    ...(input.officialImageUrls ?? []),
+    ...(input.officialImageUrl && input.officialImageUrl.trim() ? [input.officialImageUrl.trim()] : []),
+  ];
+  const realUrls = [
+    ...(input.realImageUrls ?? []),
+    ...(input.realImageUrl && input.realImageUrl.trim() ? [input.realImageUrl.trim()] : []),
+  ];
+
+  const hasOfficial = officialUrls.length > 0;
+  const hasReal = realUrls.length > 0;
 
   let imagePath = "";
 
@@ -104,9 +117,12 @@ async function doSaveItem(
     insertData.image = imagePath;
   }
 
-  // 新图字段
+  // 新图字段（旧列存第一张，兼容旧查询）
+  const firstReal = hasReal ? realUrls[0] : null;
+  const firstOfficial = hasOfficial ? officialUrls[0] : null;
+
   if (hasReal) {
-    insertData.real_image_url = input.realImageUrl!.trim();
+    insertData.real_image_url = firstReal;
     if (input.userId) {
       insertData.real_image_submitter_id = input.userId;
     }
@@ -114,19 +130,19 @@ async function doSaveItem(
   }
 
   if (hasOfficial) {
-    insertData.official_image_url = input.officialImageUrl!.trim();
+    insertData.official_image_url = firstOfficial;
     if (input.userId) {
       insertData.official_image_submitter_id = input.userId;
     }
     insertData.official_image_created_at = now;
   }
 
-  // image 字段 fallback：兼容旧 NOT NULL 约束，优先实物图
+  // image 字段 fallback：优先实物图 > 官图
   if (!insertData.image) {
     if (hasReal) {
-      insertData.image = input.realImageUrl!.trim();
+      insertData.image = realUrls[0];
     } else if (hasOfficial) {
-      insertData.image = input.officialImageUrl!.trim();
+      insertData.image = officialUrls[0];
     }
   }
 
@@ -143,6 +159,21 @@ async function doSaveItem(
 
   if (error) {
     return { error: `[DB写入] code=${error.code} msg=${error.message} details=${error.details}` };
+  }
+
+  // 写入 item_images 多图表（兼容表不存在的情况）
+  const allImages: { image_type: "official" | "real"; image_url: string }[] = [
+    ...officialUrls.map((url) => ({ image_type: "official" as const, image_url: url })),
+    ...realUrls.map((url) => ({ image_type: "real" as const, image_url: url })),
+  ];
+  if (allImages.length > 0) {
+    await addItemImages(
+      data.id,
+      allImages.map((img) => ({
+        ...img,
+        submitter_id: input.userId,
+      }))
+    );
   }
 
   // 投稿时通知管理员

@@ -4,11 +4,11 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { createClient } from "@/lib/supabaseAction";
+import { supplementItemImage } from "@/lib/itemImages";
 
 const DELETE_MARKER = "[申请删除]";
 const PENDING_MARKER = "[待审核]";
 
-// TODO: 后续可接入审核流程 — 补充图片进入 [待审核] 状态，由管理员审批后再更新
 export async function supplementImage(formData: FormData) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -23,37 +23,54 @@ export async function supplementImage(formData: FormData) {
 
   const now = new Date().toISOString();
 
-  const updateData: Record<string, unknown> = {};
+  // 1. 写入 item_images 表
+  const insertResult = await supplementItemImage(itemId, imageType as "official" | "real", imageUrl, user.id);
+  if (insertResult.error) {
+    // 表不存在时 fallback 到只更新旧字段
+    if (!insertResult.error.includes("尚未创建")) {
+      return insertResult;
+    }
+  }
 
-  // 先查询当前图片状态，用于 image 字段 fallback
+  // 2. 同步更新旧字段（兼容旧查询）
   const { data: currentItem } = await supabaseAdmin
     .from("items")
     .select("image, official_image_url, real_image_url")
     .eq("id", itemId)
     .maybeSingle();
 
+  const updateData: Record<string, unknown> = {};
+
   if (imageType === "official") {
-    updateData.official_image_url = imageUrl;
-    updateData.official_image_submitter_id = user.id;
-    updateData.official_image_created_at = now;
-    // 如果旧 image 字段为空，使用当前补充的图片作为 fallback
+    // 如果 items.official_image_url 为空，写入第一张官图
+    if (!currentItem?.official_image_url) {
+      updateData.official_image_url = imageUrl;
+      updateData.official_image_submitter_id = user.id;
+      updateData.official_image_created_at = now;
+    }
+    // 如果旧 image 字段也为空且没有实物图，使用官图作为 fallback
     if (!currentItem?.image && !currentItem?.real_image_url) {
       updateData.image = imageUrl;
     }
   } else {
-    updateData.real_image_url = imageUrl;
-    updateData.real_image_submitter_id = user.id;
-    updateData.real_image_created_at = now;
-    // 实物图优先：始终更新 image 为实物图
+    // 如果 items.real_image_url 为空，写入第一张实物图
+    if (!currentItem?.real_image_url) {
+      updateData.real_image_url = imageUrl;
+      updateData.real_image_submitter_id = user.id;
+      updateData.real_image_created_at = now;
+    }
+    // 实物图优先：始终更新 image
     updateData.image = imageUrl;
   }
 
-  const { error } = await supabaseAdmin
-    .from("items")
-    .update(updateData)
-    .eq("id", itemId);
+  if (Object.keys(updateData).length > 0) {
+    const { error } = await supabaseAdmin
+      .from("items")
+      .update(updateData)
+      .eq("id", itemId);
 
-  if (error) return { error: `补充图片失败：${error.message}` };
+    if (error) return { error: `补充图片失败：${error.message}` };
+  }
 
   revalidatePath(`/items/${itemId}`);
   return { success: true };

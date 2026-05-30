@@ -4,6 +4,16 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabaseAction";
 import { saveItem } from "@/lib/itemActions";
 
+/** 从 FormData 提取某行的多图数组：officialImageUrl_0_0, officialImageUrl_0_1... */
+function extractRowArray(formData: FormData, prefix: string, rowIndex: number): string[] {
+  const result: string[] = [];
+  for (let j = 0; j < 10; j++) {
+    const val = (formData.get(`${prefix}_${rowIndex}_${j}`) as string)?.trim();
+    if (val) result.push(val);
+  }
+  return result;
+}
+
 export async function batchSubmitPublic(formData: FormData) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -53,6 +63,9 @@ async function batchSave(
     const imageUrl = (formData.get(`imageUrl_${i}`) as string)?.trim() || undefined;
     const officialImageUrl = (formData.get(`officialImageUrl_${i}`) as string)?.trim() || undefined;
     const realImageUrl = (formData.get(`realImageUrl_${i}`) as string)?.trim() || undefined;
+    // 多图支持：officialImageUrl_0_0, officialImageUrl_0_1...
+    const officialImageUrls = extractRowArray(formData, "officialImageUrl", i);
+    const realImageUrls = extractRowArray(formData, "realImageUrl", i);
 
     if (!title) {
       errors.push(`第 ${i + 1} 个商品缺少标题`);
@@ -74,6 +87,8 @@ async function batchSave(
         visibility,
         officialImageUrl,
         realImageUrl,
+        officialImageUrls: officialImageUrls.length > 0 ? officialImageUrls : undefined,
+        realImageUrls: realImageUrls.length > 0 ? realImageUrls : undefined,
       },
       pending
     );

@@ -8,9 +8,13 @@ import { supplementImage } from "./actions";
 export default function SupplementImageButton({
   itemId,
   type,
+  currentCount = 0,
+  maxCount = 5,
 }: {
   itemId: number;
   type: "official" | "real";
+  currentCount?: number;
+  maxCount?: number;
 }) {
   const [showUpload, setShowUpload] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
@@ -69,7 +73,7 @@ export default function SupplementImageButton({
         fd.set("imageUrl", urlData.publicUrl);
 
         const result = await supplementImage(fd);
-        if (result?.error) {
+        if ("error" in result && result.error) {
           setError(result.error);
         } else {
           setShowUpload(false);

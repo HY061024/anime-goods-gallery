@@ -10,10 +10,10 @@ type ItemRow = {
   id: number;
   imageFile: File | null;
   preview: string | null;
-  officialImageFile: File | null;
-  officialPreview: string | null;
-  realImageFile: File | null;
-  realPreview: string | null;
+  officialImageFiles: File[];
+  officialPreviews: string[];
+  realImageFiles: File[];
+  realPreviews: string[];
   title: string;
   work: string;
   character: string;
@@ -29,10 +29,10 @@ function createRow(): ItemRow {
     id: nextId++,
     imageFile: null,
     preview: null,
-    officialImageFile: null,
-    officialPreview: null,
-    realImageFile: null,
-    realPreview: null,
+    officialImageFiles: [],
+    officialPreviews: [],
+    realImageFiles: [],
+    realPreviews: [],
     title: "",
     work: "",
     character: "",
@@ -67,30 +67,49 @@ export default function BatchItemForm({
   const [result, setResult] = useState<{ successCount: number; errors?: string[] } | null>(null);
   const router = useRouter();
 
-  function handleFileChange(rowId: number, type: "official" | "real" | "old", file: File | null) {
+  const MAX_OFFICIAL = 3;
+  const MAX_REAL = 5;
+
+  function handleFilesChange(rowId: number, type: "official" | "real", files: File[]) {
+    setRows((prev) =>
+      prev.map((r) => {
+        if (r.id !== rowId) return r;
+        const max = type === "official" ? MAX_OFFICIAL : MAX_REAL;
+        const currentFiles = type === "official" ? r.officialImageFiles : r.realImageFiles;
+        const currentPreviews = type === "official" ? r.officialPreviews : r.realPreviews;
+        const remaining = max - currentFiles.length;
+        const toAdd = files.slice(0, remaining);
+
+        currentPreviews.forEach((p) => URL.revokeObjectURL(p));
+        const newFiles = [...currentFiles, ...toAdd];
+        const newPreviews = newFiles.map((f) => URL.createObjectURL(f));
+
+        if (type === "official") {
+          return { ...r, officialImageFiles: newFiles, officialPreviews: newPreviews };
+        } else {
+          return { ...r, realImageFiles: newFiles, realPreviews: newPreviews };
+        }
+      })
+    );
+  }
+
+  function removeRowFile(rowId: number, type: "official" | "real", index: number) {
     setRows((prev) =>
       prev.map((r) => {
         if (r.id !== rowId) return r;
         if (type === "official") {
-          if (r.officialPreview) URL.revokeObjectURL(r.officialPreview);
+          URL.revokeObjectURL(r.officialPreviews[index]);
           return {
             ...r,
-            officialImageFile: file,
-            officialPreview: file ? URL.createObjectURL(file) : null,
-          };
-        } else if (type === "real") {
-          if (r.realPreview) URL.revokeObjectURL(r.realPreview);
-          return {
-            ...r,
-            realImageFile: file,
-            realPreview: file ? URL.createObjectURL(file) : null,
+            officialImageFiles: r.officialImageFiles.filter((_, i) => i !== index),
+            officialPreviews: r.officialPreviews.filter((_, i) => i !== index),
           };
         } else {
-          if (r.preview) URL.revokeObjectURL(r.preview);
+          URL.revokeObjectURL(r.realPreviews[index]);
           return {
             ...r,
-            imageFile: file,
-            preview: file ? URL.createObjectURL(file) : null,
+            realImageFiles: r.realImageFiles.filter((_, i) => i !== index),
+            realPreviews: r.realPreviews.filter((_, i) => i !== index),
           };
         }
       })
@@ -112,8 +131,8 @@ export default function BatchItemForm({
       if (prev.length <= 1) return prev;
       const row = prev.find((r) => r.id === rowId);
       if (row?.preview) URL.revokeObjectURL(row.preview);
-      if (row?.officialPreview) URL.revokeObjectURL(row.officialPreview);
-      if (row?.realPreview) URL.revokeObjectURL(row.realPreview);
+      row?.officialPreviews.forEach((p) => URL.revokeObjectURL(p));
+      row?.realPreviews.forEach((p) => URL.revokeObjectURL(p));
       return prev.filter((r) => r.id !== rowId);
     });
   }
@@ -173,37 +192,52 @@ export default function BatchItemForm({
         }
       }
 
-      // 官图
-      if (r.officialImageFile && r.officialImageFile.size > 0) {
+      // 官图（多张）
+      for (let j = 0; j < r.officialImageFiles.length; j++) {
         try {
-          setError(`正在处理第 ${i + 1} 件官图…`);
-          const url = await uploadAndGetUrl(r.officialImageFile);
-          fd.set(`officialImageUrl_${i}`, url);
+          setError(`正在处理第 ${i + 1} 件官图 ${j + 1}/${r.officialImageFiles.length}…`);
+          const url = await uploadAndGetUrl(r.officialImageFiles[j]);
+          fd.set(`officialImageUrl_${i}_${j}`, url);
         } catch (e) {
-          setError(`第 ${i + 1} 件官图上传失败: ${e instanceof Error ? e.message : "未知错误"}`);
+          setError(`第 ${i + 1} 件官图 ${j + 1} 上传失败: ${e instanceof Error ? e.message : "未知错误"}`);
           setSubmitting(false);
           return;
         }
       }
+      // 兼容单图字段
+      if (r.officialImageFiles.length > 0) {
+        const firstUrl = fd.get(`officialImageUrl_${i}_0`) as string;
+        if (firstUrl) fd.set(`officialImageUrl_${i}`, firstUrl);
+      }
 
-      // 实物图
-      if (r.realImageFile && r.realImageFile.size > 0) {
+      // 实物图（多张）
+      for (let j = 0; j < r.realImageFiles.length; j++) {
         try {
-          setError(`正在处理第 ${i + 1} 件实物图…`);
-          const url = await uploadAndGetUrl(r.realImageFile);
-          fd.set(`realImageUrl_${i}`, url);
+          setError(`正在处理第 ${i + 1} 件实物图 ${j + 1}/${r.realImageFiles.length}…`);
+          const url = await uploadAndGetUrl(r.realImageFiles[j]);
+          fd.set(`realImageUrl_${i}_${j}`, url);
         } catch (e) {
-          setError(`第 ${i + 1} 件实物图上传失败: ${e instanceof Error ? e.message : "未知错误"}`);
+          setError(`第 ${i + 1} 件实物图 ${j + 1} 上传失败: ${e instanceof Error ? e.message : "未知错误"}`);
           setSubmitting(false);
           return;
         }
+      }
+      if (r.realImageFiles.length > 0) {
+        const firstUrl = fd.get(`realImageUrl_${i}_0`) as string;
+        if (firstUrl) fd.set(`realImageUrl_${i}`, firstUrl);
       }
     }
 
     // 检查至少有一个商品有图片
     let hasAnyImage = false;
     for (let i = 0; i < rows.length; i++) {
-      if (fd.get(`imageUrl_${i}`) || fd.get(`officialImageUrl_${i}`) || fd.get(`realImageUrl_${i}`)) {
+      if (
+        fd.get(`imageUrl_${i}`) ||
+        fd.get(`officialImageUrl_${i}_0`) ||
+        fd.get(`officialImageUrl_${i}`) ||
+        fd.get(`realImageUrl_${i}_0`) ||
+        fd.get(`realImageUrl_${i}`)
+      ) {
         hasAnyImage = true;
         break;
       }
@@ -304,26 +338,46 @@ export default function BatchItemForm({
             </div>
 
             <div className="space-y-3">
-              {/* 官图上传 */}
+              {/* 官图上传（最多3张） */}
               <div>
-                <p className="mb-1 text-xs font-medium text-blue-600">官图（选填）</p>
-                {row.officialPreview ? (
-                  <div className="relative mx-auto w-full max-w-[200px]">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={row.officialPreview}
-                      alt="官图预览"
-                      className="aspect-square w-full rounded-xl object-cover ring-1 ring-blue-200"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleFileChange(row.id, "official", null)}
-                      className="absolute -top-2 -right-2 rounded-full bg-white p-1 text-slate-400 shadow border border-pink-200 hover:text-red-500"
-                    >
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
+                <p className="mb-1 text-xs font-medium text-blue-600">
+                  官图（最多{MAX_OFFICIAL}张 · {row.officialImageFiles.length}/{MAX_OFFICIAL}）
+                </p>
+                {row.officialPreviews.length > 0 ? (
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-3 gap-2">
+                      {row.officialPreviews.map((preview, j) => (
+                        <div key={j} className="relative">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={preview}
+                            alt={`官图 ${j + 1}`}
+                            className="aspect-square w-full rounded-xl object-cover ring-1 ring-blue-200"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeRowFile(row.id, "official", j)}
+                            className="absolute -top-1.5 -right-1.5 rounded-full bg-white p-0.5 text-slate-400 shadow border border-pink-200 hover:text-red-500"
+                          >
+                            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    {row.officialImageFiles.length < MAX_OFFICIAL && (
+                      <label className="flex cursor-pointer flex-col items-center gap-1 rounded-xl border-2 border-dashed border-blue-200 py-2 transition hover:border-blue-400 hover:bg-blue-50/50">
+                        <span className="text-xs text-blue-400">+ 继续添加</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={(e) => handleFilesChange(row.id, "official", Array.from(e.target.files ?? []))}
+                          className="hidden"
+                        />
+                      </label>
+                    )}
                   </div>
                 ) : (
                   <label className="flex cursor-pointer flex-col items-center gap-1 rounded-xl border-2 border-dashed border-blue-200 py-4 transition hover:border-blue-400 hover:bg-blue-50/50">
@@ -334,33 +388,54 @@ export default function BatchItemForm({
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={(e) => handleFileChange(row.id, "official", e.target.files?.[0] ?? null)}
+                      multiple
+                      onChange={(e) => handleFilesChange(row.id, "official", Array.from(e.target.files ?? []))}
                       className="hidden"
                     />
                   </label>
                 )}
               </div>
 
-              {/* 实物图上传 */}
+              {/* 实物图上传（最多5张） */}
               <div>
-                <p className="mb-1 text-xs font-medium text-green-600">实物图（选填）</p>
-                {row.realPreview ? (
-                  <div className="relative mx-auto w-full max-w-[200px]">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={row.realPreview}
-                      alt="实物图预览"
-                      className="aspect-square w-full rounded-xl object-cover ring-1 ring-green-200"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleFileChange(row.id, "real", null)}
-                      className="absolute -top-2 -right-2 rounded-full bg-white p-1 text-slate-400 shadow border border-pink-200 hover:text-red-500"
-                    >
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
+                <p className="mb-1 text-xs font-medium text-green-600">
+                  实物图（最多{MAX_REAL}张 · {row.realImageFiles.length}/{MAX_REAL}）
+                </p>
+                {row.realPreviews.length > 0 ? (
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-3 gap-2">
+                      {row.realPreviews.map((preview, j) => (
+                        <div key={j} className="relative">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={preview}
+                            alt={`实物图 ${j + 1}`}
+                            className="aspect-square w-full rounded-xl object-cover ring-1 ring-green-200"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeRowFile(row.id, "real", j)}
+                            className="absolute -top-1.5 -right-1.5 rounded-full bg-white p-0.5 text-slate-400 shadow border border-pink-200 hover:text-red-500"
+                          >
+                            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    {row.realImageFiles.length < MAX_REAL && (
+                      <label className="flex cursor-pointer flex-col items-center gap-1 rounded-xl border-2 border-dashed border-green-200 py-2 transition hover:border-green-400 hover:bg-green-50/50">
+                        <span className="text-xs text-green-400">+ 继续添加</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={(e) => handleFilesChange(row.id, "real", Array.from(e.target.files ?? []))}
+                          className="hidden"
+                        />
+                      </label>
+                    )}
                   </div>
                 ) : (
                   <label className="flex cursor-pointer flex-col items-center gap-1 rounded-xl border-2 border-dashed border-green-200 py-4 transition hover:border-green-400 hover:bg-green-50/50">
@@ -371,7 +446,8 @@ export default function BatchItemForm({
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={(e) => handleFileChange(row.id, "real", e.target.files?.[0] ?? null)}
+                      multiple
+                      onChange={(e) => handleFilesChange(row.id, "real", Array.from(e.target.files ?? []))}
                       className="hidden"
                     />
                   </label>

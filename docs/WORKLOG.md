@@ -61,3 +61,38 @@
 - `npm run lint`：仅 Markdown 变更，不触发 lint
 - `npm run build`：仅 Markdown 变更，不影响构建
 **下一步**：执行第五次/第六次迁移时，确认 SQL 满足 6 步授权要求
+
+---
+
+## 2026-05-30
+**修改者**：Claude Code
+**任务**：图鉴详情页多图轮播 + 完整图片预览 + 官图/实物图多图上传
+**修改文件**：
+- `src/data/items.ts`（新增 ItemImage 类型、groupItemImagesByType、canAddOfficialImage、canAddRealImage、getImageCount、MAX_OFFICIAL/MAX_REAL 常量）
+- `src/lib/itemImages.ts`（新建 — item_images 表 CRUD，含 getItemImages、getItemImageSubmitters、addItemImages、supplementItemImage）
+- `src/lib/itemActions.ts`（SaveItemInput 支持 officialImageUrls[]/realImageUrls[]，doSaveItem 写入旧字段+批量插入 item_images）
+- `src/lib/batchActions.ts`（extractRowArray 提取每行多图数组）
+- `src/components/ItemForm.tsx`（单图→多图数组，官图≤3、实物图≤5，网格预览+单张删除）
+- `src/components/BatchItemForm.tsx`（每行多图数组支持）
+- `src/components/ImageCarousel.tsx`（新建 — 轮播组件，touch swipe、左右箭头、数量指示、object-contain）
+- `src/components/Lightbox.tsx`（新建 — 全屏大图预览，ESC/点击关闭、键盘导航、touch swipe、贡献者信息）
+- `src/app/items/[id]/LightboxClient.tsx`（新建 — render-prop 模式客户端包裹器）
+- `src/app/items/[id]/page.tsx`（用 ImageCarousel+LightboxClient 替换 ImageSection，贡献者展示，补充按钮传 currentCount/maxCount）
+- `src/app/items/[id]/SupplementImageButton.tsx`（新增 currentCount/maxCount props，修复类型错误）
+- `src/app/items/[id]/actions.ts`（supplementImage 写入 item_images 表，兼容表不存在 fallback）
+- `src/app/submit/actions.ts`（extractArrayFromFormData 提取多图数组）
+- `src/app/admin/createItem.ts`（同上）
+**完成内容**：
+1. 新建 item_images 表 SQL（含 6 步 GRANT 授权），由用户手动在 Supabase SQL Editor 执行
+2. 代码侧全面兼容表不存在（42P01 静默 fallback 到旧字段），SQL 未执行时不影响现有功能
+3. 详情页官图/实物图各独立轮播（PC 420px / 手机 300px，object-contain 不裁剪）
+4. 大图预览弹窗（半透明遮罩 + 键盘/触摸导航 + 序号+类型标签 + 上传者信息）
+5. 投稿/批量上传/管理后台均支持多图数组上传
+6. 补充图片功能按类型计数，达上限自动隐藏按钮
+7. 列表页（ItemCard、首页、搜索、痛柜广场）完全不受影响，仍用 getItemMainImage()
+8. TypeScript 检查通过，构建通过
+**数据库操作**：item_images 建表 SQL 已生成，待用户手动执行（第七次迁移）
+**检查结果**：
+- `npx tsc --noEmit`：通过（0 errors）
+- `npm run build`：通过（所有路由编译成功）
+**下一步**：用户执行 item_images 建表 SQL → git commit + push

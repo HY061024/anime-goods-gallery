@@ -6,9 +6,15 @@ import { getItemById } from "@/lib/items";
 import { createClient } from "@/lib/supabaseServer";
 import { getSubmitterInfos } from "@/lib/profiles";
 import { isInCollection } from "@/lib/collections";
+import { getItemImages, getItemImageSubmitters } from "@/lib/itemImages";
+import { groupItemImagesByType, canAddOfficialImage, canAddRealImage, getImageCount, MAX_OFFICIAL, MAX_REAL } from "@/data/items";
+import type { ItemImage } from "@/data/items";
 import DeleteRequestButton from "./DeleteRequestButton";
 import CollectButton from "./CollectButton";
 import SupplementImageButton from "./SupplementImageButton";
+import ImageCarousel from "@/components/ImageCarousel";
+import type { CarouselImage } from "@/components/ImageCarousel";
+import LightboxClient from "./LightboxClient";
 
 type ItemDetailPageProps = {
   params: Promise<{ id: string }>;
@@ -42,8 +48,16 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
   const officialSubmitterId = item.official_image_submitter_id ?? "";
   const realSubmitterId = item.real_image_submitter_id ?? "";
 
+  // 获取 item_images 多图数据
+  const allImages = await getItemImages(item.id);
+  const { official: officialImages, real: realImages } = groupItemImagesByType(allImages);
+
+  // 获取 item_images 贡献者信息
+  const imageSubmitters = await getItemImageSubmitters(item.id);
+
   // 收集所有需要查询 profile 的用户 ID
-  const allSubmitterIds = [submitterId, officialSubmitterId, realSubmitterId].filter(Boolean);
+  const itemImageSubmitterIds = [...new Set(allImages.map((img) => img.submitter_id).filter((id): id is string => !!id))];
+  const allSubmitterIds = [submitterId, officialSubmitterId, realSubmitterId, ...itemImageSubmitterIds].filter((id): id is string => !!id);
 
   const [submitterInfos, collected] = await Promise.all([
     allSubmitterIds.length > 0 ? getSubmitterInfos(allSubmitterIds) : Promise.resolve(new Map()),
@@ -53,14 +67,54 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
   const submitterInfo = submitterInfos.get(submitterId);
   const submitterName = submitterInfo?.displayName;
 
-  const officialSubmitterInfo = submitterInfos.get(officialSubmitterId);
-  const realSubmitterInfo = submitterInfos.get(realSubmitterId);
+  // 构建 CarouselImage 数组（优先 item_images，fallback 旧字段）
+  function buildCarouselImages(
+    dbImages: ItemImage[],
+    legacyUrl: string | null | undefined,
+    type: "official" | "real"
+  ): CarouselImage[] {
+    if (dbImages.length > 0) {
+      return dbImages.map((img) => {
+        const info = submitterInfos.get(img.submitter_id ?? "");
+        return {
+          image_url: img.image_url,
+          submitter_id: img.submitter_id,
+          submitter_name: info?.displayName ?? (img.submitter_id ? `用户${img.submitter_id.slice(0, 6)}` : null),
+          submitter_avatar: info?.avatarUrl,
+          created_at: img.created_at,
+        };
+      });
+    }
+    // Fallback 到旧字段
+    if (legacyUrl) {
+      const legacySubmitterId = type === "official" ? officialSubmitterId : realSubmitterId;
+      const legacyInfo = submitterInfos.get(legacySubmitterId);
+      const legacyCreatedAt = type === "official" ? item!.official_image_created_at : item!.real_image_created_at;
+      return [{
+        image_url: legacyUrl,
+        submitter_id: legacySubmitterId || null,
+        submitter_name: legacyInfo?.displayName ?? (legacySubmitterId ? `用户${legacySubmitterId.slice(0, 6)}` : null),
+        submitter_avatar: legacyInfo?.avatarUrl,
+        created_at: legacyCreatedAt ?? null,
+      }];
+    }
+    return [];
+  }
 
-  const officialSubmitterName = officialSubmitterInfo?.displayName ?? (officialSubmitterId ? `用户${officialSubmitterId.slice(0, 6)}` : null);
-  const realSubmitterName = realSubmitterInfo?.displayName ?? (realSubmitterId ? `用户${realSubmitterId.slice(0, 6)}` : null);
+  const officialCarouselImages = buildCarouselImages(officialImages, item.official_image_url, "official");
+  const realCarouselImages = buildCarouselImages(realImages, item.real_image_url, "real");
 
-  const hasOfficial = !!item.official_image_url;
-  const hasReal = !!item.real_image_url;
+  const hasOfficial = officialCarouselImages.length > 0;
+  const hasReal = realCarouselImages.length > 0;
+
+  // 贡献者显示名（去重）
+  function getSubmitterNames(images: CarouselImage[]): string {
+    const names = [...new Set(images.map((img) => img.submitter_name).filter(Boolean))];
+    return names.length > 0 ? names.join("、") : "";
+  }
+
+  const officialContributors = getSubmitterNames(officialCarouselImages);
+  const realContributors = getSubmitterNames(realCarouselImages);
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-8">
@@ -71,31 +125,29 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
       <div className="mt-6 grid gap-8 lg:grid-cols-[480px_1fr]">
         {/* 左侧：图片区域 */}
         <div className="space-y-4">
-          {/* 实物图 */}
-          <ImageSection
-            label="实物图"
-            imageUrl={item.real_image_url}
-            submitterName={realSubmitterName}
-            submitterId={realSubmitterId}
-            submitterAvatar={realSubmitterInfo?.avatarUrl}
-            createdAt={item.real_image_created_at}
-            emptyText="暂无实物图，欢迎补充"
-            accentColor="green"
-          />
+          {/* 实物图轮播 */}
+          <LightboxClient images={realCarouselImages} type="real">
+            {({ onOpen }) => (
+              <ImageCarousel
+                images={realCarouselImages}
+                type="real"
+                onImageClick={onOpen}
+              />
+            )}
+          </LightboxClient>
 
-          {/* 官图 */}
-          <ImageSection
-            label="官图"
-            imageUrl={item.official_image_url}
-            submitterName={officialSubmitterName}
-            submitterId={officialSubmitterId}
-            submitterAvatar={officialSubmitterInfo?.avatarUrl}
-            createdAt={item.official_image_created_at}
-            emptyText="暂无官图，欢迎补充"
-            accentColor="blue"
-          />
+          {/* 官图轮播 */}
+          <LightboxClient images={officialCarouselImages} type="official">
+            {({ onOpen }) => (
+              <ImageCarousel
+                images={officialCarouselImages}
+                type="official"
+                onImageClick={onOpen}
+              />
+            )}
+          </LightboxClient>
 
-          {/* 兼容旧图片：只有当新字段都为空时才显示旧 image */}
+          {/* 兼容旧图片：只有当新字段和 item_images 都为空时才显示旧 image */}
           {!hasOfficial && !hasReal && item.image && (
             <div className="overflow-hidden rounded-3xl bg-white shadow-sm border border-pink-100">
               <img
@@ -182,22 +234,51 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
             <DeleteRequestButton itemId={item.id} />
           </div>
 
-          {/* 补充图片入口 */}
-          {user && (!hasOfficial || !hasReal) && (
+          {/* 贡献者 */}
+          {(officialContributors || realContributors) && (
             <div className="mt-6 border-t border-pink-100 pt-6">
-              <h3 className="mb-3 text-sm font-semibold text-slate-700">补充图片</h3>
-              <div className="flex flex-wrap gap-2">
-                {!hasOfficial && <SupplementImageButton itemId={item.id} type="official" />}
-                {!hasReal && <SupplementImageButton itemId={item.id} type="real" />}
+              <h3 className="mb-2 text-sm font-semibold text-slate-700">图片贡献</h3>
+              <div className="space-y-1 text-xs text-slate-500">
+                {realContributors && (
+                  <p><span className="inline-block w-10 rounded bg-green-100 px-1 py-0.5 text-center text-[10px] font-medium text-green-600 mr-1">实物</span>{realContributors}</p>
+                )}
+                {officialContributors && (
+                  <p><span className="inline-block w-10 rounded bg-blue-100 px-1 py-0.5 text-center text-[10px] font-medium text-blue-600 mr-1">官图</span>{officialContributors}</p>
+                )}
               </div>
             </div>
           )}
-          {user && hasOfficial && hasReal && (
+
+          {/* 补充图片入口 */}
+          {user && (canAddOfficialImage(allImages) || canAddRealImage(allImages)) && (
+            <div className="mt-6 border-t border-pink-100 pt-6">
+              <h3 className="mb-3 text-sm font-semibold text-slate-700">补充图片</h3>
+              <div className="flex flex-wrap gap-2">
+                {canAddOfficialImage(allImages) && (
+                  <SupplementImageButton
+                    itemId={item.id}
+                    type="official"
+                    currentCount={getImageCount(allImages, "official")}
+                    maxCount={MAX_OFFICIAL}
+                  />
+                )}
+                {canAddRealImage(allImages) && (
+                  <SupplementImageButton
+                    itemId={item.id}
+                    type="real"
+                    currentCount={getImageCount(allImages, "real")}
+                    maxCount={MAX_REAL}
+                  />
+                )}
+              </div>
+            </div>
+          )}
+          {user && !canAddOfficialImage(allImages) && !canAddRealImage(allImages) && (
             <div className="mt-6 border-t border-pink-100 pt-6">
               <p className="text-xs text-green-600 font-medium">图片已完整</p>
             </div>
           )}
-          {!user && (!hasOfficial || !hasReal) && (
+          {!user && (
             <div className="mt-6 border-t border-pink-100 pt-6">
               <p className="text-xs text-slate-400">
                 登录后可补充图鉴图片
@@ -219,70 +300,3 @@ function Info({ label, value }: { label: string; value: string }) {
   );
 }
 
-function ImageSection({
-  label,
-  imageUrl,
-  submitterName,
-  submitterId,
-  submitterAvatar,
-  createdAt,
-  emptyText,
-  accentColor,
-}: {
-  label: string;
-  imageUrl?: string | null;
-  submitterName?: string | null;
-  submitterId?: string;
-  submitterAvatar?: string | null;
-  createdAt?: string | null;
-  emptyText: string;
-  accentColor: "green" | "blue";
-}) {
-  const borderColor = accentColor === "green" ? "border-green-200" : "border-blue-200";
-  const labelBg = accentColor === "green" ? "bg-green-500" : "bg-blue-500";
-
-  return (
-    <div className={`overflow-hidden rounded-3xl bg-white shadow-sm border ${imageUrl ? ringGray : borderColor}`}>
-      {imageUrl ? (
-        <>
-          <img
-            src={imageUrl}
-            alt={label}
-            className="aspect-square w-full object-cover"
-          />
-          <div className="px-4 py-3 space-y-1">
-            <span className={`inline-block rounded-full ${labelBg} px-2 py-0.5 text-xs font-medium text-white`}>
-              {label}
-            </span>
-            {submitterName && (
-              <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                <span>图片由</span>
-                {submitterId ? (
-                  <Link href={`/users/${submitterId}`} className="flex items-center gap-1 hover:text-pink-500 transition-colors">
-                    {submitterAvatar && (
-                      <img src={submitterAvatar} alt="" className="h-4 w-4 rounded-full object-cover" />
-                    )}
-                    <span className="font-medium">{submitterName}</span>
-                  </Link>
-                ) : (
-                  <span className="font-medium">{submitterName}</span>
-                )}
-                <span>上传</span>
-                {createdAt && <span>· {relativeTime(createdAt)}</span>}
-              </div>
-            )}
-          </div>
-        </>
-      ) : (
-        <div className="flex aspect-square w-full flex-col items-center justify-center bg-slate-50 text-slate-400">
-          <svg className="h-10 w-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          <p className="text-sm">{emptyText}</p>
-        </div>
-      )}
-    </div>
-  );
-}
-
-const ringGray = "border-pink-100";

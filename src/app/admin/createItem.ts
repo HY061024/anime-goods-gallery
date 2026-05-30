@@ -4,12 +4,26 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "./auth";
 import { saveItem } from "@/lib/itemActions";
 
+/** 从 FormData 提取 indexed 数组字段 */
+function extractArrayFromFormData(formData: FormData, prefix: string): string[] {
+  const result: string[] = [];
+  for (let i = 0; i < 10; i++) {
+    const val = (formData.get(`${prefix}_${i}`) as string)?.trim();
+    if (val) result.push(val);
+  }
+  return result;
+}
+
 export async function createItem(formData: FormData) {
   try {
     await requireAdmin();
 
     const imageFile = formData.get("imageFile") as File | null;
     const imageUrl = (formData.get("imageUrl") as string)?.trim() || undefined;
+
+    const officialImageUrls = extractArrayFromFormData(formData, "officialImageUrl");
+    const realImageUrls = extractArrayFromFormData(formData, "realImageUrl");
+
     const officialImageUrl = (formData.get("officialImageUrl") as string)?.trim() || undefined;
     const realImageUrl = (formData.get("realImageUrl") as string)?.trim() || undefined;
 
@@ -25,6 +39,8 @@ export async function createItem(formData: FormData) {
       imageUrl,
       officialImageUrl,
       realImageUrl,
+      officialImageUrls: officialImageUrls.length > 0 ? officialImageUrls : undefined,
+      realImageUrls: realImageUrls.length > 0 ? realImageUrls : undefined,
     });
 
     if ("error" in result) return { error: result.error };

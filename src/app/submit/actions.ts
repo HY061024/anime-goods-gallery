@@ -4,10 +4,26 @@ import { revalidatePath } from "next/cache";
 import { saveItem } from "@/lib/itemActions";
 import { createClient } from "@/lib/supabaseAction";
 
+/** 从 FormData 提取 indexed 数组字段，如 officialImageUrl_0, officialImageUrl_1... */
+function extractArrayFromFormData(formData: FormData, prefix: string): string[] {
+  const result: string[] = [];
+  for (let i = 0; i < 10; i++) {
+    const val = (formData.get(`${prefix}_${i}`) as string)?.trim();
+    if (val) result.push(val);
+  }
+  return result;
+}
+
 export async function submitItem(formData: FormData) {
   try {
     const imageFile = formData.get("imageFile") as File | null;
     const imageUrl = (formData.get("imageUrl") as string)?.trim() || undefined;
+
+    // 多图支持：从 FormData 提取 officialImageUrl_0, officialImageUrl_1... 等
+    const officialImageUrls = extractArrayFromFormData(formData, "officialImageUrl");
+    const realImageUrls = extractArrayFromFormData(formData, "realImageUrl");
+
+    // 兼容旧的单图字段
     const officialImageUrl = (formData.get("officialImageUrl") as string)?.trim() || undefined;
     const realImageUrl = (formData.get("realImageUrl") as string)?.trim() || undefined;
 
@@ -31,6 +47,8 @@ export async function submitItem(formData: FormData) {
         visibility: "public",
         officialImageUrl,
         realImageUrl,
+        officialImageUrls: officialImageUrls.length > 0 ? officialImageUrls : undefined,
+        realImageUrls: realImageUrls.length > 0 ? realImageUrls : undefined,
       },
       true
     );
