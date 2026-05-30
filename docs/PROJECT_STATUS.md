@@ -1,6 +1,6 @@
 # PROJECT_STATUS.md — 照影项目状态
 
-> 最后更新：2026-05-27
+> 最后更新：2026-05-30
 > 本项目同时由 Claude Code 和 Codex 维护。双方每次操作后都应更新此文件。
 
 ## 基本信息
@@ -39,12 +39,13 @@
 
 ## 数据库状态
 
+- **Supabase 安全变更（2026-05-30）**：新建 public schema 表不再默认暴露给 Data API。以后所有迁移 SQL 必须包含 6 步：CREATE TABLE + RLS + POLICY + GRANT USAGE ON SCHEMA + 表级 GRANT + BIGSERIAL sequence GRANT。详见 CLAUDE.md。
 - 第一次迁移（用户系统+通知）✅
 - 第二次迁移（痛柜功能核心）✅
 - 第三次迁移（浏览量计数）✅
 - 第四次迁移（好友+消息+反馈+个人资料扩展+管理员）✅
 - 第五次迁移（图片结构升级：DROP NOT NULL + COALESCE 回填）⚠️ 待执行
-- 第六次迁移（灵感社区 4 张表 + RLS）⚠️ 待执行
+- 第六次迁移（灵感社区 4 张表 + RLS + GRANT）⚠️ 待执行（SQL 需同步加入 GRANT 授权）
 - 当前共 9 张表 + 灵感社区 4 张表待创建
 
 ## 下一步优先级

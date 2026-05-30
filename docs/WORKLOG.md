@@ -41,3 +41,23 @@
 - `npm run lint`：未通过；PowerShell 直接运行 `npm` 被执行策略拦截，改用 `npm.cmd run lint` 后发现既有业务代码问题：`src/app/admin/(protected)/feedback/page.tsx` 存在 `no-explicit-any`，`src/app/admin/(public)/page.tsx` 存在 `<a>` 跳首页应改用 `next/link`；另有若干既有 warning
 - `npm run build`：未通过；Turbopack 构建阶段无法连接 Google Fonts 获取 `Geist` / `Geist Mono`，疑似当前网络受限导致
 **下一步**：后续 Claude Code 或 Codex 接手时，继续先读共享进度文件，再按任务更新状态和日志
+
+---
+
+## 2026-05-30
+**修改者**：Claude Code
+**任务**：记录 Supabase 安全变更，更新所有迁移 SQL 模板
+**修改文件**：
+- `CLAUDE.md`（新增"Supabase 安全变更"章节 + 注意事项第8条 + 当前进度）
+- `docs/PROJECT_STATUS.md`（数据库状态章节加入安全变更说明）
+- `docs/WORKLOG.md`（本条记录）
+**完成内容**：
+1. CLAUDE.md 新增"Supabase 安全变更（2026-05-30）"章节，列出未来所有建表迁移必须包含的 6 步授权
+2. 注意事项新增第 8 条：所有新增 public schema 表迁移 SQL 必须包含完整 GRANT 授权
+3. PROJECT_STATUS.md 数据库状态章节置顶标注安全变更，第六次迁移备注"SQL 需加入 GRANT"
+4. 第五次迁移（ALTER TABLE 改已有表）不涉及新建表，无需 GRANT
+**数据库操作**：无（仅文档更新，不涉及数据库变更）
+**检查结果**：
+- `npm run lint`：仅 Markdown 变更，不触发 lint
+- `npm run build`：仅 Markdown 变更，不影响构建
+**下一步**：执行第五次/第六次迁移时，确认 SQL 满足 6 步授权要求

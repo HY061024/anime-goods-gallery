@@ -65,6 +65,18 @@
 - Server Action 不直接调用 `redirect()`，改为返回 `{ redirectUrl }`，由客户端 `useRouter().push()` 导航
 - 图片字段写入必须设置 `image = real_image_url || official_image_url`，不要删除旧 `image` 字段
 
+## 数据库迁移 SQL 规范（Supabase 2026-05-30 起）
+
+所有新建 public schema 表的迁移 SQL 必须包含 6 步：
+1. `CREATE TABLE ...`
+2. `ALTER TABLE ... ENABLE ROW LEVEL SECURITY`
+3. `CREATE POLICY ...`
+4. `GRANT USAGE ON SCHEMA public TO anon, authenticated`
+5. `GRANT SELECT, INSERT, UPDATE, DELETE ON <table> TO anon, authenticated`
+6. 如使用 `BIGSERIAL`，还需 `GRANT USAGE ON SEQUENCE <seq_name> TO anon, authenticated`
+
+不授权会导致 Data API 返回 403。详见 CLAUDE.md。
+
 ## 关键文件速查
 
 | 文件 | 用途 |
