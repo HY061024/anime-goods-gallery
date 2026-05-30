@@ -96,3 +96,28 @@
 - `npx tsc --noEmit`：通过（0 errors）
 - `npm run build`：通过（所有路由编译成功）
 **下一步**：用户执行 item_images 建表 SQL → git commit + push
+
+---
+
+## 2026-05-30
+**修改者**：Codex
+**任务**：修复线上商品详情页 `/items/75` 显示 “This page couldn't load”
+**修改文件**：
+- `src/app/items/[id]/LightboxClient.tsx`
+- `src/app/items/[id]/page.tsx`
+- `src/app/items/[id]/SupplementImageButton.tsx`
+- `src/lib/itemImages.ts`
+- `docs/PROJECT_STATUS.md`
+- `docs/WORKLOG.md`
+**完成内容**：
+1. 定位线上详情页错误：Server Component 把 render function 作为 children 传给 `"use client"` 的 `LightboxClient`，触发 React Server Components 运行时错误
+2. 将 `LightboxClient` 改为纯客户端组合组件，由它内部渲染 `ImageCarousel` 和 `Lightbox`
+3. 简化详情页调用方式，移除不必要的 `getItemImageSubmitters` 重复查询
+4. 清理本次相关 lint warning：移除未使用类型，并在补充图片按钮展示当前数量/上限
+**数据库操作**：无
+**检查结果**：
+- `npx tsc --noEmit`：通过
+- 定向 `npx eslint`（本次相关 4 个文件）：通过
+- `npm run lint`：未通过；仍有既有业务代码问题：`src/app/admin/(protected)/feedback/page.tsx` 的 `no-explicit-any`，`src/app/admin/(public)/page.tsx` 的 `<a>` 应改 `next/link`
+- `npm run build`：未通过；本机无法连接 Google Fonts 获取 `Geist` / `Geist Mono`
+**下一步**：等待 Vercel 自动部署完成后刷新 `/items/75` 验证

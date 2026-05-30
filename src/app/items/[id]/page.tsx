@@ -6,13 +6,12 @@ import { getItemById } from "@/lib/items";
 import { createClient } from "@/lib/supabaseServer";
 import { getSubmitterInfos } from "@/lib/profiles";
 import { isInCollection } from "@/lib/collections";
-import { getItemImages, getItemImageSubmitters } from "@/lib/itemImages";
+import { getItemImages } from "@/lib/itemImages";
 import { groupItemImagesByType, canAddOfficialImage, canAddRealImage, getImageCount, MAX_OFFICIAL, MAX_REAL } from "@/data/items";
 import type { ItemImage } from "@/data/items";
 import DeleteRequestButton from "./DeleteRequestButton";
 import CollectButton from "./CollectButton";
 import SupplementImageButton from "./SupplementImageButton";
-import ImageCarousel from "@/components/ImageCarousel";
 import type { CarouselImage } from "@/components/ImageCarousel";
 import LightboxClient from "./LightboxClient";
 
@@ -51,9 +50,6 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
   // 获取 item_images 多图数据
   const allImages = await getItemImages(item.id);
   const { official: officialImages, real: realImages } = groupItemImagesByType(allImages);
-
-  // 获取 item_images 贡献者信息
-  const imageSubmitters = await getItemImageSubmitters(item.id);
 
   // 收集所有需要查询 profile 的用户 ID
   const itemImageSubmitterIds = [...new Set(allImages.map((img) => img.submitter_id).filter((id): id is string => !!id))];
@@ -126,26 +122,10 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
         {/* 左侧：图片区域 */}
         <div className="space-y-4">
           {/* 实物图轮播 */}
-          <LightboxClient images={realCarouselImages} type="real">
-            {({ onOpen }) => (
-              <ImageCarousel
-                images={realCarouselImages}
-                type="real"
-                onImageClick={onOpen}
-              />
-            )}
-          </LightboxClient>
+          <LightboxClient images={realCarouselImages} type="real" />
 
           {/* 官图轮播 */}
-          <LightboxClient images={officialCarouselImages} type="official">
-            {({ onOpen }) => (
-              <ImageCarousel
-                images={officialCarouselImages}
-                type="official"
-                onImageClick={onOpen}
-              />
-            )}
-          </LightboxClient>
+          <LightboxClient images={officialCarouselImages} type="official" />
 
           {/* 兼容旧图片：只有当新字段和 item_images 都为空时才显示旧 image */}
           {!hasOfficial && !hasReal && item.image && (
@@ -299,4 +279,3 @@ function Info({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
-

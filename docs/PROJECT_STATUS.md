@@ -1,6 +1,6 @@
 # PROJECT_STATUS.md — 照影项目状态
 
-> 最后更新：2026-05-30（多图轮播功能完成）
+> 最后更新：2026-05-30（修复详情页多图轮播线上错误）
 > 本项目同时由 Claude Code 和 Codex 维护。双方每次操作后都应更新此文件。
 
 ## 基本信息
@@ -40,6 +40,7 @@
 ## 数据库状态
 
 - **Supabase 安全变更（2026-05-30）**：新建 public schema 表不再默认暴露给 Data API。以后所有迁移 SQL 必须包含 6 步：CREATE TABLE + RLS + POLICY + GRANT USAGE ON SCHEMA + 表级 GRANT + BIGSERIAL sequence GRANT。详见 CLAUDE.md。
+- **线上详情页错误修复（2026-05-30）**：多图轮播上线后，详情页曾因 Server Component 向 Client Component 传 render function children 触发 RSC 错误；已改为客户端组件内部渲染 ImageCarousel + Lightbox。
 - 第一次迁移（用户系统+通知）✅
 - 第二次迁移（痛柜功能核心）✅
 - 第三次迁移（浏览量计数）✅

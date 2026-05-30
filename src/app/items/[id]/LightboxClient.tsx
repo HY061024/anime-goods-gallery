@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import ImageCarousel from "@/components/ImageCarousel";
 import type { CarouselImage } from "@/components/ImageCarousel";
 import Lightbox from "@/components/Lightbox";
 
 type LightboxClientProps = {
   images: CarouselImage[];
   type: "official" | "real";
-  children: (props: { onOpen: (index: number) => void }) => React.ReactNode;
 };
 
-export default function LightboxClient({ images, type, children }: LightboxClientProps) {
+export default function LightboxClient({ images, type }: LightboxClientProps) {
   const [open, setOpen] = useState(false);
   const [startIndex, setStartIndex] = useState(0);
 
@@ -21,7 +21,7 @@ export default function LightboxClient({ images, type, children }: LightboxClien
 
   return (
     <>
-      {children({ onOpen: handleOpen })}
+      <ImageCarousel images={images} type={type} onImageClick={handleOpen} />
       {open && images.length > 0 && (
         <Lightbox
           images={images}

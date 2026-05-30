@@ -97,7 +97,9 @@ export default function SupplementImageButton({
           : "rounded-2xl border-2 border-dashed border-green-200 bg-green-50/30 p-4"
       }>
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-medium text-slate-600">补充{label}</span>
+          <span className="text-sm font-medium text-slate-600">
+            补充{label}（{currentCount}/{maxCount}）
+          </span>
           <button
             type="button"
             onClick={() => { setShowUpload(false); setPreview(null); setFile(null); setError(""); }}
@@ -176,7 +178,7 @@ export default function SupplementImageButton({
           : "inline-flex items-center gap-1 rounded-xl border border-dashed border-green-300 px-4 py-2 text-sm font-medium text-green-500 transition hover:bg-green-50"
       }
     >
-      ＋ 补充{label}
+      ＋ 补充{label}（{currentCount}/{maxCount}）
     </button>
   );
 }

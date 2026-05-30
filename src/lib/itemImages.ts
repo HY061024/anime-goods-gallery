@@ -1,7 +1,7 @@
 "use server";
 
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
-import type { ItemImage, ItemImageWithSubmitter } from "@/data/items";
+import type { ItemImage } from "@/data/items";
 
 const TABLE = "item_images";
 
