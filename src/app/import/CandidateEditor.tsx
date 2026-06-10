@@ -46,10 +46,10 @@ export default function CandidateEditor({ candidate, onChange, readOnly }: Props
                   <button
                     type="button"
                     onClick={() => removeImage(i)}
-                    className="absolute top-1 right-1 rounded-full bg-black/50 p-1 text-white/80 hover:bg-black/70 transition"
+                    className="absolute top-1 right-1 rounded-full bg-black/50 p-2 text-white/80 hover:bg-black/70 transition"
                     aria-label="删除图片"
                   >
-                    <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
@@ -100,7 +100,7 @@ export default function CandidateEditor({ candidate, onChange, readOnly }: Props
       </div>
 
       {/* 作品 + 角色 */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="mb-1 block text-sm font-medium text-slate-600">作品（可选）</label>
           <input
@@ -124,7 +124,7 @@ export default function CandidateEditor({ candidate, onChange, readOnly }: Props
       </div>
 
       {/* 分类 + 价格 */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="mb-1 block text-sm font-medium text-slate-600">分类（可选）</label>
           <input
