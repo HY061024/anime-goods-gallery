@@ -38,7 +38,7 @@ export default async function InspirationPage({ searchParams }: PageProps) {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-8">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* 页面标题 */}
       <div className="mb-8">
         <Link href="/" className="text-sm font-medium text-pink-500 transition hover:text-pink-600">

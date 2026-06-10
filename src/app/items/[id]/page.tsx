@@ -113,14 +113,14 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
   const realContributors = getSubmitterNames(realCarouselImages);
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-8">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <Link href="/items" className="text-sm font-medium text-pink-500 transition hover:text-pink-600">
         ← 返回搜索页
       </Link>
 
-      <div className="mt-6 grid gap-8 lg:grid-cols-[480px_1fr]">
+      <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[480px_1fr]">
         {/* 左侧：图片区域 */}
-        <div className="space-y-4">
+        <div className="w-full min-w-0 space-y-4">
           {/* 实物图轮播 */}
           <LightboxClient images={realCarouselImages} type="real" />
 
@@ -133,27 +133,27 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
               <img
                 src={item.image}
                 alt={item.title}
-                className="aspect-square w-full object-cover"
+                className="aspect-square w-full object-contain max-w-full"
               />
             </div>
           )}
         </div>
 
         {/* 右侧信息 */}
-        <div className="rounded-3xl bg-white p-8 border border-pink-100 shadow-sm">
+        <div className="rounded-3xl bg-white p-4 sm:p-6 lg:p-8 border border-pink-100 shadow-sm min-w-0">
           {/* 分类标签 */}
           <span className="inline-block rounded-full bg-pink-50 px-3 py-1 text-sm font-medium text-pink-600">
             {item.category}
           </span>
 
           {/* 标题 */}
-          <h1 className="mt-4 text-3xl font-bold text-slate-800">{item.title}</h1>
+          <h1 className="mt-4 text-2xl sm:text-3xl font-bold text-slate-800 break-words">{item.title}</h1>
 
           {/* 作品/角色 */}
-          <div className="mt-3 flex items-center gap-2 text-slate-500">
-            <span className="rounded-lg bg-slate-100 px-2 py-0.5 text-sm">{item.work}</span>
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-slate-500">
+            <span className="rounded-lg bg-slate-100 px-2 py-0.5 text-sm max-w-full break-words">{item.work}</span>
             <span className="text-slate-300">/</span>
-            <span className="rounded-lg bg-slate-100 px-2 py-0.5 text-sm">{item.character}</span>
+            <span className="rounded-lg bg-slate-100 px-2 py-0.5 text-sm max-w-full break-words">{item.character}</span>
           </div>
 
           {/* 条目提交者信息 */}
@@ -171,11 +171,11 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
                   </span>
                 )}
               </span>
-              <span className="font-medium">{submitterName ?? `用户${submitterId.slice(0, 6)}`}</span>
+              <span className="font-medium max-w-full break-words">{submitterName ?? `用户${submitterId.slice(0, 6)}`}</span>
               {item.created_at && <span>· {relativeTime(item.created_at)}</span>}
             </Link>
           ) : submitterName ? (
-            <p className="mt-3 text-xs text-slate-400">
+            <p className="mt-3 text-xs text-slate-400 break-words">
               {submitterName}
               {item.created_at ? ` · ${relativeTime(item.created_at)}` : ""}
             </p>
@@ -198,7 +198,7 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
           {item.description && (
             <div className="mt-8 border-t border-pink-100 pt-6">
               <h2 className="mb-3 text-lg font-bold text-slate-800">周边简介</h2>
-              <p className="leading-7 text-slate-600">{item.description}</p>
+              <p className="leading-7 text-slate-600 break-words whitespace-normal">{item.description}</p>
             </div>
           )}
 
@@ -220,10 +220,10 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
               <h3 className="mb-2 text-sm font-semibold text-slate-700">图片贡献</h3>
               <div className="space-y-1 text-xs text-slate-500">
                 {realContributors && (
-                  <p><span className="inline-block w-10 rounded bg-green-100 px-1 py-0.5 text-center text-[10px] font-medium text-green-600 mr-1">实物</span>{realContributors}</p>
+                  <p className="break-words"><span className="inline-block w-10 rounded bg-green-100 px-1 py-0.5 text-center text-[10px] font-medium text-green-600 mr-1">实物</span>{realContributors}</p>
                 )}
                 {officialContributors && (
-                  <p><span className="inline-block w-10 rounded bg-blue-100 px-1 py-0.5 text-center text-[10px] font-medium text-blue-600 mr-1">官图</span>{officialContributors}</p>
+                  <p className="break-words"><span className="inline-block w-10 rounded bg-blue-100 px-1 py-0.5 text-center text-[10px] font-medium text-blue-600 mr-1">官图</span>{officialContributors}</p>
                 )}
               </div>
             </div>
@@ -275,7 +275,7 @@ function Info({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center gap-3 text-sm">
       <span className="w-14 shrink-0 font-medium text-slate-400">{label}</span>
-      <span className="font-medium text-slate-800">{value}</span>
+      <span className="font-medium text-slate-800 min-w-0 break-words">{value}</span>
     </div>
   );
 }

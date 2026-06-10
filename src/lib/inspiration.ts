@@ -60,6 +60,7 @@ export async function createInspirationPost(input: {
   title: string;
   content: string;
   coverUrl?: string;
+  imageUrls?: string[];
   videoUrl?: string;
   materialUrl?: string;
   work?: string;
@@ -68,6 +69,10 @@ export async function createInspirationPost(input: {
   relatedItemId?: number;
   visibility?: "public" | "private";
 }) {
+  const imageUrls = input.imageUrls ?? [];
+  // cover_url 兼容：多图时自动设为第一张
+  const coverUrl = input.coverUrl ?? imageUrls[0] ?? null;
+
   const { data, error } = await supabaseAdmin
     .from("inspiration_posts")
     .insert({
@@ -75,7 +80,8 @@ export async function createInspirationPost(input: {
       type: input.type,
       title: input.title,
       content: input.content,
-      cover_url: input.coverUrl ?? null,
+      cover_url: coverUrl,
+      image_urls: imageUrls,
       video_url: input.videoUrl ?? null,
       material_url: input.materialUrl ?? null,
       work: input.work ?? "",

@@ -36,6 +36,10 @@ export default function InspirationCard({
   onLike?: (postId: number) => Promise<unknown> | void;
   onFavorite?: (postId: number) => Promise<unknown> | void;
 }) {
+  const imageUrls = post.image_urls ?? [];
+  const isVideo = post.type === "video";
+  const isMultiImage = imageUrls.length >= 2;
+
   return (
     <div className="group relative overflow-hidden rounded-2xl bg-white shadow-sm border border-pink-100 transition hover:-translate-y-1 hover:shadow-lg hover:border-pink-200">
       <Link href={`/inspiration/${post.id}`} className="block">
@@ -51,17 +55,32 @@ export default function InspirationCard({
           ) : (
             <div className="flex h-full w-full items-center justify-center">
               <span className="text-4xl text-pink-300">
-                {post.type === "video" ? "🎬" : post.type === "note" ? "📝" : post.type === "material" ? "📦" : "❓"}
+                {isVideo ? "🎬" : post.type === "note" ? "📝" : post.type === "material" ? "📦" : "❓"}
               </span>
             </div>
           )}
 
-          {/* 类型标签 */}
-          <span
-            className={`absolute left-2 top-2 rounded-full px-2 py-0.5 text-xs font-medium shadow-sm backdrop-blur-sm ${TYPE_COLORS[post.type]}`}
-          >
-            {TYPE_LABELS[post.type]}
-          </span>
+          {/* 左上角标签组 */}
+          <div className="absolute left-2 top-2 flex flex-col gap-1">
+            {/* 类型标签 */}
+            <span
+              className={`rounded-full px-2 py-0.5 text-xs font-medium shadow-sm backdrop-blur-sm ${TYPE_COLORS[post.type]}`}
+            >
+              {TYPE_LABELS[post.type]}
+            </span>
+            {/* 视频额外标签 */}
+            {isVideo && post.video_url && (
+              <span className="rounded-full bg-red-500/80 px-2 py-0.5 text-[10px] font-medium text-white shadow-sm backdrop-blur-sm">
+                视频
+              </span>
+            )}
+            {/* 多图标签 */}
+            {isMultiImage && (
+              <span className="rounded-full bg-purple-500/70 px-2 py-0.5 text-[10px] font-medium text-white shadow-sm backdrop-blur-sm">
+                多图 · {imageUrls.length}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* 信息 */}
@@ -77,17 +96,24 @@ export default function InspirationCard({
             </p>
           )}
 
-          {/* 标签 */}
+          {/* 标签（最多展示 3 个，可点击） */}
           {post.tags && post.tags.length > 0 && (
             <div className="mt-1.5 flex flex-wrap gap-1">
               {post.tags.slice(0, 3).map((tag) => (
-                <span
+                <Link
                   key={tag}
-                  className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-500"
+                  href={`/inspiration?tag=${encodeURIComponent(tag)}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-500 hover:bg-pink-100 hover:text-pink-600 transition"
                 >
                   #{tag}
-                </span>
+                </Link>
               ))}
+              {post.tags.length > 3 && (
+                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-400">
+                  +{post.tags.length - 3}
+                </span>
+              )}
             </div>
           )}
         </div>

@@ -8,7 +8,7 @@ export default async function NewInspirationPage() {
 
   if (!user) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-8">
+      <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 py-8">
         <Link href="/inspiration" className="text-sm font-medium text-pink-500 transition hover:text-pink-600">
           ← 返回灵感广场
         </Link>
@@ -32,7 +32,7 @@ export default async function NewInspirationPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
+    <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 py-8">
       <Link href="/inspiration" className="text-sm font-medium text-pink-500 transition hover:text-pink-600">
         ← 返回灵感广场
       </Link>

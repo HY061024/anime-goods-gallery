@@ -127,3 +127,42 @@ export async function getItemsByUserId(userId: string) {
   if (error) throw new Error(error.message);
   return (data ?? []) as Item[];
 }
+
+/** 智能导入重复检测：检查 source_url 或 title 是否已存在 */
+export async function checkImportDuplicate(params: {
+  sourceUrl?: string;
+  title?: string;
+}): Promise<{ isDuplicate: boolean; matches: Array<{ id: number; title: string; source_url: string | null }> }> {
+  const matches: Array<{ id: number; title: string; source_url: string | null }> = [];
+
+  // 1. source_url 完全匹配
+  if (params.sourceUrl) {
+    const { data: urlMatches } = await supabaseAdmin
+      .from("items")
+      .select("id, title, source_url")
+      .eq("source_url", params.sourceUrl)
+      .limit(5);
+
+    if (urlMatches) matches.push(...urlMatches);
+  }
+
+  // 2. title 完全相同或包含关系
+  if (params.title && params.title.trim()) {
+    const t = params.title.trim();
+    const { data: titleMatches } = await supabaseAdmin
+      .from("items")
+      .select("id, title, source_url")
+      .or(`title.eq.${t},title.ilike.%${t}%,title.ilike.${t}%`)
+      .limit(5);
+
+    if (titleMatches) {
+      for (const row of titleMatches) {
+        if (!matches.find((m) => m.id === row.id)) {
+          matches.push(row);
+        }
+      }
+    }
+  }
+
+  return { isDuplicate: matches.length > 0, matches };
+}

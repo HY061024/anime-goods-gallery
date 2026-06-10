@@ -22,12 +22,13 @@
 - 公开痛柜（/users/[userId] + 痛柜广场 /cabinets）
 - 好友（发送/接受/拒绝/取消 + 好友列表 + FriendButton）
 - 私信（好友间私聊 + 对话列表 + 未读红点）
-- 灵感区（视频/笔记/素材/提问 4 种帖子 + 点赞/收藏/评论）
+- 灵感区（视频/笔记/素材/提问 4 种帖子 + 点赞/收藏/评论 + 图片/视频本地上传 + 标签智能处理）
 - 用户资料页（头像/昵称/简介/背景图编辑 + 公开页完整资料）
 - 管理员后台（路由分组 + 统一认证 + 审核/反馈/管理员管理）
 - 底部导航栏（手机端底部 Tab + PC 端左侧侧边栏）
 - 图片浏览器直传 Supabase Storage（绕过 Vercel 4.5MB 限制）
 - 意见反馈（/feedback 提交 + /admin/feedback 管理）
+- 智能导入图鉴（/import — 链接解析/截图导入，自动生成待审核草稿）
 
 ## 当前重点问题
 
@@ -47,8 +48,10 @@
 - 第四次迁移（好友+消息+反馈+个人资料扩展+管理员）✅
 - 第五次迁移（图片结构升级：DROP NOT NULL + COALESCE 回填）⚠️ 待执行
 - 第六次迁移（灵感社区 4 张表 + RLS + GRANT）⚠️ 待执行（SQL 需同步加入 GRANT 授权）
-- 第七次迁移（多图轮播 item_images 表 + RLS + GRANT）⚠️ 待执行（SQL 已生成，需用户手动在 Supabase SQL Editor 执行）
-- 当前共 9 张表 + item_images 待创建 + 灵感社区 4 张表待创建
+- 第七次迁移（多图轮播 item_images 表 + RLS + GRANT）⚠️ 待执行
+- 第八次迁移（灵感区图片多图 image_urls 字段）⚠️ 待执行
+- 第九次迁移（智能导入 import_jobs + import_candidates 表 + items 来源字段）⚠️ 待执行（可重复执行版本，含 DROP POLICY IF EXISTS）
+- 当前共 9 张表 + item_images 待创建 + 灵感社区 4 张表待创建 + import 2 张表待创建
 
 ## 下一步优先级
 

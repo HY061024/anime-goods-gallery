@@ -4,6 +4,48 @@
 
 ---
 
+## 2026-06-10
+**修改者**：Claude Code
+**任务**：新增智能导入图鉴功能（/import）+ 灵感区上传优化 + 图鉴详情页移动端修复
+**修改文件**：
+- `docs/migration_008_inspiration_images.sql`（新建）
+- `docs/migration_009_smart_import.sql`（新建）
+- `src/data/inspiration.ts`（image_urls + 限制常量 + processTags）
+- `src/data/items.ts`（ImportCandidate 类型 + 导入常量）
+- `src/lib/inspiration.ts`（createInspirationPost 支持 imageUrls）
+- `src/lib/itemActions.ts`（新增 saveImportItem）
+- `src/lib/items.ts`（新增 checkImportDuplicate）
+- `src/app/inspiration/actions.ts`（完整服务端校验重写）
+- `src/app/inspiration/new/InspirationForm.tsx`（完全重写：图片/视频上传+标签+按钮状态机）
+- `src/app/inspiration/new/page.tsx`（容器响应式）
+- `src/app/inspiration/page.tsx`（容器响应式）
+- `src/app/inspiration/[id]/page.tsx`（多图+视频播放器）
+- `src/components/InspirationCard.tsx`（视频/多图标签+可点击标签+N）
+- `src/app/import/page.tsx`（新建 — 智能导入 3 Tab）
+- `src/app/import/LinkImportTab.tsx`（新建 — 链接解析）
+- `src/app/import/ScreenshotImportTab.tsx`（新建 — 截图导入）
+- `src/app/import/BatchImportTab.tsx`（新建 — 批量预留）
+- `src/app/import/CandidateEditor.tsx`（新建 — 候选编辑器）
+- `src/app/import/actions.ts`（新建 — parseImportUrl+submitImportItem）
+- `src/app/items/[id]/page.tsx`（移动端布局修复）
+- `src/components/ImageCarousel.tsx`（移动端修复）
+- `src/app/globals.css`（overflow-x hidden）
+- `docs/PROJECT_STATUS.md`（更新）
+- `docs/WORKLOG.md`（本条）
+**完成内容**：
+1. 图鉴详情页移动端左右不对称修复
+2. 灵感区图片/视频本地上传（≤9张压缩≤2MB、≤1个≤50MB）
+3. 灵感区标签智能处理（去#去重trim拒绝危险字符≤10个×20字符）
+4. 灵感区卡片优化（视频/多图标签+可点击+N）
+5. 智能导入链接解析（SSRF防护+OG解析+平台识别+重复检测）
+6. 智能导入截图上传（复用compressImage+手动填写）
+7. 导入统一标记[待审核][智能导入]
+**数据库操作**：两次迁移 SQL 已生成待执行
+**检查结果**：tsc 通过、build 通过（28 条路由含 /import）
+**下一步**：执行迁移 SQL → git commit + push
+
+---
+
 ## 2026-05-27
 **修改者**：Claude Code
 **任务**：建立 Claude Code ↔ Codex 共享项目进度机制

@@ -18,7 +18,31 @@ export type Item = {
   real_image_submitter_id?: string | null;
   official_image_created_at?: string | null;
   real_image_created_at?: string | null;
+
+  // 智能导入来源
+  source_url?: string | null;
+  source_platform?: string | null;
 };
+
+/** 智能导入候选图鉴 */
+export type ImportCandidate = {
+  title: string;
+  description?: string;
+  imageUrls: string[];
+  sourceUrl?: string;
+  sourcePlatform?: string;
+  confidence?: number;
+  work?: string;
+  character?: string;
+  category?: string;
+  price?: number;
+  imageType?: 'official' | 'real' | 'unknown';
+};
+
+/** 导入限制常量 */
+export const MAX_IMPORT_IMAGES = 9;
+export const IMPORT_PARSE_TIMEOUT_MS = 8000;
+export const IMPORT_MAX_RESPONSE_SIZE = 1 * 1024 * 1024; // 1MB
 
 export type ItemImage = {
   id: number;

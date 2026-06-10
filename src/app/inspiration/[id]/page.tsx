@@ -66,7 +66,7 @@ export default async function InspirationDetailPage({ params }: Props) {
   const addCommentAction = addComment.bind(null, postId);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
+    <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 py-8">
       <Link href="/inspiration" className="text-sm font-medium text-pink-500 transition hover:text-pink-600">
         ← 返回灵感广场
       </Link>
@@ -84,7 +84,7 @@ export default async function InspirationDetailPage({ params }: Props) {
 
       {/* 标题 */}
       {post.title && (
-        <h1 className="mt-3 text-2xl font-bold text-slate-800">{post.title}</h1>
+        <h1 className="mt-3 text-2xl font-bold text-slate-800 break-words">{post.title}</h1>
       )}
 
       {/* 作者信息 */}
@@ -113,6 +113,22 @@ export default async function InspirationDetailPage({ params }: Props) {
         </div>
       )}
 
+      {/* 多图展示 */}
+      {post.image_urls && post.image_urls.length >= 2 && (
+        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {post.image_urls.map((url, i) => (
+            <div key={i} className="overflow-hidden rounded-xl border border-pink-100 aspect-square bg-slate-100">
+              <img
+                src={url}
+                alt={`图片 ${i + 1}`}
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* 视频嵌入 */}
       {post.type === "video" && post.video_url && (
         <div className="mt-4 overflow-hidden rounded-2xl bg-black aspect-video">
@@ -125,14 +141,20 @@ export default async function InspirationDetailPage({ params }: Props) {
               className="h-full w-full"
               allowFullScreen
             />
+          ) : post.video_url.includes("youtube.com") || post.video_url.includes("youtu.be") ? (
+            <iframe
+              src={post.video_url}
+              className="h-full w-full"
+              allowFullScreen
+            />
           ) : (
-            <video src={post.video_url} controls className="h-full w-full" />
+            <video src={post.video_url} controls className="h-full w-full" preload="metadata" />
           )}
         </div>
       )}
 
       {/* 内容 */}
-      <div className="mt-5 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
+      <div className="mt-5 whitespace-pre-wrap break-words text-sm leading-relaxed text-slate-700">
         {post.content}
       </div>
 

@@ -183,3 +183,98 @@ async function doSaveItem(
 
   return { success: data.id };
 }
+
+// ====== 智能导入专用写入（宽松校验） ======
+
+const IMPORT_PENDING_MARKER = "[待审核][智能导入]";
+
+export type SaveImportItemInput = {
+  userId: string;
+  title: string;
+  description?: string;
+  work?: string;
+  character?: string;
+  category?: string;
+  price?: number;
+  imageUrls: string[];
+  imageType?: "official" | "real" | "unknown";
+  sourceUrl?: string;
+  sourcePlatform?: string;
+};
+
+export async function saveImportItem(input: SaveImportItemInput): Promise<SaveItemResult> {
+  try {
+    const { title, imageUrls, userId } = input;
+
+    // 最低校验：标题 + 至少一张图片
+    if (!title || !title.trim()) return { error: "[验证] 请填写图鉴名称" };
+    if (!imageUrls || imageUrls.length === 0) return { error: "[验证] 请至少上传一张图片" };
+
+    const now = new Date().toISOString();
+    const imageType = input.imageType ?? "unknown";
+
+    const insertData: Record<string, unknown> = {
+      title: title.trim(),
+      work: input.work?.trim() ?? "",
+      character: input.character?.trim() ?? "",
+      category: input.category?.trim() ?? "",
+      price: input.price ?? 0,
+      description: `${IMPORT_PENDING_MARKER}${input.description ?? ""}`,
+      visibility: "public",
+      submitter_id: userId,
+    };
+
+    // 来源字段
+    if (input.sourceUrl) {
+      insertData.source_url = input.sourceUrl;
+    }
+    if (input.sourcePlatform) {
+      insertData.source_platform = input.sourcePlatform;
+    }
+
+    // 图片写入对应字段（不确定→实物图）
+    const firstImage = imageUrls[0];
+    insertData.image = firstImage;
+
+    if (imageType === "official") {
+      insertData.official_image_url = firstImage;
+      insertData.official_image_submitter_id = userId;
+      insertData.official_image_created_at = now;
+    } else {
+      // "real" 或 "unknown" → 实物图
+      insertData.real_image_url = firstImage;
+      insertData.real_image_submitter_id = userId;
+      insertData.real_image_created_at = now;
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from("items")
+      .insert(insertData)
+      .select("id")
+      .single();
+
+    if (error) {
+      return { error: `[DB写入] code=${error.code} msg=${error.message}` };
+    }
+
+    // 写入 item_images 表
+    const allImages = imageUrls.map((url) => ({
+      image_type: imageType === "official" ? ("official" as const) : ("real" as const),
+      image_url: url,
+      submitter_id: userId,
+    }));
+
+    if (allImages.length > 0) {
+      await addItemImages(data.id, allImages);
+    }
+
+    // 通知管理员有新的导入投稿
+    createAdminNotification(data.id, title.trim());
+
+    return { success: data.id };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("saveImportItem 出错:", msg);
+    return { error: `[saveImportItem] ${msg}` };
+  }
+}
