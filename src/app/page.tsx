@@ -80,12 +80,18 @@ export default async function HomePage() {
               )}
             </div>
 
-            <div className="mt-8">
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link
                 href="/submit"
                 className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-pink-500 shadow-lg transition hover:bg-pink-50 hover:scale-105"
               >
-                投稿你喜欢的周边 →
+                ✏️ 投稿你喜欢的周边
+              </Link>
+              <Link
+                href="/import"
+                className="inline-flex items-center gap-2 rounded-full border-2 border-white/60 bg-white/10 px-6 py-3 text-sm font-bold text-white shadow-lg backdrop-blur-sm transition hover:bg-white/20 hover:scale-105"
+              >
+                🤖 智能导入图鉴
               </Link>
             </div>
           </div>
@@ -95,6 +101,52 @@ export default async function HomePage() {
           <svg viewBox="0 0 1440 60" className="h-8 w-full fill-[#faf5ff]">
             <path d="M0 30C240 60 480 0 720 30s480 0 720-30v60H0V30z" />
           </svg>
+        </div>
+      </section>
+
+      {/* 快捷功能区 */}
+      <section className="mx-auto max-w-7xl px-6 py-12">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-slate-800">快捷功能</h2>
+          <p className="mt-1 text-sm text-slate-500">快速开始收录你的周边收藏</p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Link
+            href="/submit"
+            className="group rounded-2xl bg-white border border-pink-100 p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-pink-400 to-pink-300 text-2xl">
+                ✏️
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-lg font-bold text-slate-800 group-hover:text-pink-500 transition-colors">
+                  投稿周边
+                </h3>
+                <p className="mt-1 text-sm text-slate-500">
+                  手动填写周边信息，支持单个或批量上传
+                </p>
+              </div>
+            </div>
+          </Link>
+          <Link
+            href="/import"
+            className="group rounded-2xl bg-white border border-pink-100 p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-purple-400 to-pink-400 text-2xl">
+                🤖
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-lg font-bold text-slate-800 group-hover:text-pink-500 transition-colors">
+                  智能导入图鉴
+                </h3>
+                <p className="mt-1 text-sm text-slate-500">
+                  粘贴链接或上传截图，自动识别周边信息
+                </p>
+              </div>
+            </div>
+          </Link>
         </div>
       </section>
 

@@ -17,12 +17,20 @@ export default async function SubmitPage() {
         successPath="/items?submitted=1"
       />
       <div className="mx-auto max-w-2xl px-4 pb-8 text-center">
-        <Link
-          href="/submit/batch"
-          className="inline-flex items-center gap-1 text-sm font-medium text-pink-500 transition hover:text-pink-600"
-        >
-          有多件要投稿？使用批量上传 →
-        </Link>
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <Link
+            href="/submit/batch"
+            className="inline-flex items-center gap-1 text-sm font-medium text-pink-500 transition hover:text-pink-600"
+          >
+            有多件要投稿？使用批量上传 →
+          </Link>
+          <Link
+            href="/import"
+            className="inline-flex items-center gap-1 text-sm font-medium text-purple-500 transition hover:text-purple-600"
+          >
+            🤖 使用智能导入，自动识别信息 →
+          </Link>
+        </div>
       </div>
     </>
   );

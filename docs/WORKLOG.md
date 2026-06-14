@@ -163,3 +163,25 @@
 - `npm run lint`：未通过；仍有既有业务代码问题：`src/app/admin/(protected)/feedback/page.tsx` 的 `no-explicit-any`，`src/app/admin/(public)/page.tsx` 的 `<a>` 应改 `next/link`
 - `npm run build`：未通过；本机无法连接 Google Fonts 获取 `Geist` / `Geist Mono`
 **下一步**：等待 Vercel 自动部署完成后刷新 `/items/75` 验证
+
+---
+
+## 2026-06-11
+**修改者**：Claude Code
+**任务**：给已上线的 /import 智能导入页面补入口（4处）
+**修改文件**：
+- `src/app/page.tsx`
+- `src/app/submit/page.tsx`
+- `src/components/BottomNav.tsx`
+- `docs/WORKLOG.md`（本条）
+**完成内容**：
+1. 首页 Hero 搜索区旁新增"智能导入图鉴"按钮（🤖 白色半透明圆角按钮，投稿按钮旁），跳转 /import
+2. 首页新增"快捷功能"卡片区（投稿周边 + 智能导入图鉴两张卡片，Hero 下方），跳转 /import 和 /submit
+3. PC 左侧导航栏新增"导入"入口（ImportIcon 下载图标，含 active 状态指示条），跳转 /import
+4. 投稿页 (/submit) 底部新增"智能导入"链接（批量上传链接旁），跳转 /import
+5. 手机端首页可直接看到 Hero 按钮和功能区卡片，无溢出
+**数据库操作**：无
+**检查结果**：
+- `npm run lint`：6 errors 20 warnings，全部为既有问题，本次修改零新增
+- `npm run build`：通过（28 条路由含 /import）
+**下一步**：用户确认后 git commit + push
