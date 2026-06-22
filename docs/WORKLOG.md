@@ -208,3 +208,24 @@
 - `npx tsc --noEmit`：通过
 - `npm run build`：⚠️ 因缺少环境变量 `SUPABASE_SERVICE_ROLE_KEY` 失败（非代码问题）
 **下一步**：手动在 `.env.local` 补充 `SUPABASE_SERVICE_ROLE_KEY` 后，重新运行 `npm run build` 验证
+
+---
+
+## 2026-06-22（第二次）
+**修改者**：Claude Code
+**任务**：配置 Stop hook 自动保存进度
+**修改文件**：
+- `.claude/settings.local.json`（新建 — Stop hook，会话结束时自动更新 WORKLOG + PROJECT_STATUS）
+- `docs/PROJECT_STATUS.md`（更新）
+- `docs/WORKLOG.md`（本条）
+**完成内容**：
+1. 检查确认 `.claude/settings.local.json` 不存在，Stop hook 未配置
+2. 创建最小安全配置：Stop hook 在会话结束时提醒更新 docs/WORKLOG.md + docs/PROJECT_STATUS.md
+3. 文件被 `.gitignore` 第 44 行忽略，不纳入版本控制
+**数据库操作**：无
+**检查结果**：
+- `git status`：工作区干净（`.claude/settings.local.json` 已被 gitignore）
+**下一步**：
+1. 我手动在 `.env.local` 补充 `SUPABASE_SERVICE_ROLE_KEY`
+2. 运行 `npm run build` 验证通过
+3. 确认 Vercel 是否自动部署 main 分支最新提交
