@@ -185,3 +185,26 @@
 - `npm run lint`：6 errors 20 warnings，全部为既有问题，本次修改零新增
 - `npm run build`：通过（28 条路由含 /import）
 **下一步**：用户确认后 git commit + push
+
+---
+
+## 2026-06-22
+**修改者**：Claude Code
+**任务**：核对项目状态 — 确认分支、/import 页面、智能导入入口、本地构建
+**修改文件**：
+- `docs/PROJECT_STATUS.md`（更新）
+- `docs/WORKLOG.md`（本条）
+**完成内容**：
+1. 发现本地在旧分支 `master`（HEAD: `886adc1`），而所有新功能（/import、灵感区、多图轮播等）都在 `origin/main`（HEAD: `0d3f2dc`）
+2. 创建备份分支 `backup-master-before-main` 保护当前 master 状态
+3. 切换到 `main` 分支，跟踪 `origin/main`
+4. 确认 /import 页面完整存在（page.tsx + LinkImportTab + ScreenshotImportTab + BatchImportTab + CandidateEditor + actions.ts）
+5. 确认智能导入入口存在 5 处：首页 Hero 按钮 + 快捷功能区 + PC 侧边栏 BottomNav + 手机底部导航 + 投稿页链接
+6. TypeScript 编译通过（0 errors）
+7. `npm run build` 在数据收集阶段失败：`.env.local` 缺少 `SUPABASE_SERVICE_ROLE_KEY`
+**数据库操作**：无
+**检查结果**：
+- `git status`：工作区干净
+- `npx tsc --noEmit`：通过
+- `npm run build`：⚠️ 因缺少环境变量 `SUPABASE_SERVICE_ROLE_KEY` 失败（非代码问题）
+**下一步**：手动在 `.env.local` 补充 `SUPABASE_SERVICE_ROLE_KEY` 后，重新运行 `npm run build` 验证

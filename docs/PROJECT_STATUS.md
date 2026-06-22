@@ -1,6 +1,6 @@
 # PROJECT_STATUS.md — 照影项目状态
 
-> 最后更新：2026-05-30（修复详情页多图轮播线上错误）
+> 最后更新：2026-06-22（分支确认 + 本地构建验证）
 > 本项目同时由 Claude Code 和 Codex 维护。双方每次操作后都应更新此文件。
 
 ## 基本信息
@@ -53,11 +53,22 @@
 - 第九次迁移（智能导入 import_jobs + import_candidates 表 + items 来源字段）⚠️ 待执行（可重复执行版本，含 DROP POLICY IF EXISTS）
 - 当前共 9 张表 + item_images 待创建 + 灵感社区 4 张表待创建 + import 2 张表待创建
 
+## 当前分支与环境
+
+- **当前分支**：`main`（跟踪 `origin/main`）
+- **HEAD**：`0d3f2dc feat: add smart import entry points`
+- **/import 页面**：✅ 存在（`src/app/import/page.tsx` + 5 个子模块）
+- **智能导入入口**：✅ 首页 Hero 按钮 + 快捷功能区 + PC 侧边栏 + 手机底部导航 + 投稿页链接，共 5 处入口
+- **TypeScript 编译**：✅ 通过（`npx tsc --noEmit` 0 errors）
+- **npm run build**：⚠️ 在"收集页面数据"阶段失败，原因是 `.env.local` 缺少 `SUPABASE_SERVICE_ROLE_KEY`，导致 `src/lib/supabaseAdmin.ts` 模块加载时抛错。**这不是代码回退或入口丢失，而是本地环境变量不完整。**
+- **下一步**：由我手动补充 `SUPABASE_SERVICE_ROLE_KEY` 后，再运行 `npm run build` 验证。
+
 ## 下一步优先级
 
-1. 执行第七次迁移（item_images 表），启用多图轮播功能
-2. 修复投稿 image 字段兼容问题（执行第五次迁移）
-3. 优化首页电脑端配色
-4. 修复个人页换背景（验证 Safari 兼容）
-5. 完善痛柜广场和别人主页社交入口
-6. 完善灵感区（执行第六次迁移 + 权限 + 内容）
+1. ⚠️ **紧急**：本地 `.env.local` 补充 `SUPABASE_SERVICE_ROLE_KEY`，使 `npm run build` 通过
+2. 执行第七次迁移（item_images 表），启用多图轮播功能
+3. 修复投稿 image 字段兼容问题（执行第五次迁移）
+4. 优化首页电脑端配色
+5. 修复个人页换背景（验证 Safari 兼容）
+6. 完善痛柜广场和别人主页社交入口
+7. 完善灵感区（执行第六次迁移 + 权限 + 内容）
