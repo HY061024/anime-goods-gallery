@@ -42,8 +42,8 @@ export default function InspirationCard({
 
   return (
     <div className="group relative overflow-hidden rounded-2xl bg-white shadow-sm border border-pink-100 transition hover:-translate-y-1 hover:shadow-lg hover:border-pink-200">
+      {/* 封面图 - 可点击进入详情 */}
       <Link href={`/inspiration/${post.id}`} className="block">
-        {/* 封面图 / 占位 */}
         <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-pink-100 to-purple-100">
           {post.cover_url ? (
             <img
@@ -82,42 +82,46 @@ export default function InspirationCard({
             )}
           </div>
         </div>
+      </Link>
 
-        {/* 信息 */}
-        <div className="p-3">
-          <h2 className="line-clamp-1 text-sm font-semibold text-slate-800 group-hover:text-pink-600 transition-colors">
+      {/* 信息区域 - 在封面 Link 外面，避免 <a> 嵌套 */}
+      <div className="p-3">
+        <Link
+          href={`/inspiration/${post.id}`}
+          className="block group/title"
+        >
+          <h2 className="line-clamp-1 text-sm font-semibold text-slate-800 group-hover/title:text-pink-600 transition-colors">
             {post.title || post.content.slice(0, 50) || "无标题"}
           </h2>
+        </Link>
 
-          {post.work && (
-            <p className="mt-1 text-xs text-slate-500">
-              {post.work}
-              {post.character ? ` / ${post.character}` : ""}
-            </p>
-          )}
+        {post.work && (
+          <p className="mt-1 text-xs text-slate-500">
+            {post.work}
+            {post.character ? ` / ${post.character}` : ""}
+          </p>
+        )}
 
-          {/* 标签（最多展示 3 个，可点击） */}
-          {post.tags && post.tags.length > 0 && (
-            <div className="mt-1.5 flex flex-wrap gap-1">
-              {post.tags.slice(0, 3).map((tag) => (
-                <Link
-                  key={tag}
-                  href={`/inspiration?tag=${encodeURIComponent(tag)}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-500 hover:bg-pink-100 hover:text-pink-600 transition"
-                >
-                  #{tag}
-                </Link>
-              ))}
-              {post.tags.length > 3 && (
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-400">
-                  +{post.tags.length - 3}
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-      </Link>
+        {/* 标签（最多展示 3 个，可点击） */}
+        {post.tags && post.tags.length > 0 && (
+          <div className="mt-1.5 flex flex-wrap gap-1">
+            {post.tags.slice(0, 3).map((tag) => (
+              <Link
+                key={tag}
+                href={`/inspiration?tag=${encodeURIComponent(tag)}`}
+                className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-500 hover:bg-pink-100 hover:text-pink-600 transition"
+              >
+                #{tag}
+              </Link>
+            ))}
+            {post.tags.length > 3 && (
+              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-400">
+                +{post.tags.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* 底部操作栏 */}
       <div className="flex items-center gap-3 px-3 pb-3">
