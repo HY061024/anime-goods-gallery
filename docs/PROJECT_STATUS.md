@@ -1,6 +1,6 @@
 # PROJECT_STATUS.md — 照影项目状态
 
-> 最后更新：2026-06-22（Stop hook 配置完成）
+> 最后更新：2026-06-22（修复 hydration mismatch，build 通过，Vercel 环境变量已配置）
 > 本项目同时由 Claude Code 和 Codex 维护。双方每次操作后都应更新此文件。
 
 ## 基本信息
@@ -56,19 +56,21 @@
 ## 当前分支与环境
 
 - **当前分支**：`main`（跟踪 `origin/main`）
-- **HEAD**：`0d3f2dc feat: add smart import entry points`
+- **HEAD**：`bbf3dfb fix: remove nested links causing hydration mismatch`
 - **/import 页面**：✅ 存在（`src/app/import/page.tsx` + 5 个子模块）
 - **智能导入入口**：✅ 首页 Hero 按钮 + 快捷功能区 + PC 侧边栏 + 手机底部导航 + 投稿页链接，共 5 处入口
 - **TypeScript 编译**：✅ 通过（`npx tsc --noEmit` 0 errors）
-- **npm run build**：⚠️ 在"收集页面数据"阶段失败，原因是 `.env.local` 缺少 `SUPABASE_SERVICE_ROLE_KEY`，导致 `src/lib/supabaseAdmin.ts` 模块加载时抛错。**这不是代码回退或入口丢失，而是本地环境变量不完整。**
-- **下一步**：由我手动补充 `SUPABASE_SERVICE_ROLE_KEY` 后，再运行 `npm run build` 验证。
+- **npm run build**：✅ 通过（28 条路由全部编译成功）
+- **Vercel 环境变量**：✅ `SUPABASE_SERVICE_ROLE_KEY` 已在 Vercel 项目设置中配置
+- **本地环境**：⚠️ `.env.local` 缺少 `SUPABASE_SERVICE_ROLE_KEY`，但 Vercel 部署不受影响
 
 ## 下一步优先级
 
-1. ⚠️ **紧急**：本地 `.env.local` 补充 `SUPABASE_SERVICE_ROLE_KEY`，使 `npm run build` 通过
-2. 执行第七次迁移（item_images 表），启用多图轮播功能
-3. 修复投稿 image 字段兼容问题（执行第五次迁移）
-4. 优化首页电脑端配色
-5. 修复个人页换背景（验证 Safari 兼容）
-6. 完善痛柜广场和别人主页社交入口
-7. 完善灵感区（执行第六次迁移 + 权限 + 内容）
+1. ~~⚠️ 紧急：本地 `.env.local` 补充 `SUPABASE_SERVICE_ROLE_KEY`~~ → Vercel 已配置，部署不受影响
+2. 进入网站持续建设阶段（继续完善功能、优化体验）
+3. 执行第七次迁移（item_images 表），启用多图轮播功能
+4. 修复投稿 image 字段兼容问题（执行第五次迁移）
+5. 优化首页电脑端配色
+6. 修复个人页换背景（验证 Safari 兼容）
+7. 完善痛柜广场和别人主页社交入口
+8. 完善灵感区（执行第六次迁移 + 权限 + 内容）

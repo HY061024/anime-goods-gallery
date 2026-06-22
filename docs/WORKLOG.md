@@ -229,3 +229,29 @@
 1. 我手动在 `.env.local` 补充 `SUPABASE_SERVICE_ROLE_KEY`
 2. 运行 `npm run build` 验证通过
 3. 确认 Vercel 是否自动部署 main 分支最新提交
+
+---
+
+## 2026-06-22（第三次）
+**修改者**：Claude Code
+**任务**：修复 ItemCard 和 InspirationCard 嵌套 Link 导致的 hydration mismatch
+**修改文件**：
+- `src/components/ItemCard.tsx`（拆分外层 Link 只包裹图片区，信息区+标题独立 Link，提交者 Link 不再嵌套）
+- `src/components/InspirationCard.tsx`（拆分外层 Link 只包裹封面图，信息区+标题独立 Link，标签 Link 不再嵌套，移除多余 stopPropagation）
+- `docs/PROJECT_STATUS.md`（更新）
+- `docs/WORKLOG.md`（本条）
+**完成内容**：
+1. 定位根因：ItemCard 外层 `<Link to /items/[id]>` 包裹了信息区，其中的提交者 `<Link to /users/[id]>` 形成 `<a>` 嵌套 `<a>`（HTML 规范禁止）
+2. InspirationCard 同样问题：外层 `<Link to /inspiration/[id]>` 包裹标签 `<Link>`
+3. 修复方式：外层 Link 只包裹图片/封面区域，信息区移出，标题单独用 `<Link>` 指向详情页，所有子 Link 不再嵌套
+4. ItemCard 标题 hover 颜色改用 `group-hover/title:` 命名空间保持交互效果
+5. `npm run build` 通过（28 条路由全部编译成功）
+6. `git commit` + `git push` 到 origin/main（commit: `bbf3dfb`）
+7. 确认 Vercel `SUPABASE_SERVICE_ROLE_KEY` 已配置
+8. 项目已恢复到 main 最新进度，/import 页面和首页/Navbar/BottomNav 入口均完整
+**数据库操作**：无
+**检查结果**：
+- `npx tsc --noEmit`：通过（0 errors）
+- `npm run build`：通过（28 条路由）
+- `git status`：工作区干净，本地与 origin/main 同步
+**下一步**：进入网站持续建设阶段
