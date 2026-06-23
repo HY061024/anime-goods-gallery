@@ -255,3 +255,33 @@
 - `npm run build`：通过（28 条路由）
 - `git status`：工作区干净，本地与 origin/main 同步
 **下一步**：进入网站持续建设阶段
+
+
+---
+
+## 2026-06-23
+**修改者**：Claude Code
+**任务**：日韩代购请求 — 数据库设计与迁移 SQL
+**修改文件**：
+- `supabase/migrations/20260623_create_proxy_orders.sql`（新建 — 第十次迁移 SQL 草稿）
+- `docs/PROJECT_STATUS.md`（更新）
+- `docs/WORKLOG.md`（本条）
+**完成内容**：
+1. 设计日韩代购请求功能方案（6 页 + 6 组件 + 4 lib + 4 入口 + 3 表）
+2. 创建 proxy_orders 主表：id / user_id / item_url / item_name / item_price / user_notes / status(9状态) / payment_proof_url / created_at / updated_at
+3. 创建 proxy_order_admin_notes 独立表：管理员内部备注与用户数据完全隔离
+4. 创建 proxy_order_logs 操作日志表：状态变更自动记录
+5. RLS 安全策略：
+   - authenticated：仅 SELECT/INSERT 自己的 proxy_orders，无 UPDATE
+   - authenticated：仅 SELECT 自己订单的 proxy_order_logs
+   - authenticated：对 proxy_order_admin_notes 零权限
+   - anon：三张表均零权限
+6. RPC 函数 upload_payment_proof：SECURITY DEFINER + search_path='' + public. 前缀，仅允许 pending_payment→proof_uploaded
+7. 触发器：updated_at 自动刷新 + 状态变更自动写日志
+8. 所有表引用统一使用 public. 前缀，全链路可重复执行（DROP IF EXISTS）
+9. SQL 已在 Supabase SQL Editor 手动执行成功
+**数据库操作**：第十次迁移已执行（proxy_orders / proxy_order_admin_notes / proxy_order_logs 三张表创建完毕）
+**检查结果**：
+- SQL 逐项自检 9/9 通过（admin_notes 隔离 / authenticated 无 UPDATE / anon 零权限 / 重复执行安全）
+- 业务代码未启动
+**下一步**：开始编写业务代码（类型定义 → lib → 提交页 → 付款码弹窗 → 我的代购单 → 管理员后台 → 入口接入）
