@@ -102,6 +102,23 @@ export default function BottomNav({ userEmail, unreadMessages }: BottomNavProps)
           <span className="text-[10px] font-medium">导入</span>
         </Link>
 
+        {/* 代购入口（仅桌面端侧边栏） */}
+        <Link
+          href="/proxy-order"
+          className={`relative flex w-full flex-col items-center gap-0.5 px-3 py-2.5 transition-colors duration-200 ${
+            pathname.startsWith("/proxy-order")
+              ? "text-pink-500"
+              : "text-slate-400 hover:text-slate-500"
+          }`}
+          title="日韩代购"
+        >
+          {pathname.startsWith("/proxy-order") && (
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-0.5 rounded-r-full bg-pink-500" />
+          )}
+          <ProxyOrderIcon active={pathname.startsWith("/proxy-order")} />
+          <span className="text-[10px] font-medium">代购</span>
+        </Link>
+
         {/* 底部用户头像 */}
         {userEmail ? (
           <Link
@@ -231,6 +248,19 @@ function ImportIcon({ active }: { active: boolean }) {
         strokeLinecap="round"
         strokeLinejoin="round"
         d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+      />
+    </svg>
+  );
+}
+
+function ProxyOrderIcon({ active }: { active: boolean }) {
+  const c = active ? "currentColor" : "currentColor";
+  return (
+    <svg className="h-6 w-6" fill="none" stroke={c} strokeWidth={1.8} viewBox="0 0 24 24">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
       />
     </svg>
   );

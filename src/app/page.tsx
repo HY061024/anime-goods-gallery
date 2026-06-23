@@ -93,6 +93,12 @@ export default async function HomePage() {
               >
                 🤖 智能导入图鉴
               </Link>
+              <Link
+                href="/proxy-order"
+                className="inline-flex items-center gap-2 rounded-full border-2 border-white/60 bg-white/10 px-6 py-3 text-sm font-bold text-white shadow-lg backdrop-blur-sm transition hover:bg-white/20 hover:scale-105"
+              >
+                🛍️ 日韩代购
+              </Link>
             </div>
           </div>
         </div>
@@ -108,7 +114,7 @@ export default async function HomePage() {
       <section className="mx-auto max-w-7xl px-6 py-12">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-slate-800">快捷功能</h2>
-          <p className="mt-1 text-sm text-slate-500">快速开始收录你的周边收藏</p>
+          <p className="mt-1 text-sm text-slate-500">投稿、导入或找人代购你喜欢的周边</p>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Link
@@ -143,6 +149,24 @@ export default async function HomePage() {
                 </h3>
                 <p className="mt-1 text-sm text-slate-500">
                   粘贴链接或上传截图，自动识别周边信息
+                </p>
+              </div>
+            </div>
+          </Link>
+          <Link
+            href="/proxy-order"
+            className="group rounded-2xl bg-white border border-pink-100 p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 text-2xl">
+                🛍️
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-lg font-bold text-slate-800 group-hover:text-pink-500 transition-colors">
+                  日韩代购
+                </h3>
+                <p className="mt-1 text-sm text-slate-500">
+                  提交链接并上传付款凭证后进入管理员处理
                 </p>
               </div>
             </div>
