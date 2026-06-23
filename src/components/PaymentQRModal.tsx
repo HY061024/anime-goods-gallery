@@ -6,17 +6,17 @@ interface PaymentQRModalProps {
   open: boolean;
   onClose: () => void;
   orderId?: number;
-  /** 收款码图片 URL，优先级：props > NEXT_PUBLIC_* 环境变量 > 本地 fallback */
-  alipayQrUrl?: string;
-  wechatQrUrl?: string;
+  /** 收款码图片 URL，由 Server Component 读取环境变量后传入 */
+  alipayQrUrl: string;
+  wechatQrUrl: string;
 }
 
 export default function PaymentQRModal({
   open,
   onClose,
   orderId,
-  alipayQrUrl = process.env.NEXT_PUBLIC_ALIPAY_QR_URL || "/payments/alipay.jpg",
-  wechatQrUrl = process.env.NEXT_PUBLIC_WECHAT_QR_URL || "/payments/wechat.jpg",
+  alipayQrUrl,
+  wechatQrUrl,
 }: PaymentQRModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);

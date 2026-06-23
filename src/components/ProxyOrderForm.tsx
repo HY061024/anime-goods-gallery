@@ -4,7 +4,12 @@ import { useState, useTransition } from "react";
 import { submitProxyOrder } from "@/app/proxy-order/actions";
 import PaymentQRModal from "./PaymentQRModal";
 
-export default function ProxyOrderForm() {
+interface ProxyOrderFormProps {
+  alipayQrUrl: string;
+  wechatQrUrl: string;
+}
+
+export default function ProxyOrderForm({ alipayQrUrl, wechatQrUrl }: ProxyOrderFormProps) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [showQR, setShowQR] = useState(false);
@@ -115,6 +120,8 @@ export default function ProxyOrderForm() {
         open={showQR}
         onClose={() => setShowQR(false)}
         orderId={createdOrderId ?? undefined}
+        alipayQrUrl={alipayQrUrl}
+        wechatQrUrl={wechatQrUrl}
       />
     </>
   );

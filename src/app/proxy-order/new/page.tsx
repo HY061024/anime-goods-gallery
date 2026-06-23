@@ -3,6 +3,13 @@ import ProxyOrderForm from "@/components/ProxyOrderForm";
 import Link from "next/link";
 
 export default async function NewProxyOrderPage() {
+  // 在 Server Component 中读取环境变量，作为 props 传给 Client Component
+  // 避免 Client Component 中直接使用 process.env（Turbopack 内联不稳定）
+  const alipayQrUrl = process.env.NEXT_PUBLIC_ALIPAY_QR_URL || "/payments/alipay.jpg";
+  const wechatQrUrl = process.env.NEXT_PUBLIC_WECHAT_QR_URL || "/payments/wechat.jpg";
+  const hasAlipayEnv = !!process.env.NEXT_PUBLIC_ALIPAY_QR_URL;
+  const hasWechatEnv = !!process.env.NEXT_PUBLIC_WECHAT_QR_URL;
+  console.log(`[proxy-order/new] alipay env detected: ${hasAlipayEnv ? "yes" : "no"}, wechat env detected: ${hasWechatEnv ? "yes" : "no"}`);
   const supabase = await createClient();
   const {
     data: { user },
@@ -56,7 +63,7 @@ export default async function NewProxyOrderPage() {
         </ol>
       </div>
 
-      <ProxyOrderForm />
+      <ProxyOrderForm alipayQrUrl={alipayQrUrl} wechatQrUrl={wechatQrUrl} />
     </div>
   );
 }
