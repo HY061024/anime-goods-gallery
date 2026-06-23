@@ -29,7 +29,13 @@
 - 图片浏览器直传 Supabase Storage（绕过 Vercel 4.5MB 限制）
 - 意见反馈（/feedback 提交 + /admin/feedback 管理）
 - 智能导入图鉴（/import — 链接解析/截图导入，自动生成待审核草稿）
-- 日韩代购请求（提交/付款码/凭证上传/我的代购单/管理员审核/取消删除）
+- 日韩代购请求（提交/付款码/凭证上传/我的代购单/管理员审核/取消删除）✅ 基础闭环已完成
+  - 入口 5 处：首页 Hero + 快捷功能区 + PC 左侧导航 + AdminNav + 提交成功弹窗"去上传凭证"
+  - 付款码弹窗：支付宝/微信双码 + 三步指引 + 点击放大 lightbox
+  - 二维码图片：不提交仓库，通过 Vercel NEXT_PUBLIC_* 环境变量读取 Supabase Storage URL
+  - 凭证上传：浏览器压缩 → 直传 Storage → RPC 更新状态为 proof_uploaded
+  - 管理员审核：状态流转（白名单校验）+ 付款凭证预览
+  - 取消/删除：cancel_proxy_order / delete_proxy_order RPC（SECURITY DEFINER）
 
 ## 当前重点问题
 
@@ -59,7 +65,8 @@
 ## 当前分支与环境
 
 - **当前分支**：`main`（跟踪 `origin/main`）
-- **HEAD**：`7eac6e9 feat: add proxy order admin review and cancellation`
+- **HEAD**：`043c8b1 fix: show enlarged payment QR lightbox`
+- **代购付款二维码**：✅ `public/payments/` 不提交 GitHub，线上通过 Vercel 环境变量（`NEXT_PUBLIC_ALIPAY_QR_URL` / `NEXT_PUBLIC_WECHAT_QR_URL`）读取 Supabase Storage 公开 URL，Server Component 读取后作为 props 传入 Client Component，点击可放大查看
 - **/import 页面**：✅ 存在（`src/app/import/page.tsx` + 5 个子模块）
 - **智能导入入口**：✅ 首页 Hero 按钮 + 快捷功能区 + PC 侧边栏 + 手机底部导航 + 投稿页链接，共 5 处入口
 - **TypeScript 编译**：✅ 通过（`npx tsc --noEmit` 0 errors）
@@ -69,7 +76,7 @@
 
 ## 下一步优先级
 
-1. ~~🚧 日韩代购请求~~ → 业务代码已完成，待 Vercel 设置 QR 环境变量后全面测试
+1. ~~日韩代购请求~~ → 基础闭环已完成（含付款码 env 加载修复 + 点击放大 lightbox 修复）
 2. 执行第七次迁移（item_images 表），启用多图轮播功能
 3. 修复投稿 image 字段兼容问题（执行第五次迁移）
 4. 优化首页电脑端配色

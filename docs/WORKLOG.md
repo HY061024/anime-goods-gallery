@@ -339,3 +339,47 @@
 3. 完成管理员内部备注 proxy_order_admin_notes 的前端界面
 4. 补充"我的"页面中代购单入口
 5. 图鉴详情页"代购此商品"按钮（自动填充链接）
+
+---
+
+## 2026-06-23（第三次）
+**修改者**：Claude Code
+**任务**：修复代购付款二维码线上不显示
+**修改文件**：
+- `src/app/proxy-order/new/page.tsx`（Server Component 中读取 NEXT_PUBLIC_* 环境变量，作为 props 传入）
+- `src/components/ProxyOrderForm.tsx`（新增 alipayQrUrl / wechatQrUrl props，透传给 PaymentQRModal）
+- `src/components/PaymentQRModal.tsx`（移除 process.env 默认值，改为纯 props 消费）
+**完成内容**：
+1. 根因：PaymentQRModal（Client Component）在默认参数值中使用 `process.env.NEXT_PUBLIC_*`，Turbopack 内联不稳定导致线上取不到值
+2. 修复：Server Component（page.tsx）中读取 `NEXT_PUBLIC_ALIPAY_QR_URL` / `NEXT_PUBLIC_WECHAT_QR_URL`，fallback 到 `/payments/` 本地文件，日志只输出 yes/no 不输出完整 URL
+3. 数据流：page.tsx (Server, 读 env) → ProxyOrderForm (Client, 透传 props) → PaymentQRModal (Client, 纯 props)
+4. public/payments/ 不提交 GitHub，线上通过 Vercel 环境变量读取 Supabase Storage 公开 URL
+**数据库操作**：无
+**检查结果**：
+- `npx tsc --noEmit`：通过
+- `npm run build`：通过（32 条路由）
+- `git push`：`2344a53 fix: load payment QR URLs from server props`
+**下一步**：验证线上付款码弹窗是否正常显示二维码
+
+---
+
+## 2026-06-23（第四次）
+**修改者**：Claude Code
+**任务**：修复代购付款二维码点击放大 lightbox 不显示
+**修改文件**：
+- `src/components/PaymentQRModal.tsx`（lightbox 移入 dialog 内部 + 状态改为对象 + 样式优化）
+**完成内容**：
+1. 根因：lightbox 原本是 `<dialog>` 的兄弟元素，`dialog.showModal()` 将对话框推入浏览器 top layer，覆盖所有普通 z-index 元素，导致 lightbox 图片被遮住
+2. 修复：将 lightbox 移入 `<dialog>` 内部渲染，使其参与 top layer，`z-[100]` 覆盖对话框内容
+3. 状态升级：`lightboxImg: string | null` → `selectedQr: { title: string; src: string } | null`
+4. 支付宝点击：`setSelectedQr({ title: "支付宝", src: alipayQrUrl })`
+5. 微信点击：`setSelectedQr({ title: "微信支付", src: wechatQrUrl })`
+6. Lightbox 内容：标题 + 大图（max-h-[75vh] max-w-[90vw] object-contain）+ 提示文字 + 关闭按钮
+7. 交互：点击黑色遮罩关闭，点击大图不透传（stopPropagation）
+8. 复用已能正常显示的小图 src，无需单独错误图片路径
+**数据库操作**：无
+**检查结果**：
+- `npx tsc --noEmit`：通过
+- `npm run build`：通过（32 条路由）
+- `git push`：`043c8b1 fix: show enlarged payment QR lightbox`
+**下一步**：验证线上二维码点击放大功能是否正常
