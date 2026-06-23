@@ -19,7 +19,7 @@ export default function PaymentQRModal({
   wechatQrUrl,
 }: PaymentQRModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const [lightboxImg, setLightboxImg] = useState<string | null>(null);
+  const [selectedQr, setSelectedQr] = useState<{ title: string; src: string } | null>(null);
   const [alipayError, setAlipayError] = useState(false);
   const [wechatError, setWechatError] = useState(false);
 
@@ -93,7 +93,7 @@ export default function PaymentQRModal({
                 </div>
               ) : (
                 <button
-                  onClick={() => setLightboxImg(alipayQrUrl)}
+                  onClick={() => setSelectedQr({ title: "支付宝", src: alipayQrUrl })}
                   className="w-full transition hover:ring-2 hover:ring-blue-300 rounded-lg"
                 >
                   <img
@@ -120,7 +120,7 @@ export default function PaymentQRModal({
                 </div>
               ) : (
                 <button
-                  onClick={() => setLightboxImg(wechatQrUrl)}
+                  onClick={() => setSelectedQr({ title: "微信支付", src: wechatQrUrl })}
                   className="w-full transition hover:ring-2 hover:ring-green-300 rounded-lg"
                 >
                   <img
@@ -150,35 +150,38 @@ export default function PaymentQRModal({
             我已付款，去上传凭证
           </button>
         </div>
-      </dialog>
 
-      {/* 二维码放大 lightbox */}
-      {lightboxImg && (
-        <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4"
-          onClick={() => setLightboxImg(null)}
-        >
-          <button
-            onClick={() => setLightboxImg(null)}
-            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white transition hover:bg-white/30"
+        {/* 二维码放大 lightbox — 必须在 dialog 内部，才能突破 showModal 的 top layer */}
+        {selectedQr && (
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4"
+            onClick={() => setSelectedQr(null)}
           >
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+            {/* 关闭按钮 */}
+            <button
+              onClick={() => setSelectedQr(null)}
+              className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white transition hover:bg-white/30"
+            >
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
 
-          <div className="flex max-w-sm flex-col items-center" onClick={(e) => e.stopPropagation()}>
-            <img
-              src={lightboxImg}
-              alt="收款码"
-              className="max-h-[70vh] max-w-full rounded-2xl bg-white p-4 object-contain"
-            />
-            <p className="mt-4 text-center text-sm text-white/80">
-              扫码付款后请保存付款截图
-            </p>
+            {/* 内容区 — 点击不透传，防止误关 */}
+            <div className="flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
+              <h3 className="mb-3 text-lg font-bold text-white">{selectedQr.title}</h3>
+              <img
+                src={selectedQr.src}
+                alt={selectedQr.title}
+                className="max-h-[75vh] max-w-[90vw] rounded-2xl bg-white p-4 object-contain"
+              />
+              <p className="mt-4 text-center text-sm text-white/80">
+                扫码付款后请保存付款截图
+              </p>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </dialog>
     </>
   );
 }
