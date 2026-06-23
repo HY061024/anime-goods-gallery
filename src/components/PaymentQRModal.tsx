@@ -20,6 +20,8 @@ export default function PaymentQRModal({
 }: PaymentQRModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);
+  const [alipayError, setAlipayError] = useState(false);
+  const [wechatError, setWechatError] = useState(false);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -78,32 +80,67 @@ export default function PaymentQRModal({
 
           {/* 两个收款码 */}
           <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => setLightboxImg(alipayQrUrl)}
-              className="rounded-xl border border-blue-100 bg-blue-50/50 p-3 text-center transition hover:ring-2 hover:ring-blue-300"
-            >
+            {/* 支付宝 */}
+            <div className="rounded-xl border border-blue-100 bg-blue-50/50 p-3 text-center">
               <p className="mb-2 text-xs font-semibold text-blue-600">支付宝</p>
-              <img
-                src={alipayQrUrl}
-                alt="支付宝收款码"
-                className="mx-auto aspect-square w-full max-w-[140px] rounded-lg object-contain"
-              />
+              {alipayError ? (
+                <div className="flex flex-col items-center justify-center gap-1 py-4">
+                  <svg className="h-8 w-8 text-slate-300" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <p className="text-[10px] text-slate-400">付款码暂未加载</p>
+                  <p className="text-[10px] text-slate-400">请联系管理员</p>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setLightboxImg(alipayQrUrl)}
+                  className="w-full transition hover:ring-2 hover:ring-blue-300 rounded-lg"
+                >
+                  <img
+                    src={alipayQrUrl}
+                    alt="支付宝收款码"
+                    className="mx-auto aspect-square w-full max-w-[140px] rounded-lg object-contain"
+                    onError={() => setAlipayError(true)}
+                  />
+                </button>
+              )}
               <p className="mt-1.5 text-[10px] text-slate-400">点击二维码可放大</p>
-            </button>
+            </div>
 
-            <button
-              onClick={() => setLightboxImg(wechatQrUrl)}
-              className="rounded-xl border border-green-100 bg-green-50/50 p-3 text-center transition hover:ring-2 hover:ring-green-300"
-            >
+            {/* 微信 */}
+            <div className="rounded-xl border border-green-100 bg-green-50/50 p-3 text-center">
               <p className="mb-2 text-xs font-semibold text-green-600">微信支付</p>
-              <img
-                src={wechatQrUrl}
-                alt="微信收款码"
-                className="mx-auto aspect-square w-full max-w-[140px] rounded-lg object-contain"
-              />
+              {wechatError ? (
+                <div className="flex flex-col items-center justify-center gap-1 py-4">
+                  <svg className="h-8 w-8 text-slate-300" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <p className="text-[10px] text-slate-400">付款码暂未加载</p>
+                  <p className="text-[10px] text-slate-400">请联系管理员</p>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setLightboxImg(wechatQrUrl)}
+                  className="w-full transition hover:ring-2 hover:ring-green-300 rounded-lg"
+                >
+                  <img
+                    src={wechatQrUrl}
+                    alt="微信收款码"
+                    className="mx-auto aspect-square w-full max-w-[140px] rounded-lg object-contain"
+                    onError={() => setWechatError(true)}
+                  />
+                </button>
+              )}
               <p className="mt-1.5 text-[10px] text-slate-400">点击二维码可放大</p>
-            </button>
+            </div>
           </div>
+
+          {/* 全局错误提示：两个码都加载失败 */}
+          {alipayError && wechatError && (
+            <div className="mt-3 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-center text-xs text-amber-700">
+              付款码暂未加载，请联系管理员
+            </div>
+          )}
 
           {/* "去上传凭证" 按钮 */}
           <button

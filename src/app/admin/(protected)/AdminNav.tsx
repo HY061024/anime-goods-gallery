@@ -41,6 +41,12 @@ export default function AdminNav({
       >
         反馈
       </NavLink>
+      <NavLink
+        href="/admin/proxy-orders"
+        active={pathname.startsWith("/admin/proxy-orders")}
+      >
+        代购审核
+      </NavLink>
       {role === "super_admin" && (
         <NavLink
           href="/admin/admins"

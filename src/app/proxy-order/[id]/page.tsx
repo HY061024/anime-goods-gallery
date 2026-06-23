@@ -3,6 +3,7 @@ import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PaymentProofUploader from "./PaymentProofUploader";
+import CancelDeleteButtons from "./CancelDeleteButtons";
 import { PROXY_ORDER_STATUS_LABELS, PROXY_ORDER_STATUS_COLORS } from "@/data/proxyOrders";
 import type { ProxyOrder } from "@/data/proxyOrders";
 
@@ -90,15 +91,22 @@ export default async function ProxyOrderDetailPage({
 
       {/* 付款凭证上传区域 */}
       {canUpload ? (
-        <div className="rounded-2xl border-2 border-dashed border-pink-200 bg-pink-50/30 p-6">
-          <h2 className="mb-2 text-center text-sm font-semibold text-slate-700">
-            上传付款凭证
-          </h2>
-          <p className="mb-4 text-center text-xs text-slate-500">
-            请先根据付款码弹窗中的二维码完成付款，然后上传截图
-          </p>
-          <PaymentProofUploader orderId={order.id} />
-        </div>
+        <>
+          <div className="rounded-2xl border-2 border-dashed border-pink-200 bg-pink-50/30 p-6 mb-4">
+            <h2 className="mb-2 text-center text-sm font-semibold text-slate-700">
+              上传付款凭证
+            </h2>
+            <p className="mb-4 text-center text-xs text-slate-500">
+              请先根据付款码弹窗中的二维码完成付款，然后上传截图
+            </p>
+            <PaymentProofUploader orderId={order.id} />
+          </div>
+          {/* 待付款状态下可取消或删除 */}
+          <div className="rounded-2xl border border-slate-100 bg-white p-4">
+            <p className="mb-2 text-xs text-slate-500">付款遇到问题？你可以：</p>
+            <CancelDeleteButtons orderId={order.id} />
+          </div>
+        </>
       ) : order.payment_proof_url ? (
         <div className="rounded-2xl border border-green-100 bg-green-50 p-5">
           <h2 className="mb-2 text-sm font-semibold text-green-700">✅ 已提交给管理员审核</h2>
