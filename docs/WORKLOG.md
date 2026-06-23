@@ -285,3 +285,57 @@
 - SQL 逐项自检 9/9 通过（admin_notes 隔离 / authenticated 无 UPDATE / anon 零权限 / 重复执行安全）
 - 业务代码未启动
 **下一步**：开始编写业务代码（类型定义 → lib → 提交页 → 付款码弹窗 → 我的代购单 → 管理员后台 → 入口接入）
+
+
+---
+
+## 2026-06-23（第二次）
+**修改者**：Claude Code
+**任务**：日韩代购请求 — 业务代码开发
+**修改文件**：
+- `src/data/proxyOrders.ts`（新建 — 类型 + 状态常量 + 颜色映射）
+- `src/lib/proxyOrders.ts`（新建 — Server 端 CRUD）
+- `src/app/proxy-order/actions.ts`（新建 — submitProxyOrder Server Action）
+- `src/app/proxy-order/page.tsx`（新建 — 入口页，登录后显示订单列表）
+- `src/app/proxy-order/new/page.tsx`（新建 — 提交表单页）
+- `src/app/proxy-order/[id]/page.tsx`（新建 — 订单详情 + 凭证上传区）
+- `src/app/proxy-order/[id]/PaymentProofUploader.tsx`（新建 — 凭证上传组件）
+- `src/app/proxy-order/[id]/CancelDeleteButtons.tsx`（新建 — 取消/删除按钮）
+- `src/components/ProxyOrderForm.tsx`（新建 — 代购表单）
+- `src/components/PaymentQRModal.tsx`（新建 — 付款码弹窗，支持放大+步骤指引+onError+env var）
+- `src/app/admin/(protected)/proxy-orders/page.tsx`（新建 — 管理员代购审核页）
+- `src/app/admin/(protected)/proxy-orders/actions.ts`（新建 — 状态变更 Server Action）
+- `src/app/admin/(protected)/proxy-orders/AdminProxyOrderActions.tsx`（新建 — 状态变更按钮）
+- `src/app/admin/(protected)/AdminNav.tsx`（修改 — 新增"代购审核"Tab）
+- `src/app/page.tsx`（修改 — Hero 按钮 + 快捷功能区卡片）
+- `src/components/BottomNav.tsx`（修改 — PC 左侧导航"代购"入口）
+- `supabase/migrations/20260623_cancel_delete_proxy_order.sql`（新建 — cancel/delete RPC）
+- `docs/PROJECT_STATUS.md`（更新）
+- `docs/WORKLOG.md`（本条）
+**完成内容**：
+1. 代购提交页 `/proxy-order/new`：商品链接/名称/价格/备注表单，提交后弹付款码
+2. 付款码弹窗 PaymentQRModal：支付宝/微信双码、三步指引、点击放大 lightbox、图片加载失败 onError 提示、env var 优先读取
+3. 我的代购单 `/proxy-order`：登录后展示订单列表，空状态引导
+4. 订单详情页 `/proxy-order/[id]`：订单信息 + 凭证上传（压缩→Storage→RPC）+ 取消/删除
+5. 凭证上传 PaymentProofUploader：浏览器压缩→直传 Storage→调用 upload_payment_proof RPC→状态变 proof_uploaded
+6. 管理员代购审核 `/admin/proxy-orders`：status ≠ pending_payment 的订单列表，状态流转（白名单校验），付款凭证预览
+7. 取消/删除 RPC：cancel_proxy_order + delete_proxy_order（SECURITY DEFINER），已手动执行
+8. 入口 5 处：首页 Hero + 快捷功能区 + PC 左侧导航 + AdminNav + 我的代购单列表
+**数据库操作**：
+- 第十次迁移补充 RPC（cancel_proxy_order / delete_proxy_order）已执行
+- upload_payment_proof RPC 在首次迁移中已创建
+**检查结果**：
+- `npx tsc --noEmit`：通过（0 errors）
+- `npm run build`：通过（32 条路由）
+- `git push`：3 次提交均已推送到 origin/main
+  - `b0888be` — 数据库迁移
+  - `1cb8465` + `b6dcd05` — 付款弹窗和凭证上传
+  - `7eac6e9` — 管理员审核 + 取消/删除
+- `public/payments/` 未提交 ✅
+- `.env.local` 未读取/未提交 ✅
+**下一步**：
+1. Vercel 设置 NEXT_PUBLIC_ALIPAY_QR_URL / NEXT_PUBLIC_WECHAT_QR_URL 环境变量
+2. 测试完整流程：提交→付款码→上传凭证→管理员审核→状态流转
+3. 完成管理员内部备注 proxy_order_admin_notes 的前端界面
+4. 补充"我的"页面中代购单入口
+5. 图鉴详情页"代购此商品"按钮（自动填充链接）

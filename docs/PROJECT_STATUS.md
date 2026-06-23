@@ -1,6 +1,6 @@
 # PROJECT_STATUS.md — 照影项目状态
 
-> 最后更新：2026-06-23（日韩代购请求数据库已建表，业务代码待开发）
+> 最后更新：2026-06-23（日韩代购功能业务代码完成，含提交/付款码/凭证上传/管理员审核/取消删除）
 > 本项目同时由 Claude Code 和 Codex 维护。双方每次操作后都应更新此文件。
 
 ## 基本信息
@@ -29,7 +29,7 @@
 - 图片浏览器直传 Supabase Storage（绕过 Vercel 4.5MB 限制）
 - 意见反馈（/feedback 提交 + /admin/feedback 管理）
 - 智能导入图鉴（/import — 链接解析/截图导入，自动生成待审核草稿）
-- 🚧 日韩代购请求（数据库已建表，业务代码待开发）
+- 日韩代购请求（提交/付款码/凭证上传/我的代购单/管理员审核/取消删除）
 
 ## 当前重点问题
 
@@ -52,13 +52,14 @@
 - 第七次迁移（多图轮播 item_images 表 + RLS + GRANT）⚠️ 待执行
 - 第八次迁移（灵感区图片多图 image_urls 字段）⚠️ 待执行
 - 第九次迁移（智能导入 import_jobs + import_candidates 表 + items 来源字段）⚠️ 待执行（可重复执行版本，含 DROP POLICY IF EXISTS）
-- 第十次迁移（日韩代购 proxy_orders + proxy_order_admin_notes + proxy_order_logs + RPC）✅ 已执行
+- 第十次迁移（日韩代购 proxy_orders + proxy_order_admin_notes + proxy_order_logs + upload_payment_proof RPC）✅ 已执行
+- 第十次迁移补充（cancel_proxy_order + delete_proxy_order RPC）✅ 已执行
 - 当前共 9 张表 + item_images 待创建 + 灵感社区 4 张表待创建 + import 2 张表待创建 + proxy 3 张表已创建
 
 ## 当前分支与环境
 
 - **当前分支**：`main`（跟踪 `origin/main`）
-- **HEAD**：`bbf3dfb fix: remove nested links causing hydration mismatch`
+- **HEAD**：`7eac6e9 feat: add proxy order admin review and cancellation`
 - **/import 页面**：✅ 存在（`src/app/import/page.tsx` + 5 个子模块）
 - **智能导入入口**：✅ 首页 Hero 按钮 + 快捷功能区 + PC 侧边栏 + 手机底部导航 + 投稿页链接，共 5 处入口
 - **TypeScript 编译**：✅ 通过（`npx tsc --noEmit` 0 errors）
@@ -68,7 +69,7 @@
 
 ## 下一步优先级
 
-1. 🚧 **进行中**：日韩代购请求 — 业务代码开发（类型定义 → lib → 提交页 → 付款码弹窗 → 我的代购单 → 管理员后台 → 入口接入）
+1. ~~🚧 日韩代购请求~~ → 业务代码已完成，待 Vercel 设置 QR 环境变量后全面测试
 2. 执行第七次迁移（item_images 表），启用多图轮播功能
 3. 修复投稿 image 字段兼容问题（执行第五次迁移）
 4. 优化首页电脑端配色
