@@ -6,7 +6,7 @@ interface PaymentQRModalProps {
   open: boolean;
   onClose: () => void;
   orderId?: number;
-  /** 可配置的收款码图片 URL，默认使用本地 public/payments/ */
+  /** 收款码图片 URL，优先级：props > NEXT_PUBLIC_* 环境变量 > 本地 fallback */
   alipayQrUrl?: string;
   wechatQrUrl?: string;
 }
@@ -15,8 +15,8 @@ export default function PaymentQRModal({
   open,
   onClose,
   orderId,
-  alipayQrUrl = "/payments/alipay.jpg",
-  wechatQrUrl = "/payments/wechat.jpg",
+  alipayQrUrl = process.env.NEXT_PUBLIC_ALIPAY_QR_URL || "/payments/alipay.jpg",
+  wechatQrUrl = process.env.NEXT_PUBLIC_WECHAT_QR_URL || "/payments/wechat.jpg",
 }: PaymentQRModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);
